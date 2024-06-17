@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homePageLayout">
+
+    <fragment
+        android:id="@+id/homePageLayout"
+        android:name="com.zero1labs.nutriscan.pages.HomePage"
+        android:label="@string/home_page_label"
+        tools:layout="@layout/fragment_home_page">
+        <action
+            android:id="@+id/action_home_page_to_product_details_page"
+            app:destination="@id/productDetailsPageLayout" />
+        <action
+            android:id="@+id/action_home_page_to_product_fetch_error_page"
+            app:destination="@id/ProductFetchErrorPage" />
+    </fragment>
+    <fragment
+        android:id="@+id/productDetailsPageLayout"
+        android:name="com.zero1labs.nutriscan.pages.ProductDetailsPage"
+        android:label="@string/product_details_label"
+        tools:layout="@layout/fragment_product_details_page">
+    </fragment>
+    <fragment
+        android:id="@+id/ProductFetchErrorPage"
+        android:name="com.zero1labs.nutriscan.pages.ProductFetchErrorPage"
+        android:label="ProductFetchErrorPage"
+        tools:layout="@layout/fragment_product_fetch_error_page">
+    </fragment>
+</navigation>
