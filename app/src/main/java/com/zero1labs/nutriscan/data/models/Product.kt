@@ -20,4 +20,10 @@ data class Product(
 
     @SerializedName("brands")
     val brand : String,
+
+    @SerializedName("nutriscore_grade")
+    val nutriScoreGrade : String,
+
+    @SerializedName("nutriscore_data")
+    val nutriScoreData: NutriScoreData? = null,
 )

@@ -25,7 +25,7 @@ data class Nutrients(
     @SerializedName("energy-kcal")
     val energyKcal: Int? = null,
     @SerializedName("energy-kcal_100g")
-    val energyKcal100g: Int? = null,
+    val energyKcal100g: Double? = null,
     @SerializedName("energy-kcal_serving")
     val energyKcalServing: Double? = null,
     @SerializedName("energy-kcal_unit")
@@ -63,15 +63,15 @@ data class Nutrients(
     @SerializedName("fat_value")
     val fatValue: Double? = null,
     @SerializedName("fiber")
-    val fiber: Int? = null,
+    val fiber: Double? = null,
     @SerializedName("fiber_100g")
-    val fiber100g: Int? = null,
+    val fiber100g: Double? = null,
     @SerializedName("fiber_serving")
-    val fiberServing: Int? = null,
+    val fiberServing: Double? = null,
     @SerializedName("fiber_unit")
     val fiberUnit: String? = null,
     @SerializedName("fiber_value")
-    val fiberValue: Int? = null,
+    val fiberValue: Double? = null,
     @SerializedName("fruits-vegetables-legumes-estimate-from-ingredients_100g")
     val fruitsVegetablesLegumesEstimateFromIngredients100g: Double? = null,
     @SerializedName("fruits-vegetables-legumes-estimate-from-ingredients_serving")
@@ -83,9 +83,9 @@ data class Nutrients(
     @SerializedName("nova-group")
     val novaGroup: Int? = null,
     @SerializedName("nova-group_100g")
-    val novaGroup100g: Int? = null,
+    val novaGroup100g: Double? = null,
     @SerializedName("nova-group_serving")
-    val novaGroupServing: Int? = null,
+    val novaGroupServing: Double? = null,
     @SerializedName("nutrition-score-fr")
     val nutritionScoreFr: Int? = null,
     @SerializedName("nutrition-score-fr_100g")

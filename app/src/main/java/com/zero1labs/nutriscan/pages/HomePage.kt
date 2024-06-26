@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
+import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
 import com.zero1labs.nutriscan.viewModels.ProductScanState
@@ -84,16 +85,20 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
         }
 
+        view.findViewById<Button>(R.id.btn_get_demo_item).setOnClickListener(){
+            viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.SEASONED_PEANUTS))
+        }
+
 
 
     }
 
-    fun showProgressBar(){
+    private fun showProgressBar(){
         progressBar.visibility = View.VISIBLE
         progressBarBg.visibility = View.VISIBLE
     }
 
-    fun hideProgressBar(){
+    private fun hideProgressBar(){
         progressBar.visibility = View.GONE
         progressBarBg.visibility = View.GONE
     }

@@ -8,6 +8,8 @@ object ResponseFields {
         "nutriments",
         "ingredients",
         "nutriscore_data",
+        "brands",
+        "nutriscore_grade",
     )
 
     fun getFields(): String{
