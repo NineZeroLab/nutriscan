@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.data.models
+package com.zero1labs.nutriscan.utils
 
 enum class PointsCategory (val description: String){
     TOO_LOW ("too low"),

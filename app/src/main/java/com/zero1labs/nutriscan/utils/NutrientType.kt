@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.data.models
+package com.zero1labs.nutriscan.utils
 
 enum class NutrientType (val description: String,val heading: String){
     ENERGY ("energy","Calories"),

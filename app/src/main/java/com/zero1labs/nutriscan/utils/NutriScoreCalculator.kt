@@ -1,6 +1,5 @@
 package com.zero1labs.nutriscan.utils
 
-import com.zero1labs.nutriscan.data.models.NutrientType
 import com.zero1labs.nutriscan.data.models.Nutrients
 
 class NutriScoreCalculator {

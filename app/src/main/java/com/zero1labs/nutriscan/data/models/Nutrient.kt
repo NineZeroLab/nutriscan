@@ -1,6 +1,9 @@
 package com.zero1labs.nutriscan.data.models
 
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
+import com.zero1labs.nutriscan.utils.NutrientCategory
+import com.zero1labs.nutriscan.utils.NutrientType
+import com.zero1labs.nutriscan.utils.PointsCategory
 
 class NutrientGenerator(product: Product){
     private var nutrients : MutableList<Nutrient>
@@ -21,7 +24,8 @@ class NutrientGenerator(product: Product){
             )
             val saturates = Nutrient.getNutrient(
                 nutrientType = NutrientType.SATURATES,
-                points = nutriScoreData?.saturatedFatPoints ?: NutriScoreCalculator.getPoints(NutrientType.SATURATES, productNutrients.saturatedFat100g),
+                points = nutriScoreData?.saturatedFatPoints ?: NutriScoreCalculator.getPoints(
+                    NutrientType.SATURATES, productNutrients.saturatedFat100g),
                 contentPerHundredGrams = productNutrients.saturatedFat100g ?: 0,
                 servingUnit =  productNutrients.saturatedFatUnit ?: ""
             )
@@ -39,13 +43,15 @@ class NutrientGenerator(product: Product){
             )
             val fruitsVegetablesAndNuts = Nutrient.getNutrient(
                 nutrientType = NutrientType.FRUITS_VEGETABLES_AND_NUTS,
-                points = nutriScoreData?.fruitsVegetablesNutsColzaWalnutOliveOilsPoints ?: NutriScoreCalculator.getPoints(NutrientType.FRUITS_VEGETABLES_AND_NUTS, productNutrients.fruitsVegetablesNutsEstimateFromIngredients100g),
+                points = nutriScoreData?.fruitsVegetablesNutsColzaWalnutOliveOilsPoints ?: NutriScoreCalculator.getPoints(
+                    NutrientType.FRUITS_VEGETABLES_AND_NUTS, productNutrients.fruitsVegetablesNutsEstimateFromIngredients100g),
                 contentPerHundredGrams = productNutrients.fruitsVegetablesNutsEstimateFromIngredients100g ?: 0,
                 servingUnit = "%" //TODO: replace hard value (found it to be "%" per 100g in page 28 of QR_Nutri-Score_EN.pdf (Yuka))
             )
             val protein = Nutrient.getNutrient(
                 nutrientType = NutrientType.PROTEIN,
-                points = nutriScoreData?.proteinsPoints ?: NutriScoreCalculator.getPoints(NutrientType.PROTEIN, productNutrients.proteins100g),
+                points = nutriScoreData?.proteinsPoints ?: NutriScoreCalculator.getPoints(
+                    NutrientType.PROTEIN, productNutrients.proteins100g),
                 contentPerHundredGrams = productNutrients.proteins100g ?: 0,
                 servingUnit = productNutrients.proteinsUnit ?: ""
             )
@@ -93,7 +99,7 @@ class Nutrient(
         }
 
 
-        private fun getNutrientCategory(nutrientType: NutrientType, points: Int): NutrientCategory{
+        private fun getNutrientCategory(nutrientType: NutrientType, points: Int): NutrientCategory {
             return when(nutrientType){
                 NutrientType.ENERGY,
                 NutrientType.SATURATES,

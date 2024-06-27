@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
 import com.bumptech.glide.Glide
 import com.zero1labs.nutriscan.data.models.HealthCategory
-import com.zero1labs.nutriscan.data.models.NutrientType
+import com.zero1labs.nutriscan.utils.NutrientType
 import com.zero1labs.nutriscan.data.models.ProductDetailsListItems
 
 class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsListItems>) : Adapter<RecyclerView.ViewHolder>() {
