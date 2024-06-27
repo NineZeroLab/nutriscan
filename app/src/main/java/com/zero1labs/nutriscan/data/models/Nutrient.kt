@@ -2,43 +2,6 @@ package com.zero1labs.nutriscan.data.models
 
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 
-sealed class ProductDetailsListItems{
-    data class ProductHeader(val mainDetailsForView: MainDetailsForView) : ProductDetailsListItems()
-    data class PositiveNutrientsForView(val nutrient : Nutrient) : ProductDetailsListItems()
-    data class NegativeNutrientsForView(val nutrient: Nutrient) : ProductDetailsListItems()
-    data class NutrientsHeaderForView(val nutrientCategory : NutrientCategory) : ProductDetailsListItems()
-}
-
-class MainDetailsForView(
-    val imageUrl: String,
-    val productName: String,
-    val productBrand: String,
-    val nutriScoreGrade: String,
-    val healthCategory: HealthCategory
-){
-    companion object{
-        fun getMainDetailsForView(product : Product) : MainDetailsForView{
-            return MainDetailsForView(
-                productName = product.productName,
-                productBrand = product.brand,
-                imageUrl = product.imageUrl,
-                nutriScoreGrade = product.nutriScoreGrade,
-                healthCategory = getHealthCategory(product.nutriScoreGrade),
-            )
-        }
-        private fun getHealthCategory(nutriScoreGrade: String) : HealthCategory{
-            return when(nutriScoreGrade){
-                "a" -> HealthCategory.HEALTHY
-                "b" -> HealthCategory.GOOD
-                "c" -> HealthCategory.FAIR
-                "d" -> HealthCategory.POOR
-                "e" -> HealthCategory.BAD
-                else -> HealthCategory.UNKNOWN
-            }
-        }
-    }
-}
-
 class NutrientGenerator(product: Product){
     private var nutrients : MutableList<Nutrient>
         init {
@@ -106,50 +69,14 @@ class NutrientGenerator(product: Product){
     }
 }
 
-enum class HealthCategory(val description: String){
-    HEALTHY("Healthy"),
-    GOOD("Good"),
-    FAIR("Fair"),
-    POOR("Poor"),
-    BAD("Bad"),
-    UNKNOWN("Unknown")
-}
-
-enum class PointsCategory (val description: String){
-    TOO_LOW ("too low"),
-    LOW ("low"),
-    MODERATE ("moderate"),
-    HIGH ("high"),
-    TOO_HIGH ("too high"),
-    UNKNOWN ("unknown")
-}
-
-enum class NutrientCategory(val header : String){
-    POSITIVE ("Positives"),
-    NEGATIVE ("Negatives"),
-    UNKNOWN ("Unknown")
-}
-
-enum class NutrientType (val description: String,val heading: String){
-    ENERGY ("energy","Calories"),
-    PROTEIN ("protein", "Protein"),
-    SATURATES ("saturated fat","Saturated fat"),
-    SUGAR ("sugar", "Sugar"),
-    FIBRE ("fibre", "Fibre"),
-    SODIUM ("salt", "Sodium"),
-    FRUITS_VEGETABLES_AND_NUTS("fruits,vegetables and nuts" , "Fruits, Veggies and Nuts")
-}
-
 
 class Nutrient(
     val nutrientType: NutrientType,
-    val points: Int,
-    val contentPerHundredGrams : Number,
-    val pointsCategory: PointsCategory,
-    val description : String,
+    val contentPerHundredGrams: Number,
+    val description: String,
     val nutrientCategory: NutrientCategory,
     val healthCategory: HealthCategory,
-    val servingUnit : String
+    val servingUnit: String
 ){
     companion object{
         fun getNutrient(nutrientType: NutrientType, points: Int, contentPerHundredGrams: Number, servingUnit: String) : Nutrient{
@@ -157,17 +84,41 @@ class Nutrient(
             val nutrientCategory = getNutrientCategory(nutrientType = nutrientType, points = points)
             return Nutrient(
                 nutrientType = nutrientType,
-                points = points,
                 contentPerHundredGrams = contentPerHundredGrams,
-                pointsCategory = pointsCategory,
+                description = "${pointsCategory.description} ${nutrientType.description}",
                 nutrientCategory = nutrientCategory,
                 healthCategory = healthCategory,
-                description = "${pointsCategory.description} ${nutrientType.description}",
                 servingUnit = servingUnit
             )
         }
 
-   }
+
+        private fun getNutrientCategory(nutrientType: NutrientType, points: Int): NutrientCategory{
+            return when(nutrientType){
+                NutrientType.ENERGY,
+                NutrientType.SATURATES,
+                NutrientType.SUGAR,
+                NutrientType.SODIUM
+                -> {
+                    when(points){
+                        0,1,2,3,4,5 -> NutrientCategory.POSITIVE
+                        6,7,8,9,10 -> NutrientCategory.NEGATIVE
+                        else -> NutrientCategory.UNKNOWN
+                    }
+                }
+                NutrientType.FIBRE,
+                NutrientType.PROTEIN,
+                NutrientType.FRUITS_VEGETABLES_AND_NUTS
+                -> {
+                    when(points){
+                        in 0 until 6 -> NutrientCategory.POSITIVE
+                        else -> NutrientCategory.UNKNOWN
+                    }
+                }
+            }
+        }
+
+    }
 }
 //
 //Negative Nutrients (Energy, Saturated Fat, Sugars, Sodium)
@@ -190,21 +141,19 @@ fun getNutriScoreAndPointsCategory(nutrientType: NutrientType, points : Int) : P
         NutrientType.SATURATES,
         NutrientType.SUGAR,
         NutrientType.SODIUM
-        -> {
-            return when(points){
-                0,1 -> Pair(PointsCategory.TOO_LOW, HealthCategory.HEALTHY)
-                2,3 -> Pair(PointsCategory.LOW, HealthCategory.GOOD)
-                4,5 -> Pair(PointsCategory.MODERATE, HealthCategory.FAIR)
-                6,7 -> Pair(PointsCategory.HIGH, HealthCategory.POOR)
-                8,9,10 -> Pair(PointsCategory.TOO_HIGH, HealthCategory.BAD)
-                else -> Pair(PointsCategory.UNKNOWN,HealthCategory.UNKNOWN)
-            }
+        -> when(points){
+            0,1 -> Pair(PointsCategory.TOO_LOW, HealthCategory.HEALTHY)
+            2,3 -> Pair(PointsCategory.LOW, HealthCategory.GOOD)
+            4,5 -> Pair(PointsCategory.MODERATE, HealthCategory.FAIR)
+            6,7 -> Pair(PointsCategory.HIGH, HealthCategory.POOR)
+            8,9,10 -> Pair(PointsCategory.TOO_HIGH, HealthCategory.BAD)
+            else -> Pair(PointsCategory.UNKNOWN,HealthCategory.UNKNOWN)
         }
         NutrientType.PROTEIN,
         NutrientType.FIBRE,
         NutrientType.FRUITS_VEGETABLES_AND_NUTS
             -> {
-                return when(points) {
+                when(points) {
                     0 -> Pair(PointsCategory.TOO_LOW, HealthCategory.GOOD)
                     1 -> Pair(PointsCategory.LOW, HealthCategory.GOOD)
                     2,3 -> Pair(PointsCategory.MODERATE, HealthCategory.GOOD)
@@ -213,64 +162,6 @@ fun getNutriScoreAndPointsCategory(nutrientType: NutrientType, points : Int) : P
                    else -> Pair(PointsCategory.UNKNOWN, HealthCategory.UNKNOWN)
 
                }
-            }
-    }
-}
-
-fun getNutrientCategory(nutrientType: NutrientType, points: Int): NutrientCategory{
-    return when(nutrientType){
-        NutrientType.ENERGY,
-        NutrientType.SATURATES,
-        NutrientType.SUGAR,
-        NutrientType.SODIUM
-            -> {
-               return when(points){
-                   0,1,2,3,4,5 -> NutrientCategory.POSITIVE
-                   6,7,8,9,10 -> NutrientCategory.NEGATIVE
-                   else -> NutrientCategory.UNKNOWN
-               }
-            }
-        NutrientType.FIBRE,
-        NutrientType.PROTEIN,
-        NutrientType.FRUITS_VEGETABLES_AND_NUTS
-            -> {
-                return when(points){
-                    in 0 until 6 -> NutrientCategory.POSITIVE
-                    else -> NutrientCategory.UNKNOWN
-                }
-            }
-    }
-}
-
-fun getNutriScoreCategory(nutrientType: NutrientType,pointsCategory: PointsCategory) : HealthCategory {
-    return when(nutrientType){
-        NutrientType.ENERGY,
-        NutrientType.SATURATES,
-        NutrientType.SUGAR,
-        NutrientType.SODIUM
-            -> {
-                return when(pointsCategory){
-                    PointsCategory.TOO_LOW -> HealthCategory.HEALTHY
-                    PointsCategory.LOW -> HealthCategory.GOOD
-                    PointsCategory.MODERATE -> HealthCategory.FAIR
-                    PointsCategory.HIGH -> HealthCategory.POOR
-                    PointsCategory.TOO_HIGH -> HealthCategory.BAD
-                    PointsCategory.UNKNOWN -> HealthCategory.UNKNOWN
-                }
-            }
-
-        NutrientType.PROTEIN,
-        NutrientType.FIBRE ,
-        NutrientType.FRUITS_VEGETABLES_AND_NUTS
-            -> {
-                return when(pointsCategory){
-                    PointsCategory.TOO_LOW -> HealthCategory.GOOD
-                    PointsCategory.LOW -> HealthCategory.GOOD
-                    PointsCategory.MODERATE -> HealthCategory.GOOD
-                    PointsCategory.HIGH ->  HealthCategory.HEALTHY
-                    PointsCategory.TOO_HIGH -> HealthCategory.HEALTHY
-                    PointsCategory.UNKNOWN -> HealthCategory.UNKNOWN
-                }
             }
     }
 }
