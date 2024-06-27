@@ -32,7 +32,8 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
         startScanButton = view.findViewById(R.id.btn_scan)
         getDemoItemButton = view.findViewById(R.id.btn_get_demo_item)
 
-        lifecycleScope.launch {
+
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
                 when(state.productScanState){
 
@@ -41,10 +42,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
                         Log.d("logger","Product fetch success")
                         view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
 
-                        if (state.shouldNavigate){
                             findNavController().navigate(R.id.action_home_page_to_product_details_page)
-                            viewModel.setNavigation(false)
-                        }
                     }
 
                     ProductScanState.Failure ->{
@@ -52,10 +50,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
                         Log.d("logger","Product fetch failure")
                         view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
 
-                        if (state.shouldNavigate){
                             findNavController().navigate(R.id.action_home_page_to_product_fetch_error_page)
-                            viewModel.setNavigation(false)
-                        }
                     }
 
                     ProductScanState.Loading -> {
@@ -91,7 +86,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
         }
 
         getDemoItemButton.setOnClickListener(){
-            viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.BHUJJIA))
+            viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.getRandomItem()))
         }
 
 

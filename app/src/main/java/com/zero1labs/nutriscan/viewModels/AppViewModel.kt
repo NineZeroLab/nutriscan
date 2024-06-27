@@ -76,6 +76,13 @@ class AppViewModel @Inject constructor (
                     )
                         }
                     }
+
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            productScanState = ProductScanState.NotStarted
+                        )
+
+                    }
                 }
             }
         }

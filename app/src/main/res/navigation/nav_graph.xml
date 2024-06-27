@@ -22,6 +22,15 @@
         android:name="com.zero1labs.nutriscan.pages.ProductDetailsPage"
         android:label="@string/product_details_label"
         tools:layout="@layout/fragment_product_details_page">
+        <action
+            android:id="@+id/action_reload_new_product_details"
+            app:destination="@id/productDetailsPageLayout" />
+        <action
+            android:id="@+id/action_productDetailsPageLayout_to_ProductFetchErrorPage"
+            app:destination="@id/ProductFetchErrorPage" />
+        <action
+            android:id="@+id/action_productDetailsPageLayout_to_homePageLayout"
+            app:destination="@id/homePageLayout" />
     </fragment>
     <fragment
         android:id="@+id/ProductFetchErrorPage"
