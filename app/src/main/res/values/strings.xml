@@ -46,4 +46,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="product_details_label">ProductDetailsPage</string>
     <string name="home_page_label">HomePage</string>
+    <string name="per_serving_100_gm">Per serving 100 gm</string>
+    <string name="negatives">Negatives</string>
 </resources>

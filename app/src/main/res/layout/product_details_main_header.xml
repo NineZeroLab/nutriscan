@@ -8,9 +8,10 @@
 
     <ImageView
         android:id="@+id/iv_product_image"
-        android:layout_width="121dp"
+        android:layout_width="182dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tv_product_name"
         app:layout_constraintHorizontal_bias="0.0"
@@ -23,8 +24,8 @@
         android:id="@+id/tv_product_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/inter_medium"
         android:paddingVertical="6dp"
         android:text="Product Name"
         android:textSize="24sp"
@@ -38,11 +39,10 @@
         android:id="@+id/tv_product_brand"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:paddingVertical="6dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/inter_regular"
         android:text="Brand"
-        android:textSize="16sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_product_image"
@@ -52,13 +52,14 @@
         android:id="@+id/cv_product_health"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        app:cardCornerRadius="4dp"
+        android:layout_marginBottom="10dp"
+        app:cardCornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_product_image"
-        app:layout_constraintTop_toBottomOf="@+id/tv_product_brand">
+        app:layout_constraintTop_toBottomOf="@+id/tv_product_brand"
+        app:layout_constraintVertical_bias="1.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_product_health"
@@ -76,17 +77,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.5"
-                app:srcCompat="@drawable/circle_dark_green" />
+                app:srcCompat="@drawable/circle_good" />
 
             <TextView
                 android:id="@+id/tv_product_health_grade"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="6dp"
                 android:text="Grade"
                 android:textSize="14sp"
-                android:textStyle="bold|italic"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

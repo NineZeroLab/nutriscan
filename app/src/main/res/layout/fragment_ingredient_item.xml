@@ -4,19 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ingredientItemLayout"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="wrap_content"
     tools:context=".pages.IngredientItem">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
-        android:backgroundTint="#9ECBDF"
         android:outlineAmbientShadowColor="#000000"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="6dp"
+        app:cardBackgroundColor="@color/md_theme_background"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
         app:circularflow_radiusInDP="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,15 +25,13 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/nutrient_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="12dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="18dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tv_nutrient_name"
                 app:layout_constraintStart_toStartOf="parent"
@@ -45,57 +43,76 @@
                 android:id="@+id/tv_nutrient_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="28dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="1dp"
+                android:fontFamily="@font/inter_regular"
                 android:text="TextView"
-                android:textSize="14sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/tv_nutrient_description"
                 app:layout_constraintEnd_toStartOf="@+id/tv_per_hundred_gram"
                 app:layout_constraintStart_toEndOf="@+id/nutrient_icon"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.64" />
+                app:layout_constraintVertical_chainStyle="spread" />
 
             <TextView
                 android:id="@+id/tv_nutrient_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="9dp"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="1dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/inter_regular"
                 android:text="TextView"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="7sp"
+                app:layout_constraintBottom_toTopOf="@+id/divider"
                 app:layout_constraintEnd_toStartOf="@+id/tv_per_hundred_gram"
-                app:layout_constraintHorizontal_bias="0.016"
                 app:layout_constraintStart_toEndOf="@+id/nutrient_icon"
                 app:layout_constraintTop_toBottomOf="@+id/tv_nutrient_name" />
 
             <ImageView
                 android:id="@+id/nutrient_category_icon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="2dp"
                 android:layout_marginEnd="16dp"
                 android:src="@mipmap/ellipse"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/tv_per_hundred_gram"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
 
             <TextView
                 android:id="@+id/tv_per_hundred_gram"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/inter_regular"
                 android:text="TextView"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/nutrient_category_icon"
                 app:layout_constraintStart_toEndOf="@+id/tv_nutrient_description"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.49" />
+                app:layout_constraintVertical_bias="0.5" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="2dp"
+                android:background="?android:attr/listDivider"
+                android:foreground="@color/md_theme_onBackground"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/nutrient_icon"
+                app:layout_constraintTop_toBottomOf="@+id/tv_nutrient_description" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
