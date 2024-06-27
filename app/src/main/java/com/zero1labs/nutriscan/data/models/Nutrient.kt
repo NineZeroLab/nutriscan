@@ -18,7 +18,7 @@ class NutrientGenerator(product: Product){
             )
             val energy = Nutrient.getNutrient(
                 nutrientType = NutrientType.ENERGY,
-                points = nutriScoreData?.energyPoints ?: NutriScoreCalculator.getPoints(NutrientType.ENERGY, productNutrients.energyKcal100g),
+                points = nutriScoreData?.energyPoints ?: NutriScoreCalculator.getPoints(NutrientType.ENERGY, productNutrients.energy?.toDouble()),
                 contentPerHundredGrams = productNutrients.energyKcal100g ?: 0,
                 servingUnit = productNutrients.energyKcalUnit ?: ""
             )
@@ -35,11 +35,12 @@ class NutrientGenerator(product: Product){
                 contentPerHundredGrams = productNutrients.fiber100g ?: 0,
                 servingUnit = productNutrients.fiberUnit ?: ""
             )
+            val sodiumContentInMg = NutriScoreCalculator.getMgFromGram(productNutrients.sodium100g)
             val sodium = Nutrient.getNutrient(
                 nutrientType = NutrientType.SODIUM,
-                points = nutriScoreData?.sodiumPoints ?: NutriScoreCalculator.getPoints(NutrientType.SODIUM, productNutrients.fiber100g),
-                contentPerHundredGrams = productNutrients.sodium100g ?: 0,
-                servingUnit = productNutrients.sodiumUnit ?: ""
+                points = nutriScoreData?.sodiumPoints ?: NutriScoreCalculator.getPoints(NutrientType.SODIUM, sodiumContentInMg),
+                contentPerHundredGrams = sodiumContentInMg,
+                servingUnit = "mg"
             )
             val fruitsVegetablesAndNuts = Nutrient.getNutrient(
                 nutrientType = NutrientType.FRUITS_VEGETABLES_AND_NUTS,

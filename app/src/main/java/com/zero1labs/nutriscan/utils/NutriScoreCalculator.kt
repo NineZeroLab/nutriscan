@@ -126,5 +126,9 @@ class NutriScoreCalculator {
                 else -> "e"
             }
         }
+
+        fun getMgFromGram(servingInGram : Double?) : Double{
+            return (servingInGram ?: 0.0) * 1000
+        }
     }
 }
