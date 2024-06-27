@@ -126,12 +126,15 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
     }
     private fun getHealthCategoryIcon(healthCategory: HealthCategory) : Int {
         return when(healthCategory){
-            HealthCategory.HEALTHY -> R.drawable.circle_dark_green
-            HealthCategory.GOOD -> R.drawable.circle_light_green
-            HealthCategory.FAIR -> R.drawable.circle_yellow
-            HealthCategory.POOR -> R.drawable.circle_orange
-            HealthCategory.BAD -> R.drawable.circle_red
-            HealthCategory.UNKNOWN -> R.drawable.circle_gray
+            HealthCategory.HEALTHY,
+            HealthCategory.GOOD
+                -> R.drawable.circle_good
+            HealthCategory.FAIR
+                -> R.drawable.circle_moderate
+            HealthCategory.POOR,
+            HealthCategory.BAD
+                -> R.drawable.circle_bad
+            HealthCategory.UNKNOWN -> R.drawable.circle_unknown
         }
     }
 
