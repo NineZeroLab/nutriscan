@@ -22,11 +22,16 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
     private lateinit var progressBar: ProgressBar
     private lateinit var progressBarBg : View
+    private lateinit var startScanButton: Button
+    private lateinit var getDemoItemButton: Button
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
         progressBar = view.findViewById(R.id.progressBar)
         progressBarBg = view.findViewById(R.id.blurBg)
+        startScanButton = view.findViewById(R.id.btn_scan)
+        getDemoItemButton = view.findViewById(R.id.btn_get_demo_item)
+
         lifecycleScope.launch {
             viewModel.uiState.collect{state ->
                 when(state.productScanState){
@@ -64,7 +69,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
             }
         }
 
-        view.findViewById<Button>(R.id.btn_scan).setOnClickListener(){
+        startScanButton.setOnClickListener(){
 
             Log.d("logger", "starting gms barcode scanner")
 
@@ -85,8 +90,8 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
         }
 
-        view.findViewById<Button>(R.id.btn_get_demo_item).setOnClickListener(){
-            viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.SEASONED_PEANUTS))
+        getDemoItemButton.setOnClickListener(){
+            viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.BHUJJIA))
         }
 
 
@@ -96,6 +101,9 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
     private fun showProgressBar(){
         progressBar.visibility = View.VISIBLE
         progressBarBg.visibility = View.VISIBLE
+        startScanButton.isClickable = false
+        getDemoItemButton.isClickable = false
+
     }
 
     private fun hideProgressBar(){
