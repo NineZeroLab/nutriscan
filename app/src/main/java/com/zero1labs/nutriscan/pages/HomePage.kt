@@ -9,8 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
+import com.zero1labs.nutriscan.SearchHistoryAdapter
+import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.viewModels.AppEvent
@@ -24,6 +28,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
     private lateinit var progressBarBg : View
     private lateinit var startScanButton: Button
     private lateinit var getDemoItemButton: Button
+    private lateinit var rvSearchHistoryItems : RecyclerView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
@@ -31,6 +36,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
         progressBarBg = view.findViewById(R.id.blurBg)
         startScanButton = view.findViewById(R.id.btn_scan)
         getDemoItemButton = view.findViewById(R.id.btn_get_demo_item)
+        rvSearchHistoryItems = view.findViewById(R.id.rv_search_history)
 
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -61,6 +67,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
                     ProductScanState.NotStarted -> Log.d("logger" , "product Scan not started")
                 }
+
             }
         }
 
@@ -89,6 +96,9 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
             viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.getRandomItem()))
         }
 
+        val searchHistoryItems : List<SearchHistoryListItem> = viewModel.uiState.value.searchHistory
+        rvSearchHistoryItems.layoutManager = LinearLayoutManager(requireContext())
+        rvSearchHistoryItems.adapter = SearchHistoryAdapter(searchHistoryItems)
 
 
     }

@@ -8,6 +8,17 @@
     tools:context=".pages.HomePage">
 
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_history"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/btn_scan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
     <Button
         android:id="@+id/btn_scan"
         android:layout_width="wrap_content"

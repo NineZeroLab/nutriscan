@@ -1,10 +1,14 @@
 package com.zero1labs.nutriscan.viewModels
 
 import android.util.Log
+import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.data.models.Product
+import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.repository.AppRepository
+import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 import com.zero1labs.nutriscan.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,13 +16,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 data class ProductDetailsState(
     val product: Product? = null,
     val error: String? = null,
     val productScanState: ProductScanState = ProductScanState.NotStarted,
-    val shouldNavigate :Boolean = false
+    val shouldNavigate :Boolean = false,
+    val searchHistory : List<SearchHistoryListItem>  = mutableListOf()
 )
 
 enum class ProductScanState{
@@ -58,13 +64,31 @@ class AppViewModel @Inject constructor (
                     val response: Resource<Product> =
                         appRepository.getProductDetailsById(event.productId)
                     when (response) {
-                        is Resource.Success -> _uiState.update { currentState ->
-                            Log.d("logger","product scan success from viewmodel")
-                            currentState.copy(
-                                productScanState = ProductScanState.Success,
-                                product = response.data,
-                                shouldNavigate = true
-                            )
+                        is Resource.Success -> {
+                            _uiState.update { currentState ->
+                                Log.d("logger","product scan success from viewmodel")
+                                val searchHistoryListItem = response.data?.let { product ->
+                                    SearchHistoryListItem(
+                                        mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
+                                        timeStamp = LocalDateTime.now()
+                                    )
+
+
+                                }
+
+
+                                currentState.copy(
+                                    productScanState = ProductScanState.Success,
+                                    product = response.data,
+                                    shouldNavigate = true,
+                                    searchHistory = currentState.searchHistory.toMutableList().apply {
+                                        if (searchHistoryListItem != null) {
+                                            add(element = searchHistoryListItem, index = 0)
+                                        }
+                                    }
+                                )
+
+                            }
                         }
 
                         is Resource.Error -> _uiState.update { currentState ->

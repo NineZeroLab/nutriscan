@@ -1,11 +1,13 @@
 package com.zero1labs.nutriscan
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
 import com.bumptech.glide.Glide
@@ -31,10 +33,11 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
         val ivProductImage : ImageView = itemView.findViewById(R.id.iv_product_image)
         val tvProductGrade : TextView = itemView.findViewById(R.id.tv_product_health_grade)
         val ivProductHealthIcon : ImageView = itemView.findViewById(R.id.iv_product_health_icon)
+        val cvNutrientHealthCard : CardView = itemView.findViewById(R.id.cv_product_health)
     }
 
     class NutrientsViewHolder(itemView: View) : ViewHolder(itemView) {
-        val cvNutrientCard : CardView = itemView.findViewById(R.id.cardView)
+        val cvNutrientCard : CardView = itemView.findViewById(R.id.cv_nutrient_item)
         val tvNutrientName : TextView = itemView.findViewById(R.id.tv_nutrient_name)
         val tvNutrientDescription : TextView = itemView.findViewById(R.id.tv_nutrient_description)
         val tvNutrientPerHundredGram : TextView = itemView.findViewById(R.id.tv_per_hundred_gram)
@@ -78,16 +81,19 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
         when(val item = productDetailsListItems[position]){
             is ProductDetailsListItems.ProductHeader ->{
                 (holder as ProductHeaderViewHolder).let { productHeaderViewHolder ->
+                    val (healthCategoryIcon, healthCategoryBg) = getHealthCategoryIcon(holder.cvNutrientHealthCard.context,item.mainDetailsForView.healthCategory)
                     productHeaderViewHolder.tvProductName.text = item.mainDetailsForView.productName
                     productHeaderViewHolder.tvProductBrand.text = item.mainDetailsForView.productBrand
                     productHeaderViewHolder.tvProductGrade.text = item.mainDetailsForView.healthCategory.description
                     Glide.with(productHeaderViewHolder.ivProductImage.context).load(item.mainDetailsForView.imageUrl).into(productHeaderViewHolder.ivProductImage)
-                    Glide.with(productHeaderViewHolder.ivProductHealthIcon.context).load(getHealthCategoryIcon(item.mainDetailsForView.healthCategory)).into(productHeaderViewHolder.ivProductHealthIcon)
+                    Glide.with(productHeaderViewHolder.ivProductHealthIcon.context).load(healthCategoryIcon).into(productHeaderViewHolder.ivProductHealthIcon)
+                    productHeaderViewHolder.cvNutrientHealthCard.setCardBackgroundColor(healthCategoryBg)
                 }
             }
 
             is ProductDetailsListItems.NegativeNutrientsForView -> {
                 (holder as NutrientsViewHolder).apply {
+                    val (healthCategoryIcon, _) = getHealthCategoryIcon(holder.ivNutrientCategoryIcon.context,item.nutrient.healthCategory)
                     tvNutrientName.text = item.nutrient.nutrientType.heading
                     tvNutrientDescription.text = item.nutrient.description
                     tvNutrientPerHundredGram.text = item.nutrient.let {nutrient ->
@@ -96,20 +102,21 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
                     Glide.with(ivNutrientIcon.context).load(getNutrientIcon(item.nutrient.nutrientType))
                         .into(ivNutrientIcon)
 
-                    Glide.with(ivNutrientCategoryIcon.context).load(getHealthCategoryIcon(item.nutrient.healthCategory))
+                    Glide.with(ivNutrientCategoryIcon.context).load(healthCategoryIcon)
                         .into(ivNutrientCategoryIcon)
 
                 }
             }
             is ProductDetailsListItems.PositiveNutrientsForView -> {
                 (holder as NutrientsViewHolder).apply {
+                    val (healthCategoryIcon, _) = getHealthCategoryIcon(holder.ivNutrientCategoryIcon.context,item.nutrient.healthCategory)
                     tvNutrientName.text = item.nutrient.nutrientType.heading
                     tvNutrientDescription.text = item.nutrient.description
                     tvNutrientPerHundredGram.text = item.nutrient.let {nutrient ->
                         "${nutrient.contentPerHundredGrams} ${nutrient.servingUnit}"
                     }
                     Glide.with(ivNutrientIcon.context).load(getNutrientIcon(item.nutrient.nutrientType)).into(ivNutrientIcon)
-                    Glide.with(ivNutrientCategoryIcon.context).load(getHealthCategoryIcon(item.nutrient.healthCategory)).into(ivNutrientCategoryIcon)
+                    Glide.with(ivNutrientCategoryIcon.context).load(healthCategoryIcon).into(ivNutrientCategoryIcon)
 
                     cvNutrientCard.setOnClickListener {
                         it.rootView.findViewById<TextView>(R.id.tv_product_brand).text = NutrientType.values().random().name
@@ -124,28 +131,28 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
         }
 
     }
-    private fun getHealthCategoryIcon(healthCategory: HealthCategory) : Int {
+    private fun getHealthCategoryIcon(context : Context, healthCategory: HealthCategory) : Pair<Int, Int> {
         return when(healthCategory){
             HealthCategory.HEALTHY,
             HealthCategory.GOOD
-                -> R.drawable.circle_good
+                -> Pair(R.drawable.circle_good,ContextCompat.getColor(context, R.color.product_category_good_bg))
             HealthCategory.FAIR
-                -> R.drawable.circle_moderate
+                -> Pair(R.drawable.circle_moderate,ContextCompat.getColor(context, R.color.product_category_moderate_bg))
             HealthCategory.POOR,
             HealthCategory.BAD
-                -> R.drawable.circle_bad
-            HealthCategory.UNKNOWN -> R.drawable.circle_unknown
+                -> Pair(R.drawable.circle_bad,ContextCompat.getColor(context, R.color.product_category_bad_bg))
+            HealthCategory.UNKNOWN -> Pair(R.drawable.circle_unknown, ContextCompat.getColor(context, R.color.md_theme_background))
         }
     }
 
     private fun getNutrientIcon(nutrientType: NutrientType) : Int {
         return  when(nutrientType){
-            NutrientType.ENERGY ->  R.mipmap.person_outline_24px
-            NutrientType.PROTEIN -> R.mipmap.person_outline_24px
-            NutrientType.SATURATES -> R.mipmap.person_outline_24px
-            NutrientType.SUGAR -> R.mipmap.person_outline_24px
-            NutrientType.FIBRE -> R.mipmap.person_outline_24px
-            NutrientType.SODIUM -> R.mipmap.person_outline_24px
+            NutrientType.ENERGY ->  R.mipmap.calories
+            NutrientType.PROTEIN -> R.mipmap.protein
+            NutrientType.SATURATES -> R.mipmap.saturated_fat
+            NutrientType.SUGAR -> R.mipmap.sugar
+            NutrientType.FIBRE -> R.mipmap.fibre
+            NutrientType.SODIUM -> R.mipmap.salt
             NutrientType.FRUITS_VEGETABLES_AND_NUTS -> R.mipmap.person_outline_24px
         }
     }
