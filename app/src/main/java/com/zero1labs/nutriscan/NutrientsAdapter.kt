@@ -77,7 +77,7 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
         return productDetailsListItems.size
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when(val item = productDetailsListItems[position]){
             is ProductDetailsListItems.ProductHeader ->{
                 (holder as ProductHeaderViewHolder).let { productHeaderViewHolder ->
@@ -118,9 +118,6 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
                     Glide.with(ivNutrientIcon.context).load(getNutrientIcon(item.nutrient.nutrientType)).into(ivNutrientIcon)
                     Glide.with(ivNutrientCategoryIcon.context).load(healthCategoryIcon).into(ivNutrientCategoryIcon)
 
-                    cvNutrientCard.setOnClickListener {
-                        it.rootView.findViewById<TextView>(R.id.tv_product_brand).text = NutrientType.values().random().name
-                    }
                 }
             }
             is ProductDetailsListItems.NutrientsHeaderForView -> {
@@ -153,7 +150,7 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
             NutrientType.SUGAR -> R.mipmap.sugar
             NutrientType.FIBRE -> R.mipmap.fibre
             NutrientType.SODIUM -> R.mipmap.salt
-            NutrientType.FRUITS_VEGETABLES_AND_NUTS -> R.mipmap.person_outline_24px
+            NutrientType.FRUITS_VEGETABLES_AND_NUTS -> R.mipmap.fruits_veggies
         }
     }
 }

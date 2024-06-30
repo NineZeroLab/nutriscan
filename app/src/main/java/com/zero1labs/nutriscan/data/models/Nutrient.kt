@@ -3,7 +3,7 @@ package com.zero1labs.nutriscan.data.models
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.utils.NutrientType
-import com.zero1labs.nutriscan.utils.PointsCategory
+import com.zero1labs.nutriscan.utils.PointsLevel
 
 class NutrientGenerator(product: Product){
     private var nutrients : MutableList<Nutrient>
@@ -142,31 +142,31 @@ class Nutrient(
 //Too High: 5 points
 
 
-fun getNutriScoreAndPointsCategory(nutrientType: NutrientType, points : Int) : Pair<PointsCategory,HealthCategory>{
+fun getNutriScoreAndPointsCategory(nutrientType: NutrientType, points : Int) : Pair<PointsLevel,HealthCategory>{
     return when(nutrientType){
         NutrientType.ENERGY,
         NutrientType.SATURATES,
         NutrientType.SUGAR,
         NutrientType.SODIUM
         -> when(points){
-            0,1 -> Pair(PointsCategory.TOO_LOW, HealthCategory.HEALTHY)
-            2,3 -> Pair(PointsCategory.LOW, HealthCategory.GOOD)
-            4,5 -> Pair(PointsCategory.MODERATE, HealthCategory.FAIR)
-            6,7 -> Pair(PointsCategory.HIGH, HealthCategory.POOR)
-            8,9,10 -> Pair(PointsCategory.TOO_HIGH, HealthCategory.BAD)
-            else -> Pair(PointsCategory.UNKNOWN,HealthCategory.UNKNOWN)
+            0,1 -> Pair(PointsLevel.TOO_LOW, HealthCategory.HEALTHY)
+            2,3 -> Pair(PointsLevel.LOW, HealthCategory.GOOD)
+            4,5 -> Pair(PointsLevel.MODERATE, HealthCategory.FAIR)
+            6,7 -> Pair(PointsLevel.HIGH, HealthCategory.POOR)
+            8,9,10 -> Pair(PointsLevel.TOO_HIGH, HealthCategory.BAD)
+            else -> Pair(PointsLevel.UNKNOWN,HealthCategory.UNKNOWN)
         }
         NutrientType.PROTEIN,
         NutrientType.FIBRE,
         NutrientType.FRUITS_VEGETABLES_AND_NUTS
             -> {
                 when(points) {
-                    0 -> Pair(PointsCategory.TOO_LOW, HealthCategory.GOOD)
-                    1 -> Pair(PointsCategory.LOW, HealthCategory.GOOD)
-                    2,3 -> Pair(PointsCategory.MODERATE, HealthCategory.GOOD)
-                    4 -> Pair(PointsCategory.HIGH, HealthCategory.HEALTHY)
-                    5 -> Pair(PointsCategory.TOO_HIGH, HealthCategory.HEALTHY)
-                   else -> Pair(PointsCategory.UNKNOWN, HealthCategory.UNKNOWN)
+                    0 -> Pair(PointsLevel.TOO_LOW, HealthCategory.GOOD)
+                    1 -> Pair(PointsLevel.LOW, HealthCategory.GOOD)
+                    2,3 -> Pair(PointsLevel.MODERATE, HealthCategory.GOOD)
+                    4 -> Pair(PointsLevel.HIGH, HealthCategory.HEALTHY)
+                    5 -> Pair(PointsLevel.TOO_HIGH, HealthCategory.HEALTHY)
+                   else -> Pair(PointsLevel.UNKNOWN, HealthCategory.UNKNOWN)
 
                }
             }
