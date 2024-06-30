@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.SearchHistoryAdapter
@@ -26,17 +27,17 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
     private lateinit var progressBar: ProgressBar
     private lateinit var progressBarBg : View
-    private lateinit var startScanButton: Button
-    private lateinit var getDemoItemButton: Button
     private lateinit var rvSearchHistoryItems : RecyclerView
+    private lateinit var fabScanProduct : FloatingActionButton
+    private lateinit var fabGetDemoItem: FloatingActionButton
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
         progressBar = view.findViewById(R.id.progressBar)
         progressBarBg = view.findViewById(R.id.blurBg)
-        startScanButton = view.findViewById(R.id.btn_scan)
-        getDemoItemButton = view.findViewById(R.id.btn_get_demo_item)
         rvSearchHistoryItems = view.findViewById(R.id.rv_search_history)
+        fabScanProduct = view.findViewById(R.id.fab_scan_product)
+        fabGetDemoItem = view.findViewById(R.id.fab_get_demo_item)
 
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -71,7 +72,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
             }
         }
 
-        startScanButton.setOnClickListener(){
+        fabScanProduct.setOnClickListener(){
 
             Log.d("logger", "starting gms barcode scanner")
 
@@ -92,7 +93,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
         }
 
-        getDemoItemButton.setOnClickListener(){
+        fabGetDemoItem.setOnClickListener(){
             viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.getRandomItem()))
         }
 
@@ -106,8 +107,8 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
     private fun showProgressBar(){
         progressBar.visibility = View.VISIBLE
         progressBarBg.visibility = View.VISIBLE
-        startScanButton.isClickable = false
-        getDemoItemButton.isClickable = false
+        fabScanProduct.isClickable = false
+        fabGetDemoItem.isClickable = false
 
     }
 
