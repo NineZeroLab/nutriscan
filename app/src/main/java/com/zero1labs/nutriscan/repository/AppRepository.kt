@@ -18,7 +18,6 @@ class AppRepository  @Inject constructor(
 
 
     suspend fun getProductDetailsById(productId : String ): Resource<Product> {
-        var productName = ""
         val apiRequests = retrofit.create(ApiRequests::class.java)
         return withContext(Dispatchers.IO){
             try {
