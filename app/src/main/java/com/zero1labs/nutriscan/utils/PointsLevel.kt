@@ -1,6 +1,6 @@
 package com.zero1labs.nutriscan.utils
 
-enum class PointsCategory (val description: String){
+enum class PointsLevel (val description: String){
     TOO_LOW ("too low"),
     LOW ("low"),
     MODERATE ("moderate"),
