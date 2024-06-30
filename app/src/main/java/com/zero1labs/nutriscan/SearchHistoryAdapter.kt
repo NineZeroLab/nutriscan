@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zero1labs.nutriscan.data.models.HealthCategory
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
+import com.zero1labs.nutriscan.utils.TimeCalculator
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.time.Duration
@@ -43,7 +44,7 @@ class SearchHistoryAdapter(private val searchHistoryItems : List<SearchHistoryLi
 
         holder.tvSearchHistoryName.text = item.mainDetailsForView.productName
         holder.tvSearchHistoryBrand.text = item.mainDetailsForView.productBrand
-        holder.tvTimeStamp.text = duration.seconds.toString()
+        holder.tvTimeStamp.text = TimeCalculator.getTime(duration)
         Glide.with(holder.ivSearchHistoryImage.context).load(item.mainDetailsForView.imageUrl).into(holder.ivSearchHistoryImage)
         Glide.with(holder.ivSearchHistoryHealthCategory.context).load(healthCategoryIcon).into(holder.ivSearchHistoryHealthCategory)
     }
