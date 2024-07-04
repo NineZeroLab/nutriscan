@@ -6,8 +6,6 @@ class AdditivesCalculator {
         fun parseAdditive(additiveString : String) : String{
             return additiveString.split(":")[1]
         }
-
-
     }
 }
 

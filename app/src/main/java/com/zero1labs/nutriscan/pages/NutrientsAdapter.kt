@@ -13,7 +13,8 @@ import com.bumptech.glide.Glide
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutrientType
-import com.zero1labs.nutriscan.data.models.ProductDetailsListItems
+import com.zero1labs.nutriscan.models.data.ProductDetailsListItems
+import com.zero1labs.nutriscan.utils.AppResources
 
 class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsListItems>) : Adapter<ViewHolder>() {
 
@@ -24,7 +25,8 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
     }
 
     class NutrientsHeaderViewHolder(itemView: View) : ViewHolder(itemView){
-        val tvNutrientsHeader : TextView = itemView.findViewById(R.id.tv_nutrients_header)
+        val tvNutrientsHeader: TextView = itemView.findViewById(R.id.tv_nutrients_header)
+        val tvServingQuantity: TextView = itemView.findViewById(R.id.serving_quantity)
     }
 
     class ProductHeaderViewHolder(itemView: View) : ViewHolder(itemView){
@@ -85,7 +87,7 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
                     productHeaderViewHolder.tvProductName.text = item.mainDetailsForView.productName
                     productHeaderViewHolder.tvProductBrand.text = item.mainDetailsForView.productBrand
                     productHeaderViewHolder.tvProductGrade.text = item.mainDetailsForView.healthCategory.description
-                    Glide.with(productHeaderViewHolder.ivProductImage.context).load(item.mainDetailsForView.imageUrl ?: R.drawable.ic_launcher_background).into(productHeaderViewHolder.ivProductImage)
+                    Glide.with(productHeaderViewHolder.ivProductImage.context).load(item.mainDetailsForView.imageUrl).error(R.drawable.ic_launcher_background).into(productHeaderViewHolder.ivProductImage)
                     Glide.with(productHeaderViewHolder.ivProductHealthIcon.context).load(healthCategoryIcon).into(productHeaderViewHolder.ivProductHealthIcon)
                     productHeaderViewHolder.cvNutrientHealthCard.setCardBackgroundColor(healthCategoryBg)
                 }
@@ -123,6 +125,7 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
             is ProductDetailsListItems.NutrientsHeaderForView -> {
                 (holder as NutrientsHeaderViewHolder).apply {
                     tvNutrientsHeader.text = item.nutrientCategory.header
+                    tvServingQuantity.text = AppResources.getServingTextFromProductType(item.productType)
                 }
             }
         }

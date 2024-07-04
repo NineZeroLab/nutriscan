@@ -10,6 +10,7 @@ object ResponseFields {
         "nutriscore_data",
         "brands",
         "nutriscore_grade",
+        "categories_hierarchy",
     )
 
     fun getFields(): String{

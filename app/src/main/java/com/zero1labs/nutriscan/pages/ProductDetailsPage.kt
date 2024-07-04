@@ -15,8 +15,9 @@ import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.data.models.NutrientGenerator
 import com.zero1labs.nutriscan.data.models.remote.Product
-import com.zero1labs.nutriscan.data.models.ProductDetailsListItems
+import com.zero1labs.nutriscan.models.data.ProductDetailsListItems
 import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
+import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
 import com.zero1labs.nutriscan.viewModels.ProductScanState
@@ -95,13 +96,13 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
     private fun getProductDetailsList(product: Product) : List<ProductDetailsListItems>{
         val productDetailsList = mutableListOf<ProductDetailsListItems>()
         val nutrientGenerator = NutrientGenerator(product)
-        ProductDetailsListItems.ProductHeader(MainDetailsForView.getMainDetailsForView(product)).let {productHeader ->
+        ProductDetailsListItems.ProductHeader(MainDetailsForView.getMainDetailsForView(product)).let { productHeader ->
             productDetailsList.add(element = productHeader)
         }
 
         if (nutrientGenerator.getNutrientsCount(NutrientCategory.NEGATIVE) > 0){
 
-            ProductDetailsListItems.NutrientsHeaderForView(NutrientCategory.NEGATIVE).let { nutrientsHeader ->
+            ProductDetailsListItems.NutrientsHeaderForView(NutrientCategory.NEGATIVE,AppResources.getProductType(product.categoriesHierarchy)).let { nutrientsHeader ->
                 productDetailsList.add(element = nutrientsHeader)
             }
 
@@ -112,7 +113,7 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
 
         if (nutrientGenerator.getNutrientsCount(NutrientCategory.POSITIVE) > 0){
 
-            ProductDetailsListItems.NutrientsHeaderForView(NutrientCategory.POSITIVE).let { nutrientsHeader ->
+            ProductDetailsListItems.NutrientsHeaderForView(NutrientCategory.POSITIVE,AppResources.getProductType(product.categoriesHierarchy)).let { nutrientsHeader ->
                 productDetailsList.add(element = nutrientsHeader)
             }
 
