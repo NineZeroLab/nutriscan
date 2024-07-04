@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan
+package com.zero1labs.nutriscan.pages
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,14 +8,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
 import com.bumptech.glide.Glide
+import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutrientType
 import com.zero1labs.nutriscan.data.models.ProductDetailsListItems
 
-class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsListItems>) : Adapter<RecyclerView.ViewHolder>() {
+class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsListItems>) : Adapter<ViewHolder>() {
 
     companion object{
         private const val VIEW_TYPE_MAIN_HEADER = 1
@@ -37,7 +37,6 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
     }
 
     class NutrientsViewHolder(itemView: View) : ViewHolder(itemView) {
-        val cvNutrientCard : CardView = itemView.findViewById(R.id.cv_nutrient_item)
         val tvNutrientName : TextView = itemView.findViewById(R.id.tv_nutrient_name)
         val tvNutrientDescription : TextView = itemView.findViewById(R.id.tv_nutrient_description)
         val tvNutrientPerHundredGram : TextView = itemView.findViewById(R.id.tv_per_hundred_gram)
@@ -55,18 +54,19 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
         }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
         return when(viewType){
             VIEW_TYPE_NUTRIENTS -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_ingredient_item,parent,false)
-                return NutrientsViewHolder(view)
+                val view = inflater.inflate(R.layout.fragment_ingredient_item,parent,false)
+                NutrientsViewHolder(view)
             }
             VIEW_TYPE_MAIN_HEADER -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.product_details_main_header,parent, false)
-                return ProductHeaderViewHolder(view)
+                val view = inflater.inflate(R.layout.product_details_main_header,parent, false)
+                ProductHeaderViewHolder(view)
         }
             VIEW_TYPE_NUTRIENTS_HEADER -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.nutrients_header, parent, false)
-                return NutrientsHeaderViewHolder(view)
+                val view = inflater.inflate(R.layout.nutrients_header, parent, false)
+                NutrientsHeaderViewHolder(view)
             }
 
             else -> { throw IllegalArgumentException("Invalid View Type")}
@@ -134,17 +134,26 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
             HealthCategory.GOOD
                 -> Pair(R.drawable.circle_good,ContextCompat.getColor(context, R.color.product_category_good_bg))
             HealthCategory.FAIR
-                -> Pair(R.drawable.circle_moderate,ContextCompat.getColor(context, R.color.product_category_moderate_bg))
+                -> Pair(
+                R.drawable.circle_moderate,ContextCompat.getColor(context,
+                    R.color.product_category_moderate_bg
+                ))
             HealthCategory.POOR,
             HealthCategory.BAD
-                -> Pair(R.drawable.circle_bad,ContextCompat.getColor(context, R.color.product_category_bad_bg))
-            HealthCategory.UNKNOWN -> Pair(R.drawable.circle_unknown, ContextCompat.getColor(context, R.color.md_theme_background))
+                -> Pair(
+                R.drawable.circle_bad,ContextCompat.getColor(context,
+                    R.color.product_category_bad_bg
+                ))
+            HealthCategory.UNKNOWN -> Pair(
+                R.drawable.circle_unknown, ContextCompat.getColor(context,
+                    R.color.md_theme_background
+                ))
         }
     }
 
     private fun getNutrientIcon(nutrientType: NutrientType) : Int {
         return  when(nutrientType){
-            NutrientType.ENERGY ->  R.mipmap.calories
+            NutrientType.ENERGY -> R.mipmap.calories
             NutrientType.PROTEIN -> R.mipmap.protein
             NutrientType.SATURATES -> R.mipmap.saturated_fat
             NutrientType.SUGAR -> R.mipmap.sugar

@@ -18,7 +18,6 @@ import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
-import com.zero1labs.nutriscan.viewModels.InternetConnectionState
 import com.zero1labs.nutriscan.viewModels.ProductScanState
 import kotlinx.coroutines.launch
 
@@ -32,35 +31,28 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
-        progressBar = view.findViewById(R.id.progressBar)
+        progressBar = view.findViewById(R.id.progress_bar)
         progressBarBg = view.findViewById(R.id.blurBg)
         rvSearchHistoryItems = view.findViewById(R.id.rv_search_history)
         fabScanProduct = view.findViewById(R.id.fab_scan_product)
         fabGetDemoItem = view.findViewById(R.id.fab_get_demo_item)
 
-        val state = viewModel.uiState.value
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
-                when(state.internetConnectionState){
-                    InternetConnectionState.Online -> {}
-                    InternetConnectionState.Offline -> findNavController().navigate(R.id.action_home_page_to_no_internet_connection_page)
-                    InternetConnectionState.Unchecked -> {}
-                }
                 when(state.productScanState){
                     ProductScanState.Success -> {
                         hideProgressBar()
                         Log.d("logger","Product fetch success")
-                        view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
+                        view.findViewById<ProgressBar>(R.id.progress_bar).visibility = View.GONE
                             findNavController().navigate(R.id.action_home_page_to_product_details_page)
                     }
 
                     ProductScanState.Failure ->{
                         hideProgressBar()
                         Log.d("logger","Product fetch failure")
-                        view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
+                        view.findViewById<ProgressBar>(R.id.progress_bar).visibility = View.GONE
 
-                            findNavController().navigate(R.id.action_home_page_to_product_fetch_error_page)
+                        findNavController().navigate(R.id.action_home_page_to_error_page)
                     }
 
                     ProductScanState.Loading -> {

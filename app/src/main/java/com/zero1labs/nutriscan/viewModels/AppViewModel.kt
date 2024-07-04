@@ -23,7 +23,6 @@ data class ProductDetailsState(
     val error: String? = null,
     val productScanState: ProductScanState = ProductScanState.NotStarted,
     val searchHistory : List<SearchHistoryListItem>  = mutableListOf(),
-    val internetConnectionState: InternetConnectionState = InternetConnectionState.Unchecked
 )
 
 enum class ProductScanState{
@@ -33,15 +32,8 @@ enum class ProductScanState{
     NotStarted,
 }
 
-enum class InternetConnectionState{
-    Online,
-    Offline,
-    Unchecked
-}
-
 @HiltViewModel
 class AppViewModel @Inject constructor (
-    private val networkUtils: NetworkUtils,
     private val appRepository: AppRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProductDetailsState())
@@ -51,8 +43,8 @@ class AppViewModel @Inject constructor (
         when (event) {
             is AppEvent.GetProductDetails -> TODO()
             is AppEvent.OnStartScan -> {
-                checkIfOnline()
-                if (uiState.value.internetConnectionState != InternetConnectionState.Online) return
+//                checkIfOnline()
+//                if (uiState.value.internetConnectionState != InternetConnectionState.Online) return
                 viewModelScope.launch {
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -93,7 +85,6 @@ class AppViewModel @Inject constructor (
                     _uiState.update { currentState ->
                         currentState.copy(
                             productScanState = ProductScanState.NotStarted,
-                            internetConnectionState = InternetConnectionState.Unchecked
                         )
                     }
 
@@ -102,26 +93,26 @@ class AppViewModel @Inject constructor (
         }
     }
 
-    private fun checkIfOnline(){
-
-        val isOnline: Boolean = networkUtils.isNetworkAvailable()
-        _uiState.update { currentState ->
-                 currentState.copy(
-                     internetConnectionState = if (isOnline){
-                         InternetConnectionState.Online
-                     }else{
-                         InternetConnectionState.Offline
-                     }
-                 )
-             }
-        if(uiState.value.internetConnectionState != InternetConnectionState.Online) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    productScanState = ProductScanState.NotStarted,
-                    internetConnectionState = InternetConnectionState.Unchecked
-                )
-            }
-        }
-    }
+//    private fun checkIfOnline(){
+//
+//        val isOnline: Boolean = networkUtils.isNetworkAvailable()
+//        _uiState.update { currentState ->
+//                 currentState.copy(
+//                     internetConnectionState = if (isOnline){
+//                         InternetConnectionState.Online
+//                     }else{
+//                         InternetConnectionState.Offline
+//                     }
+//                 )
+//             }
+//        if(uiState.value.internetConnectionState != InternetConnectionState.Online) {
+//            _uiState.update { currentState ->
+//                currentState.copy(
+//                    productScanState = ProductScanState.NotStarted,
+//                    internetConnectionState = InternetConnectionState.Unchecked
+//                )
+//            }
+//        }
+//    }
 
 }

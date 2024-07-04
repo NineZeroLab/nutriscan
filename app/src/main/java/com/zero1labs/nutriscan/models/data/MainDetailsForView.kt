@@ -37,7 +37,7 @@ class MainDetailsForView(
         }
         private fun getProductImageUrl(productId: String) : String? {
             val imageBaseUrl = "https://images.openfoodfacts.net/images/products/"
-            if (productId.length < 13) productId.padStart(length = 13 - productId.length -1 , padChar = '0')
+            if (productId.length < 13) productId.padStart(length = 13 - productId.length , padChar = '0')
             val imageUrl = buildString {
                 append(imageBaseUrl)
                 append(productId.subSequence(0,3)).append('/')

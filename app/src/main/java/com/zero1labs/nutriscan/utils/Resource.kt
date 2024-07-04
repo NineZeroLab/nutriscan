@@ -7,13 +7,23 @@ sealed class Resource<T>(val data: T? = null, val message: String? = null) {
 
 
 
+
+
+
+
 object AppResources{
     const val BASE_URL : String = "https://world.openfoodfacts.org/api/v2/"
-    const val DEMO_ITEM_ID: String = "3017620422003"
-    const val BHUJJIA: String = "011433157933"
-    const val SEASONED_PEANUTS = "059966050932"
-    const val ALOO_LACHHA = "8904004402858"
+    private const val DEMO_ITEM_ID = "3017620422003"
+    private const val BHUJJIA = "011433157933"
+    private const val SEASONED_PEANUTS = "059966050932"
+    private const val ALOO_LACHHA = "8904004402858"
+    private const val COCA_COLA_CAN = "5449000256805"
 
+
+    const val PRODUCT_NOT_FOUND = "Product Not Found In the Database"
+    const val UNABLE_TO_ESTABLISH_CONNECTION = "Unable to establish connection"
+    const val UNKNOWN_ERROR = "Unknown Error Occurred"
+    const val CONNECTION_TIMEOUT = "Connection Timed Out"
 
     fun getRandomItem(): String{
         return listOf(
@@ -21,6 +31,9 @@ object AppResources{
             BHUJJIA,
             SEASONED_PEANUTS,
             ALOO_LACHHA,
+            COCA_COLA_CAN,
+            "40822099",
+            "1123"
         ).random()
     }
 }

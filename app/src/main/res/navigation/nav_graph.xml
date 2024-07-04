@@ -14,21 +14,11 @@
             android:id="@+id/action_home_page_to_product_details_page"
             app:destination="@id/productDetailsPageLayout" />
         <action
-            android:id="@+id/action_home_page_to_product_fetch_error_page"
-            app:destination="@id/ProductFetchErrorPage" />
-        <action
-            android:id="@+id/action_home_page_to_no_internet_connection_page"
-            app:destination="@id/no_internet_layout" />
+            android:id="@+id/action_home_page_to_error_page"
+            app:destination="@id/ErrorPage" />
+
     </fragment>
-    <fragment
-        android:id="@+id/no_internet_layout"
-        android:name="com.zero1labs.nutriscan.pages.NoInternetConnection"
-        android:label="NoInternetConnectionPage"
-        tools:layout="@layout/fragment_no_internet_connection">
-<!--        <action-->
-<!--            android:id="@+id/action_no_internet_connection_page_to_home_page"-->
-<!--            app:destination="@id/no_internet_layout" />-->
-    </fragment>
+
     <fragment
         android:id="@+id/productDetailsPageLayout"
         android:name="com.zero1labs.nutriscan.pages.ProductDetailsPage"
@@ -39,15 +29,14 @@
             app:destination="@id/productDetailsPageLayout" />
         <action
             android:id="@+id/action_productDetailsPageLayout_to_ProductFetchErrorPage"
-            app:destination="@id/ProductFetchErrorPage" />
+            app:destination="@id/ErrorPage" />
         <action
             android:id="@+id/action_productDetailsPageLayout_to_homePageLayout"
             app:destination="@id/homePageLayout" />
     </fragment>
     <fragment
-        android:id="@+id/ProductFetchErrorPage"
-        android:name="com.zero1labs.nutriscan.pages.ProductFetchErrorPage"
-        android:label="ProductFetchErrorPage"
-        tools:layout="@layout/fragment_product_fetch_error_page">
-    </fragment>
+        android:id="@+id/ErrorPage"
+        android:name="com.zero1labs.nutriscan.pages.ErrorPage"
+        android:label="ErrorPage"
+        tools:layout="@layout/fragment_error_page" />
 </navigation>

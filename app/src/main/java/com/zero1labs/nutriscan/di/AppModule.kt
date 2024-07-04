@@ -4,7 +4,6 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import com.google.gson.GsonBuilder
-import com.zero1labs.nutriscan.repository.ApiRequests
 import com.zero1labs.nutriscan.repository.AppRepository
 import com.zero1labs.nutriscan.utils.AppResources.BASE_URL
 import com.zero1labs.nutriscan.utils.NetworkUtils
@@ -25,9 +24,9 @@ object AppModule{
     @Singleton
     fun providesAppApi() : Retrofit{
         val gson = GsonBuilder().setLenient().create()
-        val connectTimeout : Long = 30
-        val readTimeout : Long = 30
-        val writeTimeout : Long = 30
+        val connectTimeout : Long = 5
+        val readTimeout : Long = 5
+        val writeTimeout : Long = 5
 
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(connectTimeout,TimeUnit.SECONDS)
