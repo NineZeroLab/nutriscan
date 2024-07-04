@@ -5,14 +5,14 @@ import java.time.Duration
 class TimeCalculator {
     companion object{
         fun getTime( duration: Duration) : String{
-            if (duration.toDays() < 1){
-                return if (duration.toHours() < 1 ){
-                    "Just Now"
-                } else{
-                    "${duration.toHours().toString()} hours ago"
-                }
+            return when{
+                duration.toDays() > 1 -> "${duration.toDays()} days ago"
+                duration.toDays().toInt() == 1 -> "1 day ago"
+                duration.toHours() > 1 -> "${duration.toHours()} hours ago"
+                duration.toHours().toInt() == 1 -> "1 hour ago"
+                duration.toHours() < 1 -> "Just Now"
+                else -> ""
             }
-            return "${duration.toDays()} days ago"
         }
-    }
+   }
 }
