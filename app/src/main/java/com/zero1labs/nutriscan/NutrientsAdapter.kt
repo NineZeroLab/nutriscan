@@ -85,7 +85,7 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
                     productHeaderViewHolder.tvProductName.text = item.mainDetailsForView.productName
                     productHeaderViewHolder.tvProductBrand.text = item.mainDetailsForView.productBrand
                     productHeaderViewHolder.tvProductGrade.text = item.mainDetailsForView.healthCategory.description
-                    Glide.with(productHeaderViewHolder.ivProductImage.context).load(item.mainDetailsForView.imageUrl).into(productHeaderViewHolder.ivProductImage)
+                    Glide.with(productHeaderViewHolder.ivProductImage.context).load(item.mainDetailsForView.imageUrl ?: R.drawable.ic_launcher_background).into(productHeaderViewHolder.ivProductImage)
                     Glide.with(productHeaderViewHolder.ivProductHealthIcon.context).load(healthCategoryIcon).into(productHeaderViewHolder.ivProductHealthIcon)
                     productHeaderViewHolder.cvNutrientHealthCard.setCardBackgroundColor(healthCategoryBg)
                 }
