@@ -3,7 +3,6 @@ package com.zero1labs.nutriscan.pages
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -14,12 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
-import com.zero1labs.nutriscan.SearchHistoryAdapter
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
+import com.zero1labs.nutriscan.viewModels.InternetConnectionState
 import com.zero1labs.nutriscan.viewModels.ProductScanState
 import kotlinx.coroutines.launch
 
@@ -43,12 +42,16 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
+                when(state.internetConnectionState){
+                    InternetConnectionState.Online -> {}
+                    InternetConnectionState.Offline -> findNavController().navigate(R.id.action_home_page_to_no_internet_connection_page)
+                    InternetConnectionState.Unchecked -> {}
+                }
                 when(state.productScanState){
                     ProductScanState.Success -> {
                         hideProgressBar()
                         Log.d("logger","Product fetch success")
                         view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
-
                             findNavController().navigate(R.id.action_home_page_to_product_details_page)
                     }
 
@@ -91,12 +94,10 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
             }
         }
 
-        fabGetDemoItem.setOnClickListener(){
-            if (state.isOnline){
-                viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.getRandomItem()))
-            }else{
-                findNavController().navigate(R.id.action_home_page_to_product_fetch_error_page)
-            }
+        fabGetDemoItem.setOnClickListener{
+            Log.d("logger", "Get Demo Item fab clicked")
+            viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.getRandomItem()))
+
         }
 
         val searchHistoryItems : List<SearchHistoryListItem> = viewModel.uiState.value.searchHistory

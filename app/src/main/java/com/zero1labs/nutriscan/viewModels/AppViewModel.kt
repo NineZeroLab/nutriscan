@@ -23,7 +23,7 @@ data class ProductDetailsState(
     val error: String? = null,
     val productScanState: ProductScanState = ProductScanState.NotStarted,
     val searchHistory : List<SearchHistoryListItem>  = mutableListOf(),
-    val isOnline: Boolean = true
+    val internetConnectionState: InternetConnectionState = InternetConnectionState.Unchecked
 )
 
 enum class ProductScanState{
@@ -31,6 +31,12 @@ enum class ProductScanState{
     Failure,
     Loading,
     NotStarted,
+}
+
+enum class InternetConnectionState{
+    Online,
+    Offline,
+    Unchecked
 }
 
 @HiltViewModel
@@ -45,15 +51,8 @@ class AppViewModel @Inject constructor (
         when (event) {
             is AppEvent.GetProductDetails -> TODO()
             is AppEvent.OnStartScan -> {
-                Log.d("logger", "network connection : ${networkUtils.isNetworkAvailable()}")
-                    viewModelScope.launch {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isOnline = networkUtils.isNetworkAvailable()
-                            )
-                        }
-                }
-                if (!uiState.value.isOnline) return
+                checkIfOnline()
+                if (uiState.value.internetConnectionState != InternetConnectionState.Online) return
                 viewModelScope.launch {
                     _uiState.update { currentState ->
                         currentState.copy(
@@ -93,13 +92,36 @@ class AppViewModel @Inject constructor (
                     }
                     _uiState.update { currentState ->
                         currentState.copy(
-                            productScanState = ProductScanState.NotStarted
+                            productScanState = ProductScanState.NotStarted,
+                            internetConnectionState = InternetConnectionState.Unchecked
                         )
                     }
+
                 }
             }
         }
     }
 
+    private fun checkIfOnline(){
+
+        val isOnline: Boolean = networkUtils.isNetworkAvailable()
+        _uiState.update { currentState ->
+                 currentState.copy(
+                     internetConnectionState = if (isOnline){
+                         InternetConnectionState.Online
+                     }else{
+                         InternetConnectionState.Offline
+                     }
+                 )
+             }
+        if(uiState.value.internetConnectionState != InternetConnectionState.Online) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    productScanState = ProductScanState.NotStarted,
+                    internetConnectionState = InternetConnectionState.Unchecked
+                )
+            }
+        }
+    }
 
 }
