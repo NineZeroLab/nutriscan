@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
 import com.bumptech.glide.Glide
-import com.zero1labs.nutriscan.data.models.HealthCategory
+import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutrientType
 import com.zero1labs.nutriscan.data.models.ProductDetailsListItems
 

@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.data.models
+package com.zero1labs.nutriscan.data.models.remote
 
 import com.google.gson.annotations.SerializedName
 

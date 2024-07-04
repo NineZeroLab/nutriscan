@@ -1,14 +1,10 @@
 package com.zero1labs.nutriscan.viewModels
 
-import android.content.Context
-import android.content.Context.*
-import android.net.ConnectivityManager
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
-import com.zero1labs.nutriscan.data.models.Product
+import com.zero1labs.nutriscan.data.models.remote.Product
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.repository.AppRepository
 import com.zero1labs.nutriscan.utils.NetworkUtils

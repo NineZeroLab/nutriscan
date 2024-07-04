@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.data.models
+package com.zero1labs.nutriscan.utils
 
 enum class HealthCategory(val description: String){
     HEALTHY("Healthy"),

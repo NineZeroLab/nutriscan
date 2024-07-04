@@ -1,8 +1,7 @@
 package com.zero1labs.nutriscan.repository
 
 import retrofit2.http.GET
-import retrofit2.Call
-import com.zero1labs.nutriscan.data.models.SearchResponse
+import com.zero1labs.nutriscan.data.models.remote.SearchResponse
 import retrofit2.Response
 import retrofit2.http.Headers
 import retrofit2.http.Query

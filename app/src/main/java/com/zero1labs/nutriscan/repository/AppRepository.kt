@@ -1,13 +1,12 @@
 package com.zero1labs.nutriscan.repository
 
 import android.util.Log
-import com.zero1labs.nutriscan.data.models.Product
+import com.zero1labs.nutriscan.data.models.remote.Product
 import com.zero1labs.nutriscan.utils.Resource
 import com.zero1labs.nutriscan.utils.ResponseFields
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
-import retrofit2.create
 
 import javax.inject.Inject
 

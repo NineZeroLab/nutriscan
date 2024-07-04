@@ -4,19 +4,15 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.zero1labs.nutriscan.data.models.HealthCategory
+import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.utils.TimeCalculator
-import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
 
 class SearchHistoryAdapter(private val searchHistoryItems : List<SearchHistoryListItem>) : RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
 

@@ -1,5 +1,7 @@
 package com.zero1labs.nutriscan.data.models
 
+import com.zero1labs.nutriscan.data.models.remote.Product
+import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.utils.NutrientType
@@ -142,7 +144,7 @@ class Nutrient(
 //Too High: 5 points
 
 
-fun getNutriScoreAndPointsCategory(nutrientType: NutrientType, points : Int) : Pair<PointsLevel,HealthCategory>{
+fun getNutriScoreAndPointsCategory(nutrientType: NutrientType, points : Int) : Pair<PointsLevel, HealthCategory>{
     return when(nutrientType){
         NutrientType.ENERGY,
         NutrientType.SATURATES,
@@ -154,7 +156,7 @@ fun getNutriScoreAndPointsCategory(nutrientType: NutrientType, points : Int) : P
             4,5 -> Pair(PointsLevel.MODERATE, HealthCategory.FAIR)
             6,7 -> Pair(PointsLevel.HIGH, HealthCategory.POOR)
             8,9,10 -> Pair(PointsLevel.TOO_HIGH, HealthCategory.BAD)
-            else -> Pair(PointsLevel.UNKNOWN,HealthCategory.UNKNOWN)
+            else -> Pair(PointsLevel.UNKNOWN, HealthCategory.UNKNOWN)
         }
         NutrientType.PROTEIN,
         NutrientType.FIBRE,

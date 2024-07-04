@@ -1,6 +1,8 @@
 package com.zero1labs.nutriscan.data.models
 
 import android.util.Log
+import com.zero1labs.nutriscan.data.models.remote.Product
+import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 
 class MainDetailsForView(

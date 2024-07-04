@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,13 +15,12 @@ import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.data.models.NutrientGenerator
-import com.zero1labs.nutriscan.data.models.Product
+import com.zero1labs.nutriscan.data.models.remote.Product
 import com.zero1labs.nutriscan.data.models.ProductDetailsListItems
 import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
 import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
 import com.zero1labs.nutriscan.viewModels.ProductScanState
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
