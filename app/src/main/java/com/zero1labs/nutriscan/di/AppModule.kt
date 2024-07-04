@@ -1,12 +1,15 @@
 package com.zero1labs.nutriscan.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import com.google.gson.GsonBuilder
 import com.zero1labs.nutriscan.repository.ApiRequests
 import com.zero1labs.nutriscan.repository.AppRepository
 import com.zero1labs.nutriscan.utils.AppResources.BASE_URL
+import com.zero1labs.nutriscan.utils.NetworkUtils
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -45,5 +48,11 @@ object AppModule{
     @Singleton
     fun providesAppRepository(retrofit: Retrofit): AppRepository{
         return AppRepository(retrofit)
+    }
+
+    @Provides
+    @Singleton
+    fun providesNetworkUtils(@ApplicationContext context: Context): NetworkUtils{
+        return NetworkUtils(context)
     }
 }

@@ -1,14 +1,17 @@
 package com.zero1labs.nutriscan.viewModels
 
+import android.content.Context
+import android.content.Context.*
+import android.net.ConnectivityManager
 import android.util.Log
-import android.widget.ImageView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.data.models.Product
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.repository.AppRepository
-import com.zero1labs.nutriscan.utils.NutriScoreCalculator
+import com.zero1labs.nutriscan.utils.NetworkUtils
 import com.zero1labs.nutriscan.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +26,8 @@ data class ProductDetailsState(
     val product: Product? = null,
     val error: String? = null,
     val productScanState: ProductScanState = ProductScanState.NotStarted,
-    val shouldNavigate :Boolean = false,
-    val searchHistory : List<SearchHistoryListItem>  = mutableListOf()
+    val searchHistory : List<SearchHistoryListItem>  = mutableListOf(),
+    val isOnline: Boolean = true
 )
 
 enum class ProductScanState{
@@ -36,31 +39,31 @@ enum class ProductScanState{
 
 @HiltViewModel
 class AppViewModel @Inject constructor (
-  private val appRepository: AppRepository
+    private val networkUtils: NetworkUtils,
+    private val appRepository: AppRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProductDetailsState())
     val uiState : StateFlow<ProductDetailsState> = _uiState.asStateFlow()
 
-    fun setNavigation(value : Boolean){
-        _uiState.update {
-            it.copy(
-                shouldNavigate = value
-            )
-        }
-    }
-
     fun onEvent(event : AppEvent) {
         when (event) {
-
             is AppEvent.GetProductDetails -> TODO()
             is AppEvent.OnStartScan -> {
+                Log.d("logger", "network connection : ${networkUtils.isNetworkAvailable()}")
+                    viewModelScope.launch {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                isOnline = networkUtils.isNetworkAvailable()
+                            )
+                        }
+                }
+                if (!uiState.value.isOnline) return
                 viewModelScope.launch {
                     _uiState.update { currentState ->
                         currentState.copy(
                             productScanState = ProductScanState.Loading
                         )
                     }
-
                     val response: Resource<Product> =
                         appRepository.getProductDetailsById(event.productId)
                     when (response) {
@@ -72,43 +75,35 @@ class AppViewModel @Inject constructor (
                                         mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
                                         timeStamp = LocalDateTime.now()
                                     )
-
-
                                 }
-
-
                                 currentState.copy(
                                     productScanState = ProductScanState.Success,
                                     product = response.data,
-                                    shouldNavigate = true,
                                     searchHistory = currentState.searchHistory.toMutableList().apply {
                                         if (searchHistoryListItem != null) {
                                             add(element = searchHistoryListItem, index = 0)
                                         }
                                     }
                                 )
-
                             }
                         }
-
                         is Resource.Error -> _uiState.update { currentState ->
                             Log.d("logger","product scan failure from viewmodel")
                             currentState.copy(
                                 productScanState = ProductScanState.Failure,
                                 error = response.message,
-                                shouldNavigate = true
-                    )
+                            )
                         }
                     }
-
                     _uiState.update { currentState ->
                         currentState.copy(
                             productScanState = ProductScanState.NotStarted
                         )
-
                     }
                 }
             }
         }
     }
+
+
 }
