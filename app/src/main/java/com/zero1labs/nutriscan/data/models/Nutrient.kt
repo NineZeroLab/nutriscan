@@ -12,30 +12,30 @@ class NutrientGenerator(product: Product){
             val nutriScoreData = product.nutriScoreData
             val sugar = Nutrient.getNutrient(
                 nutrientType = NutrientType.SUGAR,
-                points = nutriScoreData?.sugarsPoints ?: NutriScoreCalculator.getPoints(NutrientType.SUGAR, productNutrients.sugars100g),
-                contentPerHundredGrams = productNutrients.sugars100g ?: 0,
-                servingUnit = productNutrients.sugarsUnit ?: ""
+                points = nutriScoreData?.sugarsPoints ?: NutriScoreCalculator.getPoints(NutrientType.SUGAR, productNutrients?.sugars100g),
+                contentPerHundredGrams = productNutrients?.sugars100g ?: 0,
+                servingUnit = productNutrients?.sugarsUnit ?: ""
             )
             val energy = Nutrient.getNutrient(
                 nutrientType = NutrientType.ENERGY,
-                points = nutriScoreData?.energyPoints ?: NutriScoreCalculator.getPoints(NutrientType.ENERGY, productNutrients.energy?.toDouble()),
-                contentPerHundredGrams = productNutrients.energyKcal100g ?: 0,
-                servingUnit = productNutrients.energyKcalUnit ?: ""
+                points = nutriScoreData?.energyPoints ?: NutriScoreCalculator.getPoints(NutrientType.ENERGY, productNutrients?.energy?.toDouble()),
+                contentPerHundredGrams = productNutrients?.energyKcal100g ?: 0,
+                servingUnit = productNutrients?.energyKcalUnit ?: ""
             )
             val saturates = Nutrient.getNutrient(
                 nutrientType = NutrientType.SATURATES,
                 points = nutriScoreData?.saturatedFatPoints ?: NutriScoreCalculator.getPoints(
-                    NutrientType.SATURATES, productNutrients.saturatedFat100g),
-                contentPerHundredGrams = productNutrients.saturatedFat100g ?: 0,
-                servingUnit =  productNutrients.saturatedFatUnit ?: ""
+                    NutrientType.SATURATES, productNutrients?.saturatedFat100g),
+                contentPerHundredGrams = productNutrients?.saturatedFat100g ?: 0,
+                servingUnit =  productNutrients?.saturatedFatUnit ?: ""
             )
             val fibre = Nutrient.getNutrient(
                 nutrientType = NutrientType.FIBRE,
-                points = nutriScoreData?.fiberPoints ?: NutriScoreCalculator.getPoints(NutrientType.FIBRE, productNutrients.fiber100g),
-                contentPerHundredGrams = productNutrients.fiber100g ?: 0,
-                servingUnit = productNutrients.fiberUnit ?: ""
+                points = nutriScoreData?.fiberPoints ?: NutriScoreCalculator.getPoints(NutrientType.FIBRE, productNutrients?.fiber100g),
+                contentPerHundredGrams = productNutrients?.fiber100g ?: 0,
+                servingUnit = productNutrients?.fiberUnit ?: ""
             )
-            val sodiumContentInMg = NutriScoreCalculator.getMgFromGram(productNutrients.sodium100g)
+            val sodiumContentInMg = NutriScoreCalculator.getMgFromGram(productNutrients?.sodium100g)
             val sodium = Nutrient.getNutrient(
                 nutrientType = NutrientType.SODIUM,
                 points = nutriScoreData?.sodiumPoints ?: NutriScoreCalculator.getPoints(NutrientType.SODIUM, sodiumContentInMg),
@@ -45,16 +45,16 @@ class NutrientGenerator(product: Product){
             val fruitsVegetablesAndNuts = Nutrient.getNutrient(
                 nutrientType = NutrientType.FRUITS_VEGETABLES_AND_NUTS,
                 points = nutriScoreData?.fruitsVegetablesNutsColzaWalnutOliveOilsPoints ?: NutriScoreCalculator.getPoints(
-                    NutrientType.FRUITS_VEGETABLES_AND_NUTS, productNutrients.fruitsVegetablesNutsEstimateFromIngredients100g),
-                contentPerHundredGrams = productNutrients.fruitsVegetablesNutsEstimateFromIngredients100g ?: 0,
+                    NutrientType.FRUITS_VEGETABLES_AND_NUTS, productNutrients?.fruitsVegetablesNutsEstimateFromIngredients100g),
+                contentPerHundredGrams = productNutrients?.fruitsVegetablesNutsEstimateFromIngredients100g ?: 0,
                 servingUnit = "%" //TODO: replace hard value (found it to be "%" per 100g in page 28 of QR_Nutri-Score_EN.pdf (Yuka))
             )
             val protein = Nutrient.getNutrient(
                 nutrientType = NutrientType.PROTEIN,
                 points = nutriScoreData?.proteinsPoints ?: NutriScoreCalculator.getPoints(
-                    NutrientType.PROTEIN, productNutrients.proteins100g),
-                contentPerHundredGrams = productNutrients.proteins100g ?: 0,
-                servingUnit = productNutrients.proteinsUnit ?: ""
+                    NutrientType.PROTEIN, productNutrients?.proteins100g),
+                contentPerHundredGrams = productNutrients?.proteins100g ?: 0,
+                servingUnit = productNutrients?.proteinsUnit ?: ""
             )
             nutrients = mutableListOf(
                sugar,
