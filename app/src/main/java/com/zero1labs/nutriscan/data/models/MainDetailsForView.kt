@@ -1,9 +1,10 @@
 package com.zero1labs.nutriscan.data.models
 
+import android.util.Log
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 
 class MainDetailsForView(
-    val imageUrl: String,
+    val imageUrl: String?,
     val productName: String,
     val productBrand: String,
     val healthCategory: HealthCategory
@@ -16,13 +17,13 @@ class MainDetailsForView(
             ) else product.nutriScoreGrade
             val healthCategory = getHealthCategory(nutriScoreGrade)
             return MainDetailsForView(
-                imageUrl = product.imageUrl,
+                imageUrl = product.imageUrl ?: getProductImageUrl(productId = product.productId),
                 productName = product.productName,
-                productBrand = product.brand,
+                productBrand = product.brand ?: "",
                 healthCategory = healthCategory,
             )
         }
-        private fun getHealthCategory(nutriScoreGrade: String) : HealthCategory {
+        private fun getHealthCategory(nutriScoreGrade: String?) : HealthCategory {
             return when(nutriScoreGrade){
                 "a" -> HealthCategory.HEALTHY
                 "b" -> HealthCategory.GOOD
@@ -31,6 +32,19 @@ class MainDetailsForView(
                 "e" -> HealthCategory.BAD
                 else -> HealthCategory.UNKNOWN
             }
+        }
+        private fun getProductImageUrl(productId: String) : String? {
+            val imageBaseUrl = "https://images.openfoodfacts.net/images/products/"
+            if (productId.length < 13) productId.padStart(length = 13 - productId.length -1 , padChar = '0')
+            val imageUrl = buildString {
+                append(imageBaseUrl)
+                append(productId.subSequence(0,3)).append('/')
+                append(productId.subSequence(3,6)).append('/')
+                append(productId.subSequence(6,9)).append('/')
+                append(productId.subSequence(9,13)).append("/1.jpg")
+            }
+            Log.d("logger", imageUrl)
+            return imageUrl
         }
     }
 }
