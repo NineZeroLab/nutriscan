@@ -6,6 +6,7 @@ import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 
 class MainDetailsForView(
+    val productId: String?,
     val imageUrl: String?,
     val productName: String,
     val productBrand: String,
@@ -19,6 +20,7 @@ class MainDetailsForView(
             ) else product.nutriScoreGrade
             val healthCategory = getHealthCategory(nutriScoreGrade)
             return MainDetailsForView(
+                productId = product.productId,
                 imageUrl = product.imageUrl ?: getProductImageUrl(productId = product.productId),
                 productName = product.productName,
                 productBrand = product.brand ?: "",

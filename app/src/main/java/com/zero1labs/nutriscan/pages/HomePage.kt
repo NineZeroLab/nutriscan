@@ -94,7 +94,8 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
         val searchHistoryItems : List<SearchHistoryListItem> = viewModel.uiState.value.searchHistory
         rvSearchHistoryItems.layoutManager = LinearLayoutManager(requireContext())
-        rvSearchHistoryItems.adapter = SearchHistoryAdapter(searchHistoryItems)
+        rvSearchHistoryItems.adapter = SearchHistoryAdapter(viewModel, searchHistoryItems)
+
     }
 
     private fun showProgressBar(){

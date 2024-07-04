@@ -6,23 +6,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.utils.TimeCalculator
+import com.zero1labs.nutriscan.viewModels.AppEvent
+import com.zero1labs.nutriscan.viewModels.AppViewModel
 import java.time.LocalDateTime
 
-class SearchHistoryAdapter(private val searchHistoryItems : List<SearchHistoryListItem>) : RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
-
+class SearchHistoryAdapter(private val viewModel: AppViewModel ,private val searchHistoryItems : List<SearchHistoryListItem>) : RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
     inner class SearchHistoryViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         val ivSearchHistoryImage : ImageView = itemView.findViewById(R.id.iv_search_history_image)
         val tvSearchHistoryName : TextView = itemView.findViewById(R.id.tv_search_history_name)
         val tvSearchHistoryBrand : TextView = itemView.findViewById(R.id.tv_search_history_brand)
         val tvTimeStamp : TextView = itemView.findViewById(R.id.tv_search_history_timestamp)
         val ivSearchHistoryHealthCategory : ImageView = itemView.findViewById(R.id.iv_search_history_health_category)
+        val cvListItem: CardView = itemView.findViewById(R.id.cv_list_item)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchHistoryViewHolder {
@@ -44,6 +48,9 @@ class SearchHistoryAdapter(private val searchHistoryItems : List<SearchHistoryLi
         holder.tvTimeStamp.text = TimeCalculator.getTime(duration)
         Glide.with(holder.ivSearchHistoryImage.context).load(item.mainDetailsForView.imageUrl).into(holder.ivSearchHistoryImage)
         Glide.with(holder.ivSearchHistoryHealthCategory.context).load(healthCategoryIcon).into(holder.ivSearchHistoryHealthCategory)
+        holder.cvListItem.setOnClickListener{
+            viewModel.onEvent(AppEvent.OnStartScan(item.mainDetailsForView.productId ?: ""))
+        }
     }
     private fun getHealthCategoryIcon(context : Context, healthCategory: HealthCategory) : Pair<Int, Int> {
         return when(healthCategory){
