@@ -39,11 +39,11 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
         fabScanProduct = view.findViewById(R.id.fab_scan_product)
         fabGetDemoItem = view.findViewById(R.id.fab_get_demo_item)
 
+        val state = viewModel.uiState.value
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
                 when(state.productScanState){
-
                     ProductScanState.Success -> {
                         hideProgressBar()
                         Log.d("logger","Product fetch success")
@@ -68,7 +68,6 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
                     ProductScanState.NotStarted -> Log.d("logger" , "product Scan not started")
                 }
-
             }
         }
 
@@ -90,18 +89,19 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
                 Log.d("logger", it.message.toString())
 
             }
-
         }
 
         fabGetDemoItem.setOnClickListener(){
-            viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.getRandomItem()))
+            if (state.isOnline){
+                viewModel.onEvent(AppEvent.OnStartScan(productId = AppResources.getRandomItem()))
+            }else{
+                findNavController().navigate(R.id.action_home_page_to_product_fetch_error_page)
+            }
         }
 
         val searchHistoryItems : List<SearchHistoryListItem> = viewModel.uiState.value.searchHistory
         rvSearchHistoryItems.layoutManager = LinearLayoutManager(requireContext())
         rvSearchHistoryItems.adapter = SearchHistoryAdapter(searchHistoryItems)
-
-
     }
 
     private fun showProgressBar(){
