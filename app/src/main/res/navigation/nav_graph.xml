@@ -3,39 +3,76 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homePageLayout">
+    app:startDestination="@id/sign_in_page">
 
     <fragment
-        android:id="@+id/homePageLayout"
+        android:id="@+id/register_page"
+        android:name="com.zero1labs.nutriscan.pages.RegisterPage"
+        android:label="RegisterPage"
+        tools:layout="@layout/fragment_register_page">
+        <action
+            android:id="@+id/action_register_page_to_sign_in_page"
+            app:destination="@+id/sign_in_page"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/sign_in_page"
+        android:name="com.zero1labs.nutriscan.pages.SignInPage"
+        android:label="SignInPage"
+        tools:layout="@layout/fragment_sign_in_page">
+        <action
+            android:id="@+id/action_sign_in_page_to_homepage"
+            app:destination="@id/homePage"/>
+        <action
+            android:id="@+id/action_sign_in_page_to_error_page"/>
+        <action
+            android:id="@+id/action_home_page_to_welcome_page"
+            app:destination="@id/welcome_page"/>
+        <action
+            android:id="@+id/action_sign_in_page_to_register_page"
+            app:destination="@+id/register_page"/>
+    </fragment>
+    <fragment
+        android:id="@+id/welcome_page"
+        android:name="com.zero1labs.nutriscan.pages.WelcomePage"
+        android:label="WelcomePage"
+        tools:layout="@layout/fragment_welcome_page">
+        <action
+            android:id="@+id/action_welcome_page_to_home_page"
+            app:destination="@+id/homePage"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/homePage"
         android:name="com.zero1labs.nutriscan.pages.HomePage"
         android:label="@string/home_page_label"
         tools:layout="@layout/fragment_home_page">
         <action
             android:id="@+id/action_home_page_to_product_details_page"
-            app:destination="@id/productDetailsPageLayout" />
+            app:destination="@id/productDetailsPage" />
         <action
             android:id="@+id/action_home_page_to_error_page"
-            app:destination="@id/ErrorPage" />
-
+            app:destination="@id/errorPage" />
     </fragment>
 
     <fragment
-        android:id="@+id/productDetailsPageLayout"
+        android:id="@+id/productDetailsPage"
         android:name="com.zero1labs.nutriscan.pages.ProductDetailsPage"
         android:label="@string/product_details_label"
         tools:layout="@layout/fragment_product_details_page">
         <action
             android:id="@+id/action_reload_new_product_details"
-            app:destination="@id/productDetailsPageLayout" />
+            app:destination="@id/productDetailsPage" />
         <action
             android:id="@+id/action_productDetailsPageLayout_to_ProductFetchErrorPage"
-            app:destination="@id/ErrorPage" />
+            app:destination="@id/errorPage" />
         <action
             android:id="@+id/action_productDetailsPageLayout_to_homePageLayout"
-            app:destination="@id/homePageLayout" />
+            app:destination="@id/homePage" />
     </fragment>
     <fragment
-        android:id="@+id/ErrorPage"
+        android:id="@+id/errorPage"
         android:name="com.zero1labs.nutriscan.pages.ErrorPage"
         android:label="ErrorPage"
         tools:layout="@layout/fragment_error_page" />

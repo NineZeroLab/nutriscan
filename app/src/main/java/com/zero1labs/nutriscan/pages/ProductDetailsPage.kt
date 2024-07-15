@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
@@ -25,11 +28,17 @@ import kotlinx.coroutines.launch
 
 class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
-        val btnBackToHomePage : View = view.findViewById(R.id.btn_back_to_homepage)
-        val btnScanAgain : View = view.findViewById(R.id.btn_scan_again)
+        val appCompatActivity: AppCompatActivity = activity as AppCompatActivity
+        val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
+        appCompatActivity.setSupportActionBar(materialToolbar)
+        val navController = findNavController()
+        materialToolbar.setupWithNavController(navController)
+
+        materialToolbar.title = "Product Details"
 
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -66,28 +75,28 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
 
 
 
-        btnBackToHomePage.setOnClickListener{
-            findNavController().popBackStack(findNavController().graph.startDestinationId,false)
-        }
-
-        btnScanAgain.setOnClickListener{
-            Log.d("logger", "starting gms barcode scanner")
-
-            val scanner = GmsBarcodeScanning.getClient(requireContext(), BarCodeScannerOptions.options)
-            scanner.startScan()
-                .addOnSuccessListener { barcode ->
-                    Log.d("logger", "product scan successfully")
-                    viewModel.onEvent(AppEvent.OnStartScan(barcode.rawValue.toString()))
-
-                }
-                .addOnCanceledListener {
-                    Log.d("logger", "action cancelled by user")
-                }
-                .addOnFailureListener {
-                    Log.d("logger", it.message.toString())
-
-                }
-        }
+//        btnBackToHomePage.setOnClickListener{
+//            findNavController().popBackStack()
+//        }
+//
+//        btnScanAgain.setOnClickListener{
+//            Log.d("logger", "starting gms barcode scanner")
+//
+//            val scanner = GmsBarcodeScanning.getClient(requireContext(), BarCodeScannerOptions.options)
+//            scanner.startScan()
+//                .addOnSuccessListener { barcode ->
+//                    Log.d("logger", "product scan successfully")
+//                    viewModel.onEvent(AppEvent.OnStartScan(barcode.rawValue.toString()))
+//
+//                }
+//                .addOnCanceledListener {
+//                    Log.d("logger", "action cancelled by user")
+//                }
+//                .addOnFailureListener {
+//                    Log.d("logger", it.message.toString())
+//
+//                }
+//        }
 
 
     }

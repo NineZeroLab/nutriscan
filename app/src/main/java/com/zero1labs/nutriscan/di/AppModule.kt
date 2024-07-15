@@ -1,6 +1,15 @@
 package com.zero1labs.nutriscan.di
 
 import android.content.Context
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.LocalCacheSettings
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.firestoreSettings
+import com.google.firebase.firestore.persistentCacheSettings
 import dagger.Module
 import dagger.Provides
 import com.google.gson.GsonBuilder
@@ -53,5 +62,29 @@ object AppModule{
     @Singleton
     fun providesNetworkUtils(@ApplicationContext context: Context): NetworkUtils{
         return NetworkUtils(context)
+    }
+    @Provides
+    @Singleton
+    fun providesFirebase(): Firebase{
+        return Firebase
+    }
+
+    @Provides
+    @Singleton
+    fun providesFirebaseAuth(firebase: Firebase): FirebaseAuth{
+        val auth = firebase.auth
+        auth.useEmulator("10.0.2.2",9099)
+        return auth
+    }
+
+    @Provides
+    @Singleton
+    fun providesFirebaseFirestore(firebase: Firebase): FirebaseFirestore{
+        val firestore = Firebase.firestore
+        firestore.useEmulator("10.0.2.2", 8080)
+        firestore.firestoreSettings = firestoreSettings {
+            isPersistenceEnabled = true
+        }
+        return firestore
     }
 }

@@ -44,9 +44,7 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
         val tvNutrientPerHundredGram : TextView = itemView.findViewById(R.id.tv_per_hundred_gram)
         val ivNutrientIcon : ImageView = itemView.findViewById(R.id.nutrient_icon)
         val ivNutrientCategoryIcon : ImageView = itemView.findViewById(R.id.nutrient_category_icon)
-
     }
-
     override fun getItemViewType(position: Int): Int {
         return when(productDetailsListItems[position]){
             is ProductDetailsListItems.NegativeNutrientsForView -> VIEW_TYPE_NUTRIENTS
@@ -70,7 +68,6 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
                 val view = inflater.inflate(R.layout.nutrients_header, parent, false)
                 NutrientsHeaderViewHolder(view)
             }
-
             else -> { throw IllegalArgumentException("Invalid View Type")}
         }
     }
@@ -83,12 +80,18 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
         when(val item = productDetailsListItems[position]){
             is ProductDetailsListItems.ProductHeader ->{
                 (holder as ProductHeaderViewHolder).let { productHeaderViewHolder ->
-                    val (healthCategoryIcon, healthCategoryBg) = getHealthCategoryIcon(holder.cvNutrientHealthCard.context,item.mainDetailsForView.healthCategory)
+                    val (healthCategoryIcon, healthCategoryBg) = getHealthCategoryIcon(
+                        holder.cvNutrientHealthCard.context,item.mainDetailsForView.healthCategory)
                     productHeaderViewHolder.tvProductName.text = item.mainDetailsForView.productName
                     productHeaderViewHolder.tvProductBrand.text = item.mainDetailsForView.productBrand
                     productHeaderViewHolder.tvProductGrade.text = item.mainDetailsForView.healthCategory.description
-                    Glide.with(productHeaderViewHolder.ivProductImage.context).load(item.mainDetailsForView.imageUrl).error(R.drawable.ic_launcher_background).into(productHeaderViewHolder.ivProductImage)
-                    Glide.with(productHeaderViewHolder.ivProductHealthIcon.context).load(healthCategoryIcon).into(productHeaderViewHolder.ivProductHealthIcon)
+                    Glide.with(productHeaderViewHolder.ivProductImage.context)
+                        .load(item.mainDetailsForView.imageUrl)
+                        .error(R.drawable.ic_launcher_background)
+                        .into(productHeaderViewHolder.ivProductImage)
+                    Glide.with(productHeaderViewHolder.ivProductHealthIcon.context)
+                        .load(healthCategoryIcon)
+                        .into(productHeaderViewHolder.ivProductHealthIcon)
                     productHeaderViewHolder.cvNutrientHealthCard.setCardBackgroundColor(healthCategoryBg)
                 }
             }
@@ -101,12 +104,12 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
                     tvNutrientPerHundredGram.text = item.nutrient.let {nutrient ->
                         "${nutrient.contentPerHundredGrams} ${nutrient.servingUnit}"
                     }
-                    Glide.with(ivNutrientIcon.context).load(getNutrientIcon(item.nutrient.nutrientType))
+                    Glide.with(ivNutrientIcon.context)
+                        .load(getNutrientIcon(item.nutrient.nutrientType))
                         .into(ivNutrientIcon)
-
-                    Glide.with(ivNutrientCategoryIcon.context).load(healthCategoryIcon)
+                    Glide.with(ivNutrientCategoryIcon.context)
+                        .load(healthCategoryIcon)
                         .into(ivNutrientCategoryIcon)
-
                 }
             }
             is ProductDetailsListItems.PositiveNutrientsForView -> {
@@ -117,9 +120,12 @@ class NutrientsAdapter(private val productDetailsListItems: List<ProductDetailsL
                     tvNutrientPerHundredGram.text = item.nutrient.let {nutrient ->
                         "${nutrient.contentPerHundredGrams} ${nutrient.servingUnit}"
                     }
-                    Glide.with(ivNutrientIcon.context).load(getNutrientIcon(item.nutrient.nutrientType)).into(ivNutrientIcon)
-                    Glide.with(ivNutrientCategoryIcon.context).load(healthCategoryIcon).into(ivNutrientCategoryIcon)
-
+                    Glide.with(ivNutrientIcon.context)
+                        .load(getNutrientIcon(item.nutrient.nutrientType))
+                        .into(ivNutrientIcon)
+                    Glide.with(ivNutrientCategoryIcon.context)
+                        .load(healthCategoryIcon)
+                        .into(ivNutrientCategoryIcon)
                 }
             }
             is ProductDetailsListItems.NutrientsHeaderForView -> {

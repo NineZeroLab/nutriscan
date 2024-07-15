@@ -12,6 +12,7 @@ sealed class Resource<T>(val data: T? = null, val message: String? = null) {
 
 object AppResources{
     const val BASE_URL : String = "https://world.openfoodfacts.org/api/v2/"
+    const val TAG = "logger"
     private const val DEMO_ITEM_ID = "3017620422003"
     private const val BHUJJIA = "011433157933"
     private const val SEASONED_PEANUTS = "059966050932"
