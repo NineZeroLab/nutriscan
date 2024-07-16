@@ -14,16 +14,12 @@
       },
       "oauth_client": [
         {
-          "client_id": "2576807066-p9r33itgubfts4rau1ebv5k5qmbl0e7h.apps.googleusercontent.com",
+          "client_id": "2576807066-9afs0212vqme609adkdbapfihdgu04iq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.zero1labs.nutriscan",
             "certificate_hash": "4b37a84a7f5b4ae5a78e04b46a4d9bbde229b065"
           }
-        },
-        {
-          "client_id": "2576807066-arg9l2anueuvd4nd1b7ugek00780kgem.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
@@ -33,12 +29,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "2576807066-arg9l2anueuvd4nd1b7ugek00780kgem.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.pages
+package com.zero1labs.nutriscan.pages.homepage
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,18 +8,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.utils.TimeCalculator
-import com.zero1labs.nutriscan.viewModels.AppEvent
-import com.zero1labs.nutriscan.viewModels.AppViewModel
 import java.time.LocalDateTime
+import java.time.ZoneId
 
-class SearchHistoryAdapter(private val viewModel: AppViewModel ,private val searchHistoryItems : List<SearchHistoryListItem>) : RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
+class SearchHistoryAdapter(private val viewModel: HomePageViewModel ,private var searchHistoryItems : List<SearchHistoryListItem>) : RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
     inner class SearchHistoryViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         val ivSearchHistoryImage : ImageView = itemView.findViewById(R.id.iv_search_history_image)
         val tvSearchHistoryName : TextView = itemView.findViewById(R.id.tv_search_history_name)
@@ -40,7 +38,8 @@ class SearchHistoryAdapter(private val viewModel: AppViewModel ,private val sear
 
     override fun onBindViewHolder(holder: SearchHistoryViewHolder, position: Int) {
         val item = searchHistoryItems[position]
-        val duration : java.time.Duration = java.time.Duration.between(item.timeStamp, LocalDateTime.now())
+        val duration : java.time.Duration = java.time.Duration.between(LocalDateTime.ofInstant(item.timeStamp.toInstant(),
+            ZoneId.systemDefault()), LocalDateTime.now())
         val (healthCategoryIcon, _) = getHealthCategoryIcon(context = holder.ivSearchHistoryHealthCategory.context, item.mainDetailsForView.healthCategory)
 
         holder.tvSearchHistoryName.text = item.mainDetailsForView.productName
@@ -49,7 +48,7 @@ class SearchHistoryAdapter(private val viewModel: AppViewModel ,private val sear
         Glide.with(holder.ivSearchHistoryImage.context).load(item.mainDetailsForView.imageUrl).into(holder.ivSearchHistoryImage)
         Glide.with(holder.ivSearchHistoryHealthCategory.context).load(healthCategoryIcon).into(holder.ivSearchHistoryHealthCategory)
         holder.cvListItem.setOnClickListener{
-            viewModel.onEvent(AppEvent.OnStartScan(item.mainDetailsForView.productId ?: ""))
+            viewModel.onEvent(HomePageEvent.FetchProductDetails(item.mainDetailsForView.productId ?: ""))
         }
     }
     private fun getHealthCategoryIcon(context : Context, healthCategory: HealthCategory) : Pair<Int, Int> {
@@ -76,6 +75,10 @@ class SearchHistoryAdapter(private val viewModel: AppViewModel ,private val sear
                     R.color.md_theme_background
                 ))
         }
+    }
+    fun updateData(newList: List<SearchHistoryListItem>){
+        this.searchHistoryItems = newList
+        notifyDataSetChanged()
     }
 
 }

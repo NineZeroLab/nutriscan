@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/md_theme_background"
     android:backgroundTint="@color/md_theme_background"
-    tools:context=".pages.HomePage">
+    tools:context=".pages.homepage.HomePage">
 
 
     <androidx.recyclerview.widget.RecyclerView

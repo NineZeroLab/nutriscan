@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
@@ -50,6 +51,23 @@ class AppViewModel @Inject constructor (
     private val _uiState = MutableStateFlow(ProductDetailsState())
     val uiState : StateFlow<ProductDetailsState> = _uiState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            auth.currentUser?.let {firebaseUser ->
+                _uiState.update {state ->
+                    state.copy(
+                        appUser = auth.currentUser?.uid?.let {
+                            AppUser(
+                                name = firebaseUser.email.toString(),
+                                uid = it
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
+
     fun onEvent(event : AppEvent) {
         when (event) {
             is AppEvent.GetProductDetails -> TODO()
@@ -66,16 +84,20 @@ class AppViewModel @Inject constructor (
                         appRepository.getProductDetailsById(event.productId)
                     when (response) {
                         is Resource.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    productScanState = ProductScanState.Success,
+                                )
+                            }
                             _uiState.update { currentState ->
                                 Log.d(TAG,"product scan success from viewmodel")
                                 val searchHistoryListItem = response.data?.let { product ->
                                     SearchHistoryListItem(
                                         mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
-                                        timeStamp = LocalDateTime.now()
+                                        timeStamp = Timestamp.now()
                                     )
                                 }
                                 currentState.copy(
-                                    productScanState = ProductScanState.Success,
                                     product = response.data,
                                     searchHistory = currentState.searchHistory.toMutableList().apply {
                                         if (searchHistoryListItem != null) {
@@ -139,9 +161,10 @@ class AppViewModel @Inject constructor (
 
                                 _uiState.update { state ->
                                     state.copy(
-                                        appUser = auth.currentUser?.displayName?.let {
+                                        appUser = auth.currentUser?.let {user ->
                                             AppUser(
-                                                name = it
+                                                name = user.email.toString(),
+                                                uid = user.uid
                                             )
                                         }
                                     )
@@ -172,9 +195,12 @@ class AppViewModel @Inject constructor (
                         viewModelScope.launch {
                             _uiState.update { state ->
                                 state.copy(
-                                    appUser = AppUser(
-                                        name = auth.currentUser?.displayName ?: event.email,
-                                    )
+                                    appUser = auth.currentUser?.let { user ->
+                                        AppUser(
+                                            name = user.email.toString(),
+                                            uid = user.uid
+                                        )
+                                    }
                                 )
                             }
                         }

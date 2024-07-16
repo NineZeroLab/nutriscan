@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.pages
+package com.zero1labs.nutriscan.pages.ProductDetailsPage
 
 import android.content.Context
 import android.view.LayoutInflater

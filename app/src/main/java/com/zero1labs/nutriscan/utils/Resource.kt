@@ -6,7 +6,10 @@ sealed class Resource<T>(val data: T? = null, val message: String? = null) {
 }
 
 
-
+object FirebaseCollection{
+    const val USERS = "users"
+    const val SEARCH = "search"
+}
 
 
 
@@ -23,6 +26,12 @@ object AppResources{
     const val UNABLE_TO_ESTABLISH_CONNECTION = "Unable to establish connection"
     const val UNKNOWN_ERROR = "Unknown Error Occurred"
     const val CONNECTION_TIMEOUT = "Connection Timed Out"
+
+    const val INVALID_USERNAME_PASSWORD = "Invalid Username or Password. Try Again."
+
+
+    const val USERS = "users"
+
 
     fun getRandomItem(): String{
         return listOf(

@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.pages
+package com.zero1labs.nutriscan.pages.ProductDetailsPage
 
 import android.os.Bundle
 import android.util.Log
@@ -12,18 +12,15 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.data.models.NutrientGenerator
 import com.zero1labs.nutriscan.data.models.remote.Product
 import com.zero1labs.nutriscan.models.data.ProductDetailsListItems
-import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
+import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources
-import com.zero1labs.nutriscan.viewModels.AppEvent
-import com.zero1labs.nutriscan.viewModels.AppViewModel
-import com.zero1labs.nutriscan.viewModels.ProductScanState
+import com.zero1labs.nutriscan.pages.homepage.ProductScanState
 import kotlinx.coroutines.launch
 
 class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
@@ -31,7 +28,7 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
+        val viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
         val appCompatActivity: AppCompatActivity = activity as AppCompatActivity
         val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
         appCompatActivity.setSupportActionBar(materialToolbar)

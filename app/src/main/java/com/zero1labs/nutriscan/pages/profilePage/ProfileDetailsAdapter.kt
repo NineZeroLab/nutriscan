@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.pages
+package com.zero1labs.nutriscan.pages.profilePage
 
 import android.text.Editable
 import android.text.TextWatcher

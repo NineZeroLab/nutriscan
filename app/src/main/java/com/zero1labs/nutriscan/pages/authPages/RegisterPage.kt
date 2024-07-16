@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.pages
+package com.zero1labs.nutriscan.pages.authPages
 
 import android.os.Bundle
 import android.view.View
@@ -11,10 +11,10 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
-import com.zero1labs.nutriscan.viewModels.AppEvent
-import com.zero1labs.nutriscan.viewModels.AppViewModel
 
 class RegisterPage: Fragment(R.layout.fragment_register_page){
+
+    private lateinit var viewModel: AuthViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -23,7 +23,7 @@ class RegisterPage: Fragment(R.layout.fragment_register_page){
         val tilConfirmPassword: TextInputLayout = view.findViewById(R.id.til_register_confirm_password)
         val tvSignIn: TextView = view.findViewById(R.id.tv_sign_in)
         val btnRegister: Button = view.findViewById(R.id.btn_register)
-        val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
+        val viewModel = ViewModelProvider(requireActivity())[AuthViewModel::class.java]
 
         val appCompatActivity = activity as AppCompatActivity
         val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
@@ -46,7 +46,7 @@ class RegisterPage: Fragment(R.layout.fragment_register_page){
                 tilConfirmPassword.error = "Passwords don't match"
             }else if (isValidEmail(email) && isValidPassword(password)){
                 //TODO: Register User and navigate to signIn Page
-                viewModel.onEvent(AppEvent.RegisterUserWithEmailAndPassword(email,password))
+                viewModel.onEvent(AuthEvent.RegisterUserWithEmailAndPassword(email,password))
                 findNavController().popBackStack()
             }else{
 

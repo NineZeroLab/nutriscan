@@ -15,3 +15,15 @@ Jul. 15, 2024 4:18:16 P.M. io.gapi.emulators.netty.HttpVersionRoutingHandler cha
 INFO: Detected HTTP/2 connection.
 Jul. 15, 2024 4:25:40 P.M. com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
 INFO: Connected to new websocket client
+Jul. 15, 2024 6:14:38 P.M. com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+Jul. 15, 2024 6:58:28 P.M. com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+Jul. 15, 2024 7:30:02 P.M. com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+Jul. 15, 2024 9:55:15 P.M. com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+Jul. 15, 2024 9:55:15 P.M. com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+*** shutting down gRPC server since JVM is shutting down
+*** server shut down

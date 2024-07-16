@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/sign_in_page">
+    app:startDestination="@id/homePage">
 
     <fragment
         android:id="@+id/register_page"
-        android:name="com.zero1labs.nutriscan.pages.RegisterPage"
+        android:name="com.zero1labs.nutriscan.pages.authPages.RegisterPage"
         android:label="RegisterPage"
         tools:layout="@layout/fragment_register_page">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/sign_in_page"
-        android:name="com.zero1labs.nutriscan.pages.SignInPage"
+        android:name="com.zero1labs.nutriscan.pages.authPages.SignInPage"
         android:label="SignInPage"
         tools:layout="@layout/fragment_sign_in_page">
         <action
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/welcome_page"
-        android:name="com.zero1labs.nutriscan.pages.WelcomePage"
+        android:name="com.zero1labs.nutriscan.pages.profilePage.WelcomePage"
         android:label="WelcomePage"
         tools:layout="@layout/fragment_welcome_page">
         <action
@@ -45,7 +45,7 @@
 
     <fragment
         android:id="@+id/homePage"
-        android:name="com.zero1labs.nutriscan.pages.HomePage"
+        android:name="com.zero1labs.nutriscan.pages.homepage.HomePage"
         android:label="@string/home_page_label"
         tools:layout="@layout/fragment_home_page">
         <action
@@ -54,11 +54,14 @@
         <action
             android:id="@+id/action_home_page_to_error_page"
             app:destination="@id/errorPage" />
+        <action
+            android:id="@+id/action_home_page_to_sign_in_page"
+            app:destination="@id/sign_in_page"/>
     </fragment>
 
     <fragment
         android:id="@+id/productDetailsPage"
-        android:name="com.zero1labs.nutriscan.pages.ProductDetailsPage"
+        android:name="com.zero1labs.nutriscan.pages.ProductDetailsPage.ProductDetailsPage"
         android:label="@string/product_details_label"
         tools:layout="@layout/fragment_product_details_page">
         <action
@@ -73,7 +76,7 @@
     </fragment>
     <fragment
         android:id="@+id/errorPage"
-        android:name="com.zero1labs.nutriscan.pages.ErrorPage"
+        android:name="com.zero1labs.nutriscan.pages.errorPage.ErrorPage"
         android:label="ErrorPage"
         tools:layout="@layout/fragment_error_page" />
 </navigation>

@@ -6,11 +6,11 @@ import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 
 class MainDetailsForView(
-    val productId: String?,
-    val imageUrl: String?,
-    val productName: String,
-    val productBrand: String,
-    val healthCategory: HealthCategory
+    val productId: String? = "",
+    val imageUrl: String? = "",
+    val productName: String = "",
+    val productBrand: String = "",
+    val healthCategory: HealthCategory = HealthCategory.UNKNOWN
 ){
     companion object{
         fun getMainDetailsForView(product : Product) : MainDetailsForView {

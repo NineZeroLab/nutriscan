@@ -72,19 +72,16 @@ object AppModule{
     @Provides
     @Singleton
     fun providesFirebaseAuth(firebase: Firebase): FirebaseAuth{
-        val auth = firebase.auth
-        auth.useEmulator("10.0.2.2",9099)
+        val auth = FirebaseAuth.getInstance()
+//        auth.useEmulator("10.0.2.2",9099)
         return auth
     }
 
     @Provides
     @Singleton
     fun providesFirebaseFirestore(firebase: Firebase): FirebaseFirestore{
-        val firestore = Firebase.firestore
-        firestore.useEmulator("10.0.2.2", 8080)
-        firestore.firestoreSettings = firestoreSettings {
-            isPersistenceEnabled = true
-        }
+        val firestore = FirebaseFirestore.getInstance()
+//        firestore.useEmulator("10.0.2.2", 8080)
         return firestore
     }
 }

@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.pages
+package com.zero1labs.nutriscan.pages.profilePage
 
 import android.os.Bundle
 import android.text.Editable

@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.pages
+package com.zero1labs.nutriscan.pages.authPages
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,8 +16,10 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
+import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
 import kotlinx.coroutines.launch
@@ -38,7 +40,7 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
         // Initialize oneTapClient and signInRequest
         oneTapClient = Identity.getSignInClient(requireActivity())
 
-        val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
+        val viewModel = ViewModelProvider(requireActivity())[AuthViewModel::class.java]
         val tilEmail: TextInputLayout = view.findViewById(R.id.til_email)
         val tilPassword: TextInputLayout = view.findViewById(R.id.til_password)
         val btnSignIn: Button = view.findViewById(R.id.btn_sign_in)
@@ -52,13 +54,17 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
-                if (state.appUser != null){
-                    findNavController().navigate(R.id.action_sign_in_page_to_homepage)
+                when(state.authStatus){
+                    AuthStatus.SIGNED_IN -> findNavController().navigate(R.id.action_sign_in_page_to_homepage)
+                    AuthStatus.SIGNED_OUT ->{}
+                    AuthStatus.ERROR -> {
+                        state.errorMsg?.let { Snackbar.make(view, it,Snackbar.LENGTH_LONG).show() }
+                    }
                 }
             }
         }
 
-        val serverId = "2576807066-p9r33itgubfts4rau1ebv5k5qmbl0e7h.apps.googleusercontent.com"
+        val serverId = "2576807066-9afs0212vqme609adkdbapfihdgu04iq.apps.googleusercontent.com"
 
         signInRequest = BeginSignInRequest.builder()
             .setGoogleIdTokenRequestOptions(
@@ -91,14 +97,12 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
                 tilPassword.error = "Invalid password"
             }else if (isValidEmail(email) && isValidPassword(password)){
                 //TODO: Send Email and password to ViewModel
-                viewModel.onEvent(AppEvent.SignInWithEmailAndPassword(email,password))
+                viewModel.onEvent(AuthEvent.SignInWithEmailAndPassword(email,password))
             }else{
 
             }
         }
     }
-
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -155,7 +159,5 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
             }
     }
 
-    companion object {
-        private const val TAG = "YourFragment"
-    }
+
 }
