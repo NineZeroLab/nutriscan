@@ -1,21 +1,30 @@
 package com.zero1labs.nutriscan.pages.profilePage
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat.getColor
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -28,17 +37,23 @@ import com.zero1labs.nutriscan.viewModels.AppViewModel
 
 class WelcomePage : Fragment(R.layout.fragment_welcome_page) {
 
+    @SuppressLint("MissingInflatedId")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = ViewModelProvider(requireActivity())[AppViewModel::class.java]
         val btnSaveUserData: Button = view.findViewById(R.id.btn_save_user_details)
         val mainView: View = view.findViewById(R.id.welcome_page_layout)
         val llNutrientPreferenceCollapsable: LinearLayout = view.findViewById(R.id.nutrients_collapsable_layout)
+        val clDietaryPreferenceCollapsable: ConstraintLayout = view.findViewById(R.id.cl_dietary_preference_collapsable)
         val clNutrientRestrictionCollapsable: ConstraintLayout = view.findViewById(R.id.cl_collapsable_dietary_restriction)
         val flNutrientRestrictionCollapsable: Flow = view.findViewById(R.id.ll_dietary_restriction_collapsable_layout)
         val tvDietaryPreferenceHeader: TextView = view.findViewById(R.id.tv_dietary_preference_header)
         val tvDietaryRestrictionHeader: TextView = view.findViewById(R.id.tv_dietary_restriction_header)
         val tiUserNameText: TextInputEditText = view.findViewById(R.id.ti_username_edit_text)
+        val ivDietaryPreferenceCollapsableIcon: ImageView = view.findViewById(R.id.iv_dietary_preference_expand_collapse)
+        val ivDietaryRestrictionCollapsableIcon: ImageView = view.findViewById(R.id.iv_dietary_restriction_expand_collapse)
+        val llDietaryPreferenceHeader: LinearLayout = view.findViewById(R.id.ll_dietary_preferene_header)
+        val llDietaryRestrictionHeader: LinearLayout = view.findViewById(R.id.ll_dietary_restriction_header)
         var userName = ""
 
         tiUserNameText.addTextChangedListener(object : TextWatcher{
@@ -100,41 +115,83 @@ class WelcomePage : Fragment(R.layout.fragment_welcome_page) {
             llNutrientPreferenceCollapsable.addView(itemView)
         }
 
-        tvDietaryPreferenceHeader.setOnClickListener {
-            if (llNutrientPreferenceCollapsable.visibility == View.VISIBLE){
-                llNutrientPreferenceCollapsable.visibility = View.GONE
-
+        //TODO: make the whole linear layout clickable
+        llDietaryPreferenceHeader.setOnClickListener {
+            if (clDietaryPreferenceCollapsable.visibility == View.VISIBLE){
+                clDietaryPreferenceCollapsable.visibility = View.GONE
+                Glide.with(requireContext())
+                    .load(R.mipmap.arrow_down)
+                    .into(ivDietaryPreferenceCollapsableIcon)
+                Glide.with(requireContext())
+                    .load(R.mipmap.arrow_down)
+                    .into(ivDietaryRestrictionCollapsableIcon)
             }else{
-                    llNutrientPreferenceCollapsable.visibility = View.VISIBLE
-
+                clDietaryPreferenceCollapsable.visibility = View.VISIBLE
+                clNutrientRestrictionCollapsable.visibility = View.GONE
+                Glide.with(requireContext())
+                    .load(R.mipmap.arrow_up)
+                    .into(ivDietaryPreferenceCollapsableIcon)
+                Glide.with(requireContext())
+                    .load(R.mipmap.arrow_down)
+                    .into(ivDietaryRestrictionCollapsableIcon)
             }
         }
 
-        tvDietaryRestrictionHeader.setOnClickListener {
+        //TODO: make the whole linear layout clickable
+        llDietaryRestrictionHeader.setOnClickListener {
             if (clNutrientRestrictionCollapsable.visibility == View.VISIBLE){
                 clNutrientRestrictionCollapsable.visibility = View.GONE
+                Glide.with(requireContext())
+                    .load(R.mipmap.arrow_down)
+                    .into(ivDietaryPreferenceCollapsableIcon)
+                Glide.with(requireContext())
+                    .load(R.mipmap.arrow_down)
+                    .into(ivDietaryRestrictionCollapsableIcon)
             }else{
                 clNutrientRestrictionCollapsable.visibility = View.VISIBLE
+                clDietaryPreferenceCollapsable.visibility = View.GONE
+                Glide.with(requireContext())
+                    .load(R.mipmap.arrow_down)
+                    .into(ivDietaryPreferenceCollapsableIcon)
+                Glide.with(requireContext())
+                    .load(R.mipmap.arrow_up)
+                    .into(ivDietaryRestrictionCollapsableIcon)
             }
         }
 
+        flNutrientRestrictionCollapsable.setPadding(4)
+        flNutrientRestrictionCollapsable.setVerticalGap(32)
 
         for (i in 0..<nutrientPreference.size){
             val nutrient = nutrientPreference[i]
-            val button = MaterialButton(requireContext())
+            val button = ToggleButton(requireContext())
+
 
             button.apply {
-                text = nutrient.nutrientType.heading
+
+
+                button.background = ContextCompat.getDrawable(requireContext(), R.drawable.dietary_restriction_selector)
+                button.textOn = nutrient.nutrientType.heading
+                button.textOff = nutrient.nutrientType.heading
+                button.text = nutrient.nutrientType.heading
+                button.isChecked = false
+                transformationMethod = null
+
+                setPadding(12,0,12,0)
                 id = View.generateViewId()
-                layoutParams = ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT
-                )
+                setOnCheckedChangeListener { buttonView,isChecked ->
+                    if (isChecked){
+                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onError))
+                    }else{
+                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onSurface))
+                    }
+                }
 //                background = ContextCompat.getDrawable(requireContext(),R.color.md_theme_primary)
             }
             val buttonIds = flNutrientRestrictionCollapsable.referencedIds.toMutableList()
             buttonIds.add(button.id)
             flNutrientRestrictionCollapsable.referencedIds = buttonIds.toIntArray()
+
 
 
             Log.d("logger", "adding ${nutrient.nutrientType.heading} button to layout")
