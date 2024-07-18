@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/welcome_page">
+    app:startDestination="@id/homePage">
 
     <fragment
         android:id="@+id/register_page"
@@ -26,7 +26,7 @@
         <action
             android:id="@+id/action_sign_in_page_to_error_page"/>
         <action
-            android:id="@+id/action_home_page_to_welcome_page"
+            android:id="@+id/action_sign_in_page_to_welcome_page"
             app:destination="@id/welcome_page"/>
         <action
             android:id="@+id/action_sign_in_page_to_register_page"
@@ -57,6 +57,9 @@
         <action
             android:id="@+id/action_home_page_to_sign_in_page"
             app:destination="@id/sign_in_page"/>
+        <action
+            android:id="@+id/action_home_page_to_welcome_page"
+            app:destination="@id/welcome_page"/>
     </fragment>
 
     <fragment

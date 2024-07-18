@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Visibility
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
@@ -31,7 +32,7 @@ import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.utils.AppResources.TAG
 import kotlinx.coroutines.launch
 
-class HomePage : Fragment() {
+class HomePage : Fragment(R.layout.fragment_home_page) {
 
     private lateinit var progressBar: ProgressBar
     private lateinit var progressBarBg : View
@@ -42,18 +43,9 @@ class HomePage : Fragment() {
     private lateinit var materialToolbar: MaterialToolbar
     private lateinit var viewModel: HomePageViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
-        return inflater.inflate(R.layout.fragment_home_page,container,false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
         progressBar = view.findViewById(R.id.progress_bar)
         progressBarBg = view.findViewById(R.id.blurBg)
         rvSearchHistoryItems = view.findViewById(R.id.rv_search_history)
@@ -67,9 +59,9 @@ class HomePage : Fragment() {
         viewModel.uiState.value.appUser.let { user ->
             if (user != null){
                 materialToolbar.title = "Hi ${user.name}"
-            }else{
-                materialToolbar.title = "Hi User"
+
             }
+
         }
         Log.d(TAG,"Products from firebase: ${viewModel.uiState.value.searchHistory}")
 
@@ -85,11 +77,14 @@ class HomePage : Fragment() {
                 return when(menuItem.itemId){
                     R.id.mi_sign_out -> {
                         viewModel.onEvent(HomePageEvent.SignOut)
-                        findNavController().navigate(R.id.action_home_page_to_sign_in_page)
                         true
                     }
                     R.id.mi_sign_in -> {
                         findNavController().navigate(R.id.action_home_page_to_sign_in_page)
+                        true
+                    }
+                    R.id.mi_edit_profile -> {
+                        findNavController().navigate(R.id.action_home_page_to_welcome_page)
                         true
                     }
                     else -> {false}
@@ -132,14 +127,13 @@ class HomePage : Fragment() {
                     ProductScanState.Success -> {
                         hideProgressBar()
                         Log.d("logger","Product fetch success")
-                        view.findViewById<ProgressBar>(R.id.progress_bar).visibility = View.GONE
                         findNavController().navigate(R.id.action_home_page_to_product_details_page)
                     }
                     ProductScanState.Failure ->{
                         hideProgressBar()
                         Log.d("logger","Product fetch failure")
-                        view.findViewById<ProgressBar>(R.id.progress_bar).visibility = View.GONE
-                        findNavController().navigate(R.id.action_home_page_to_error_page)
+                        Snackbar.make(view,state.msg.toString(),Snackbar.LENGTH_LONG).show()
+//                        findNavController().navigate(R.id.action_home_page_to_error_page)
                     }
                     ProductScanState.Loading -> {
 
@@ -151,22 +145,31 @@ class HomePage : Fragment() {
 
                 when(state.firebaseDataFetchState){
                     FirebaseDataFetchState.Loading -> {
+                        Log.d("logger","Firebase Data Fetch State : Loading")
                         showProgressBar()
                     }
                     FirebaseDataFetchState.Success -> {
                         hideProgressBar()
+                        materialToolbar.title = "Hi ${state.appUser?.name}"
+                        Log.d("logger","Firebase Data Fetch State : Success")
                         searchHistoryAdapter.updateData(state.searchHistory)
                     }
-                    FirebaseDataFetchState.Failure -> {}
-                    FirebaseDataFetchState.NotStarted -> {hideProgressBar()}
+                    FirebaseDataFetchState.Failure -> {
+                        hideProgressBar()
+                        Log.d("logger","Firebase Data Fetch State : Failure")
+                    }
+                    FirebaseDataFetchState.NotStarted -> {
+                        Log.d("logger","Firebase Data Fetch State : Not Started")
+                        if(state.appUser == null){
+                            Log.d("logger","appUser is null")
+                            findNavController().navigate(R.id.action_home_page_to_sign_in_page)
+                        }
+
+                    }
                 }
+
             }
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.homepage_menu,menu)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
     private fun showProgressBar(){
@@ -180,6 +183,8 @@ class HomePage : Fragment() {
     private fun hideProgressBar(){
         progressBar.visibility = View.GONE
         progressBarBg.visibility = View.GONE
+        fabScanProduct.isClickable = true
+        fabGetDemoItem.isClickable = true
     }
 
 

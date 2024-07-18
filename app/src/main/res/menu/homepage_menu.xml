@@ -7,5 +7,10 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/mi_sign_in"
-        android:title="Sign In" />
+        android:title="Sign In"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/mi_edit_profile"
+        android:title="Profile"
+        app:showAsAction="never" />
 </menu>

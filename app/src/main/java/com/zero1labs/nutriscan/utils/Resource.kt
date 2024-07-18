@@ -29,6 +29,8 @@ object AppResources{
 
     const val INVALID_USERNAME_PASSWORD = "Invalid Username or Password. Try Again."
 
+    const val USER_DETAILS_UPDATED = "User Details Updated Successfully"
+    const val USER_DETAILS_UPDATE_FAILURE = "Update failed "
 
     const val USERS = "users"
 

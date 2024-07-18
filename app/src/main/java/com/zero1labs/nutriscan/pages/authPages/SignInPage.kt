@@ -19,9 +19,12 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
+import com.zero1labs.nutriscan.pages.homepage.HomePageEvent
+import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
@@ -55,11 +58,35 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
                 when(state.authStatus){
-                    AuthStatus.SIGNED_IN -> findNavController().navigate(R.id.action_sign_in_page_to_homepage)
-                    AuthStatus.SIGNED_OUT ->{}
+                    AuthStatus.SIGNED_IN -> {
+                        ViewModelProvider(requireActivity())[HomePageViewModel::class.java].onEvent(
+                            HomePageEvent.UpdateUserDetails
+                        )
+                        Log.d(TAG,"${state.authStatus}")
+                        Snackbar.make(view,"Signing In...",Snackbar.LENGTH_SHORT).show()
+                        //delaying navigation so that HomepageViewModel is initialized with loading state
+                        //and the user is appUser is not null when signed in
+                        delay(500)
+                        if (state.appUser?.profileUpdated == true){
+                            findNavController().navigate(R.id.homePage)
+                        }else{
+                            findNavController().navigate(R.id.welcome_page)
+                        }
+
+                    }
+                    AuthStatus.SIGNED_OUT ->{
+                        Log.d(TAG,"${state.authStatus}")
+                    }
                     AuthStatus.ERROR -> {
+                        Log.d(TAG,"${state.authStatus}")
                         state.errorMsg?.let { Snackbar.make(view, it,Snackbar.LENGTH_LONG).show() }
                     }
+
+                    AuthStatus.NOT_STARTED -> {
+                        Log.d(TAG,"${state.authStatus}")
+                    }
+
+                    AuthStatus.LOADING -> TODO()
                 }
             }
         }

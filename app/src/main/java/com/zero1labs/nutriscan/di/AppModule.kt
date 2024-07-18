@@ -33,9 +33,9 @@ object AppModule{
     @Singleton
     fun providesAppApi() : Retrofit{
         val gson = GsonBuilder().setLenient().create()
-        val connectTimeout : Long = 5
-        val readTimeout : Long = 5
-        val writeTimeout : Long = 5
+        val connectTimeout : Long = 20
+        val readTimeout : Long = 20
+        val writeTimeout : Long = 20
 
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(connectTimeout,TimeUnit.SECONDS)

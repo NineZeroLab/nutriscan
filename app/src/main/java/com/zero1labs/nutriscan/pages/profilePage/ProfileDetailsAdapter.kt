@@ -88,7 +88,7 @@ class ProfileDetailsAdapter(private val profileDetailsListItems: MutableList<Pro
             }
             is ProfileDetailsListItems.DietaryPreferences -> {
                 (holder as NutrientPreferenceViewHolder).apply {
-                    tvNutrientName.text = item.nutrientPreference.nutrientType.heading
+                    tvNutrientName.text = item.nutrientPreference.nutrientType?.heading
                     rbNutrientLow.setOnCheckedChangeListener{ _, isChecked ->
                         if (isChecked){
                            updateNutrientPreference(position, NutrientPreferenceType.LOW)

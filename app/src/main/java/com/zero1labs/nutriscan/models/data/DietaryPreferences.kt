@@ -5,8 +5,8 @@ import com.zero1labs.nutriscan.utils.NutrientType
 
 
 data class NutrientPreference(
-    val nutrientType: NutrientType,
-    val nutrientPreferenceType: NutrientPreferenceType?
+    val nutrientType: NutrientType? = null,
+    val nutrientPreferenceType: NutrientPreferenceType? = null
 )
 
 enum class NutrientPreferenceType{
