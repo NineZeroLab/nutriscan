@@ -82,6 +82,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation ("com.google.android.material:material:1.4.0")
+
 }
 kapt{
     correctErrorTypes = true

@@ -166,7 +166,7 @@ class WelcomePage : Fragment(R.layout.fragment_welcome_page) {
                 id = View.generateViewId()
                 setOnCheckedChangeListener { buttonView,isChecked ->
                     if (isChecked){
-                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onError))
+                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onPrimary))
                         dietaryRestrictions.add(restriction)
 
                     }else{
@@ -201,7 +201,7 @@ class WelcomePage : Fragment(R.layout.fragment_welcome_page) {
                 setOnCheckedChangeListener { buttonView,isChecked ->
                     if (isChecked){
                         allergens.add(allergen)
-                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onError))
+                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onPrimary))
 
                     }else{
                         allergens.remove(allergen)

@@ -12,13 +12,13 @@
         android:layout_height="wrap_content"
         android:background="@color/md_theme_primary"
         android:theme="@style/AppTheme"
-        app:title="SignIn Page"
-        app:titleTextColor="@color/md_theme_onSurface"
         app:layout_constraintBottom_toTopOf="@+id/nav_host_fragment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:titleTextAppearance="@style/AppToolBarTextAppearance" />
+        app:title="SignIn Page"
+        app:titleTextAppearance="@style/AppToolBarTextAppearance"
+        app:titleTextColor="@color/md_theme_background" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
