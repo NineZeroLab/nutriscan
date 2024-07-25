@@ -11,6 +11,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
+import com.zero1labs.nutriscan.utils.AppResources.isValidEmail
+import com.zero1labs.nutriscan.utils.AppResources.isValidPassword
 
 class RegisterPage: Fragment(R.layout.fragment_register_page){
 
@@ -39,12 +41,12 @@ class RegisterPage: Fragment(R.layout.fragment_register_page){
             val confirmPassword = tilConfirmPassword.editText?.text.toString()
             if (!isValidEmail(email)){
                 tilEmail.error = "Invalid Email"
-            }else if (!isValidPassword(password)){
-                tilPassword.error = "Invalid Password"
+            }else if (!isValidPassword(password).first){
+                tilPassword.error = "${isValidPassword(password).second}"
             }else if(password != confirmPassword){
                 tilPassword.error = "Passwords don't match"
                 tilConfirmPassword.error = "Passwords don't match"
-            }else if (isValidEmail(email) && isValidPassword(password)){
+            }else if (isValidEmail(email) && isValidPassword(password).first){
                 //TODO: Register User and navigate to signIn Page
                 viewModel.onEvent(AuthEvent.RegisterUserWithEmailAndPassword(email,password))
                 findNavController().popBackStack()
@@ -60,15 +62,8 @@ class RegisterPage: Fragment(R.layout.fragment_register_page){
 
 
     }
-    private fun isValidEmail(email: String): Boolean {
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
-        return emailRegex.matches(email)
-    }
 
-    private fun isValidPassword(password: String): Boolean {
-        // Minimum 8 characters, at least one letter and one number
-        val passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$".toRegex()
-        return passwordRegex.matches(password)
-    }
+
+
 
 }

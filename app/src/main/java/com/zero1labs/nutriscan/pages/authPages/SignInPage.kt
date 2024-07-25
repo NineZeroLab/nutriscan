@@ -22,6 +22,7 @@ import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.pages.homepage.HomePageEvent
 import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources.TAG
+import com.zero1labs.nutriscan.utils.AppResources.isValidEmail
 import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
 import kotlinx.coroutines.delay
@@ -33,8 +34,6 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
     private lateinit var btnSignInWithGoogle: Button
-    private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
-    private var showOneTapUI = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,22 +90,7 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
             }
         }
 
-        val serverId = "2576807066-9afs0212vqme609adkdbapfihdgu04iq.apps.googleusercontent.com"
 
-        signInRequest = BeginSignInRequest.builder()
-            .setGoogleIdTokenRequestOptions(
-                /* googleIdTokenRequestOptions = */ BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                    .setSupported(true)
-                    .setServerClientId(serverId)
-                    .setFilterByAuthorizedAccounts(false)
-                    .build()
-            )
-            .setAutoSelectEnabled(true)
-            .build()
-
-        btnSignInWithGoogle.setOnClickListener{
-            startOneTapSignIn()
-        }
 
         tvRegister.setOnClickListener {
             findNavController().navigate(R.id.action_sign_in_page_to_register_page)
@@ -120,71 +104,11 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
 
             if (!isValidEmail(email)) {
                 tilEmail.error = "Invalid Email"
-            } else if (!isValidPassword(password)){
-                tilPassword.error = "Invalid password"
-            }else if (isValidEmail(email) && isValidPassword(password)){
-                //TODO: Send Email and password to ViewModel
+            }else if (isValidEmail(email)){
                 viewModel.onEvent(AuthEvent.SignInWithEmailAndPassword(email,password))
             }else{
 
             }
         }
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == REQ_ONE_TAP) {
-            try {
-                val credential = oneTapClient.getSignInCredentialFromIntent(data)
-                val idToken = credential.googleIdToken
-                when {
-                    idToken != null -> {
-                        // Got an ID token from Google. Use it to authenticate with Firebase.
-                        Log.d(TAG, "Got ID token.")
-                        viewModel.onEvent(AppEvent.SignInWithToken(idToken))
-
-                    }
-                    else -> {
-                        // Shouldn't happen.
-                        Log.d(TAG, "No ID token!")
-                    }
-                }
-            } catch (e: ApiException) {
-                // Handle error
-                Log.e(TAG, "Sign-in failed", e)
-            }
-        }
-    }
-
-    fun isValidEmail(email: String): Boolean {
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
-        return emailRegex.matches(email)
-    }
-
-    fun isValidPassword(password: String): Boolean {
-        // Minimum 8 characters, at least one letter and one number
-        val passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$".toRegex()
-        return passwordRegex.matches(password)
-    }
-
-
-    private fun startOneTapSignIn() {
-        oneTapClient.beginSignIn(signInRequest)
-            .addOnSuccessListener(requireActivity()) { result ->
-                try {
-                    startIntentSenderForResult(
-                        result.pendingIntent.intentSender, REQ_ONE_TAP,
-                        null, 0, 0, 0, null
-                    )
-                } catch (e: Exception) {
-                    Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}")
-                }
-            }
-            .addOnFailureListener(requireActivity()) { e ->
-                Log.d(TAG, e.localizedMessage)
-            }
-    }
-
-
 }
