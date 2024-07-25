@@ -49,20 +49,20 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
 
         llProductDetailsLayout = view.findViewById(R.id.ll_product_details_layout)
 
-            viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect{state ->
-                when(state.productScanState){
-                    ProductScanState.Success -> {
-                        Log.d("logger" , "scan status updated in viewModel")
+        viewLifecycleOwner.lifecycleScope.launch {
+        viewModel.uiState.collect{state ->
+            when(state.productScanState){
+                ProductScanState.Success -> {
+                    Log.d("logger" , "scan status updated in viewModel")
                     }
-                    ProductScanState.Failure -> {
-                        Log.d("logger" , "product data fetching error in viewModel")
-                        findNavController().navigate(R.id.action_productDetailsPageLayout_to_ProductFetchErrorPage)
+                ProductScanState.Failure -> {
+                    Log.d("logger" , "product data fetching error in viewModel")
+                    findNavController().navigate(R.id.action_productDetailsPageLayout_to_ProductFetchErrorPage)
                     }
-                    ProductScanState.Loading -> {
-                        Log.d("logger" , "loading product details in viewModel")
+                ProductScanState.Loading -> {
+                    Log.d("logger" , "loading product details in viewModel")
                     }
-                    ProductScanState.NotStarted -> Log.d("logger", "product scan not started")
+                ProductScanState.NotStarted -> Log.d("logger", "product scan not started")
                 }
             }
         }

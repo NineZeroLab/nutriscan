@@ -16,8 +16,6 @@ import com.zero1labs.nutriscan.utils.AppResources.isValidPassword
 
 class RegisterPage: Fragment(R.layout.fragment_register_page){
 
-    private lateinit var viewModel: AuthViewModel
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val tilEmail: TextInputLayout = view.findViewById(R.id.til_register_email)
