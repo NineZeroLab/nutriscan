@@ -50,7 +50,7 @@
         tools:layout="@layout/fragment_home_page">
         <action
             android:id="@+id/action_home_page_to_product_details_page"
-            app:destination="@id/productDetailsPage" />
+            app:destination="@id/cl_product_details_main_layout" />
         <action
             android:id="@+id/action_home_page_to_error_page"
             app:destination="@id/errorPage" />
@@ -63,13 +63,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/productDetailsPage"
+        android:id="@+id/cl_product_details_main_layout"
         android:name="com.zero1labs.nutriscan.pages.ProductDetailsPage.ProductDetailsPage"
         android:label="@string/product_details_label"
         tools:layout="@layout/fragment_product_details_page">
         <action
             android:id="@+id/action_reload_new_product_details"
-            app:destination="@id/productDetailsPage" />
+            app:destination="@id/cl_product_details_main_layout" />
         <action
             android:id="@+id/action_productDetailsPageLayout_to_ProductFetchErrorPage"
             app:destination="@id/errorPage" />

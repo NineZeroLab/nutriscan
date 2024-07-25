@@ -161,7 +161,11 @@ class WelcomePage : Fragment(R.layout.fragment_welcome_page) {
                 button.text = restriction.heading
                 button.isChecked = restriction in dietaryRestrictions
                 transformationMethod = null
-
+                if (isChecked){
+                    setTextColor(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+                }else{
+                    setTextColor(ContextCompat.getColor(requireContext(),R.color.md_theme_onSurface))
+                }
                 setPadding(12,0,12,0)
                 id = View.generateViewId()
                 setOnCheckedChangeListener { buttonView,isChecked ->
@@ -195,6 +199,11 @@ class WelcomePage : Fragment(R.layout.fragment_welcome_page) {
                 text = allergen.heading
                 isChecked = allergen in allergens
                 transformationMethod = null
+                if (isChecked){
+                    setTextColor(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+                }else{
+                    setTextColor(ContextCompat.getColor(requireContext(),R.color.md_theme_onSurface))
+                }
 
                 setPadding(12,0,12,0)
                 id = View.generateViewId()
