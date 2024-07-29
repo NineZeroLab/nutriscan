@@ -1,6 +1,8 @@
 package com.zero1labs.nutriscan.data.models
 
 import com.zero1labs.nutriscan.data.models.remote.Product
+import com.zero1labs.nutriscan.models.data.NutrientPreference
+import com.zero1labs.nutriscan.models.data.NutrientPreferenceType
 import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 import com.zero1labs.nutriscan.utils.NutrientCategory
@@ -76,6 +78,18 @@ class NutrientGenerator(product: Product){
     fun getNutrientsCount(nutrientCategory: NutrientCategory) : Int{
         return generateNutrientsForView(nutrientCategory).size
     }
+    fun getNutrientPreference(): List<NutrientPreference>{
+        val nutrientPreferences = mutableListOf<NutrientPreference>()
+        nutrients.forEach { nutrient ->
+            nutrientPreferences.add(
+                NutrientPreference(
+                    nutrientType = nutrient.nutrientType,
+                    nutrientPreferenceType = getNutrientPreferenceTypeFromPointsLevel(nutrient.pointsLevel)
+                )
+            )
+        }
+        return nutrientPreferences
+    }
 }
 
 
@@ -83,19 +97,21 @@ class Nutrient(
     val nutrientType: NutrientType,
     val contentPerHundredGrams: Number,
     val description: String,
+    val pointsLevel: PointsLevel,
     val nutrientCategory: NutrientCategory,
     val healthCategory: HealthCategory,
     val servingUnit: String
 ){
     companion object{
         fun getNutrient(nutrientType: NutrientType, points: Int, contentPerHundredGrams: Number, servingUnit: String) : Nutrient{
-            val (pointsCategory , healthCategory) =  getNutriScoreAndPointsCategory(nutrientType= nutrientType,points = points)
+            val (pointsLevel , healthCategory) =  getNutriScoreAndPointsCategory(nutrientType= nutrientType,points = points)
             val nutrientCategory = getNutrientCategory(nutrientType = nutrientType, points = points)
             return Nutrient(
                 nutrientType = nutrientType,
                 contentPerHundredGrams = contentPerHundredGrams,
-                description = "${pointsCategory.description} ${nutrientType.description}",
+                description = "${pointsLevel.description} ${nutrientType.description}",
                 nutrientCategory = nutrientCategory,
+                pointsLevel = pointsLevel,
                 healthCategory = healthCategory,
                 servingUnit = servingUnit
             )
@@ -173,4 +189,14 @@ fun getNutriScoreAndPointsCategory(nutrientType: NutrientType, points : Int) : P
                }
             }
     }
+}
+fun getNutrientPreferenceTypeFromPointsLevel(pointsLevel: PointsLevel) : NutrientPreferenceType{
+   return when(pointsLevel){
+       PointsLevel.TOO_LOW -> NutrientPreferenceType.LOW
+       PointsLevel.LOW -> NutrientPreferenceType.LOW
+       PointsLevel.MODERATE -> NutrientPreferenceType.MODERATE
+       PointsLevel.HIGH -> NutrientPreferenceType.HIGH
+       PointsLevel.TOO_HIGH -> NutrientPreferenceType.HIGH
+       PointsLevel.UNKNOWN -> NutrientPreferenceType.UNKNOWN
+   }
 }

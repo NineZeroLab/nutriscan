@@ -59,9 +59,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
         viewModel.uiState.value.appUser.let { user ->
             if (user != null){
                 materialToolbar.title = "Hi ${user.name}"
-
             }
-
         }
         Log.d(TAG,"Products from firebase: ${viewModel.uiState.value.searchHistory}")
 
@@ -72,7 +70,6 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
                 menu.findItem(R.id.mi_sign_out)?.isVisible = appUser != null
                 menu.findItem(R.id.mi_sign_in)?.isVisible = appUser == null
             }
-
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when(menuItem.itemId){
                     R.id.mi_sign_out -> {
@@ -164,10 +161,8 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
                             Log.d("logger","appUser is null")
                             findNavController().navigate(R.id.action_home_page_to_sign_in_page)
                         }
-
                     }
                 }
-
             }
         }
     }

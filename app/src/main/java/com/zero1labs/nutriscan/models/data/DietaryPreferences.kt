@@ -12,5 +12,6 @@ data class NutrientPreference(
 enum class NutrientPreferenceType{
     LOW,
     MODERATE,
-    HIGH
+    HIGH,
+    UNKNOWN
 }

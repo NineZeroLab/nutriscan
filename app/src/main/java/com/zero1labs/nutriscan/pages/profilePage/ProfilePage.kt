@@ -33,8 +33,9 @@ import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.utils.DietaryRestriction
 import com.zero1labs.nutriscan.utils.NutrientType
 import kotlinx.coroutines.launch
+import com.zero1labs.nutriscan.utils.DietaryRestriction.*
 
-class WelcomePage : Fragment(R.layout.fragment_welcome_page) {
+class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
 
 
     private lateinit var clAllergenCollapsableLayout: ConstraintLayout
@@ -152,7 +153,12 @@ class WelcomePage : Fragment(R.layout.fragment_welcome_page) {
         }
 
 
-        for (restriction in DietaryRestriction.values()){
+        val restrictions = mutableListOf<DietaryRestriction>(
+            VEGAN,
+            VEGETARIAN,
+            PALM_OIL_FREE
+        )
+        restrictions.forEach{restriction ->
             val button = ToggleButton(requireContext())
             button.apply {
                 button.background = ContextCompat.getDrawable(requireContext(), R.drawable.dietary_restriction_selector)

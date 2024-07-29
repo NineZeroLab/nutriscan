@@ -23,11 +23,10 @@ import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.data.models.Nutrient
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.data.models.NutrientGenerator
-import com.zero1labs.nutriscan.data.models.remote.Product
-import com.zero1labs.nutriscan.models.data.ProductDetailsListItems
 import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.pages.homepage.ProductScanState
+import com.zero1labs.nutriscan.utils.Allergen
 import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutrientType
 import com.zero1labs.nutriscan.utils.ProductType
@@ -71,30 +70,75 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
                 state.product?.let {product ->
-
-                    buildMainHeader(MainDetailsForView.getMainDetailsForView(product))
+                    val userDietaryPreference = state.appUser?.dietaryPreferences
+                    val userDietaryRestrictions = state.appUser?.dietaryRestrictions
+                    val userAllergens = state.appUser?.allergens
                     val nutrientGenerator = NutrientGenerator(product)
-                    if (nutrientGenerator.getNutrientsCount(NutrientCategory.NEGATIVE) > 0){
-                        val negativeNutrientsForView = nutrientGenerator.generateNutrientsForView(NutrientCategory.NEGATIVE)
+                    val negativeNutrientsForView = nutrientGenerator.generateNutrientsForView(NutrientCategory.NEGATIVE)
+                    val positiveNutrientsForView = nutrientGenerator.generateNutrientsForView(NutrientCategory.POSITIVE)
+                    val allergensForView = AppResources.getAllergens(product.allergensHierarchy)
+
+
+                    val productDietaryPreferences =  nutrientGenerator.getNutrientPreference()
+                    val productDietaryRestrictions = AppResources.getDietaryRestrictions(product.ingredientsAnalysisTags)
+                    val dietaryPreferenceConclusion = AppResources.getDietaryPreferenceConclusion(productDietaryPreferences,userDietaryPreference)
+                    val dietaryRestrictionConclusion = AppResources.getDietaryRestrictionConclusion(productDietaryRestrictions,userDietaryRestrictions)
+                    val allergenConclusion = AppResources.getAllergenConclusion(allergensForView,userAllergens)
+
+                    buildMainHeader(
+                        mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
+                        dietaryPreferenceConclusion = dietaryPreferenceConclusion,
+                        dietaryRestrictionConclusion = dietaryRestrictionConclusion,
+                        allergenConclusion = allergenConclusion
+                    )
+                    if (negativeNutrientsForView.isNotEmpty()){
                         buildNutrientsView(
                             nutrientCategory = NutrientCategory.NEGATIVE,
                             productType = AppResources.getProductType(product.categoriesHierarchy),
                             nutrientsForView = negativeNutrientsForView
                         )
                     }
-                    if (nutrientGenerator.getNutrientsCount(NutrientCategory.POSITIVE) > 0){
-                        val positiveNutrientsForView = nutrientGenerator.generateNutrientsForView(NutrientCategory.POSITIVE)
+                    if (positiveNutrientsForView.isNotEmpty()){
                         buildNutrientsView(
                             nutrientCategory = NutrientCategory.POSITIVE,
                             productType = AppResources.getProductType(product.categoriesHierarchy),
                             nutrientsForView = positiveNutrientsForView
                         )
                     }
+                    if (allergensForView.isNotEmpty()){
+                        buildAllergensView(AppResources.getAllergens(product.allergensHierarchy))
+                    }
                 }
             }
         }
     }
-    private fun buildMainHeader(mainDetailsForView: MainDetailsForView){
+
+    private fun buildAllergensView(allergens: List<Allergen>) {
+        val headerView = LayoutInflater.from(requireContext()).inflate(R.layout.nutrients_header, llProductDetailsLayout,false)
+        val tvAllergenHeader: TextView = headerView.findViewById(R.id.tv_nutrients_header)
+        headerView.findViewById<TextView>(R.id.serving_quantity).text = allergens.size.toString()
+        tvAllergenHeader.text = "Allergens"
+        llProductDetailsLayout.addView(headerView)
+
+        allergens.forEach { allergen ->
+            val itemView = LayoutInflater.from(requireContext()).inflate(R.layout.fragment_ingredient_item, llProductDetailsLayout, false)
+            val tvAllergenName: TextView = itemView.findViewById(R.id.tv_nutrient_name)
+            itemView.findViewById<TextView>(R.id.tv_nutrient_description).text = ""
+            itemView.findViewById<TextView>(R.id.tv_per_hundred_gram).text = ""
+            itemView.findViewById<ImageView>(R.id.nutrient_category_icon).setImageIcon(null)
+            itemView.findViewById<TextView>(R.id.tv_nutrient_description).text = ""
+            tvAllergenName.text = allergen.heading
+
+            llProductDetailsLayout.addView(itemView)
+        }
+    }
+
+    private fun buildMainHeader(
+        mainDetailsForView: MainDetailsForView,
+        dietaryPreferenceConclusion: String,
+        dietaryRestrictionConclusion: String,
+        allergenConclusion: String
+    ){
         val itemView = LayoutInflater.from(requireContext()).inflate(R.layout.product_details_main_header, llProductDetailsLayout,false)
         val cvProductHealthCategory: CardView = itemView.findViewById(R.id.cv_product_health)
         val ivProductImageView: ImageView = itemView.findViewById(R.id.iv_product_image)
@@ -102,6 +146,9 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         val tvProductBrand: TextView = itemView.findViewById(R.id.tv_product_brand)
         val ivProductHealthIcon: ImageView = itemView.findViewById(R.id.iv_product_health_icon)
         val tvProductHealthGrade: TextView = itemView.findViewById(R.id.tv_product_health_grade)
+        val tvDietaryPreferenceConclusion: TextView = itemView.findViewById(R.id.tv_dietary_preference_conclusion)
+        val tvDietaryRestrictionConclusion: TextView = itemView.findViewById(R.id.tv_dietary_restriction_conclusion)
+        val tvAllergenConclusion: TextView = itemView.findViewById(R.id.tv_allergen_conclusion)
 
         val (healthCategoryIcon, healthCategoryBg) = getHealthCategoryIcon(
             requireContext(),mainDetailsForView.healthCategory
@@ -109,6 +156,9 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         tvProductName.text = mainDetailsForView.productName
         tvProductBrand.text = mainDetailsForView.productBrand
         tvProductHealthGrade.text = mainDetailsForView.healthCategory.description
+        tvDietaryPreferenceConclusion.text = dietaryPreferenceConclusion
+        tvDietaryRestrictionConclusion.text = dietaryRestrictionConclusion
+        tvAllergenConclusion.text = allergenConclusion
         Glide.with(ivProductImageView)
             .load(mainDetailsForView.imageUrl)
             .into(ivProductImageView)

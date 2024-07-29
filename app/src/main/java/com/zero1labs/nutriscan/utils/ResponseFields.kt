@@ -11,6 +11,8 @@ object ResponseFields {
         "brands",
         "nutriscore_grade",
         "categories_hierarchy",
+        "allergens_hierarchy",
+        "ingredients_analysis_tags",
     )
 
     fun getFields(): String{

@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/welcome_page"
-        android:name="com.zero1labs.nutriscan.pages.profilePage.WelcomePage"
+        android:name="com.zero1labs.nutriscan.pages.profilePage.ProfilePage"
         android:label="WelcomePage"
         tools:layout="@layout/fragment_welcome_page">
         <action

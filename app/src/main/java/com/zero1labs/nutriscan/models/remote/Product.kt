@@ -31,5 +31,11 @@ data class Product(
     val nutriScoreData: NutriScoreData?,
 
     @SerializedName("categories_hierarchy")
-    val categoriesHierarchy: List<String>?
+    val categoriesHierarchy: List<String>?,
+
+    @SerializedName("allergens_hierarchy")
+    val allergensHierarchy: List<String>?,
+
+    @SerializedName("ingredients_analysis_tags")
+    val ingredientsAnalysisTags: List<String>?,
 )
