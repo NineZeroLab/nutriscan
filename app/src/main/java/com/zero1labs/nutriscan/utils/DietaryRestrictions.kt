@@ -10,5 +10,4 @@ enum class DietaryRestriction(val heading: String,val response: String,val concl
     VEGETARIAN("Vegetarian","en:vegetarian", "vegetarian"),
     NON_VEGETARIAN("Non-Vegetarian","en:non-vegetarian", "non vegetarian"),
     VEGETARIAN_STATUS_UNKNOWN("Vegetarian Status Unknown","en:vegetarian-status-unknown", "vegetarian status is unknown")
-
 }

@@ -3,7 +3,7 @@ package com.zero1labs.nutriscan.utils
 import android.util.Log
 import com.zero1labs.nutriscan.models.data.NutrientPreference
 import com.zero1labs.nutriscan.models.data.NutrientPreferenceType
-
+import com.zero1labs.nutriscan.utils.DietaryRestriction.*
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T?): Resource<T>(data)
     class Error<T>(message: String, data: T? = null): Resource<T>(data,message)
@@ -265,16 +265,37 @@ object AppResources{
         if (productRestrictions.isEmpty()){
             return "Not enough data for calculating restrictions"
         }
-        val matchedRestrictions = mutableListOf<DietaryRestriction>()
-        productRestrictions.forEach { productRestriction ->
-            userRestrictions?.forEach { userRestriction ->
-               if (userRestriction == productRestriction){
+        val veganRestrictions = listOf(
+            VEGAN,
+            NON_VEGAN,
+            VEGAN_STATUS_UNKNOWN
+        )
+        val palmOilRestrictions = listOf(
+            PALM_OIL,
+            PALM_OIL_FREE,
+            PALM_OIL_STATUS_UNKNOWN
+        )
+        val vegetarianRestrictions = listOf(
+            VEGETARIAN,
+            NON_VEGETARIAN,
+            VEGETARIAN_STATUS_UNKNOWN
+        )
 
-               }
+        val matchedRestrictions = mutableListOf<DietaryRestriction>()
+        productRestrictions.forEach {productRestriction ->
+            userRestrictions?.forEach { userRestriction ->
+                if (userRestriction == VEGAN && productRestriction in veganRestrictions){
+                    matchedRestrictions.add(productRestriction)
+                }else if (userRestriction == VEGETARIAN && productRestriction in vegetarianRestrictions){
+                    matchedRestrictions.add(productRestriction)
+                }else if (userRestriction == PALM_OIL_FREE && productRestriction in palmOilRestrictions){
+                    matchedRestrictions.add(productRestriction)
+                }
             }
         }
 
-        return productRestrictions.joinToString(","){ restriction ->
+
+        return matchedRestrictions.joinToString(","){ restriction ->
             restriction.conclusionString
         }
     }
