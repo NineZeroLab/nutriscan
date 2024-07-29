@@ -3,7 +3,7 @@ package com.zero1labs.nutriscan.utils
 import android.util.Log
 import com.zero1labs.nutriscan.models.data.NutrientPreference
 import com.zero1labs.nutriscan.models.data.NutrientPreferenceType
-import com.zero1labs.nutriscan.utils.DietaryRestriction.*
+
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T?): Resource<T>(data)
     class Error<T>(message: String, data: T? = null): Resource<T>(data,message)
@@ -46,7 +46,7 @@ object AppResources{
         "en:0"
     )
     val GLUTEN_ALLERGENS = listOf(
-        "en:gluten",
+        "en: gluten",
         "en:cereals containing gluten",
         "en:other cereals containing gluten",
         "en:barley",
@@ -265,43 +265,22 @@ object AppResources{
         if (productRestrictions.isEmpty()){
             return "Not enough data for calculating restrictions"
         }
-        val veganRestrictions = listOf(
-            VEGAN,
-            NON_VEGAN,
-            VEGAN_STATUS_UNKNOWN
-        )
-        val palmOilRestrictions = listOf(
-            PALM_OIL,
-            PALM_OIL_FREE,
-            PALM_OIL_STATUS_UNKNOWN
-        )
-        val vegetarianRestrictions = listOf(
-            VEGETARIAN,
-            NON_VEGETARIAN,
-            VEGETARIAN_STATUS_UNKNOWN
-        )
-
         val matchedRestrictions = mutableListOf<DietaryRestriction>()
-        productRestrictions.forEach {productRestriction ->
+        productRestrictions.forEach { productRestriction ->
             userRestrictions?.forEach { userRestriction ->
-                if (userRestriction == VEGAN && productRestriction in veganRestrictions){
-                    matchedRestrictions.add(productRestriction)
-                }else if (userRestriction == VEGETARIAN && productRestriction in vegetarianRestrictions){
-                    matchedRestrictions.add(productRestriction)
-                }else if (userRestriction == PALM_OIL_FREE && productRestriction in palmOilRestrictions){
-                    matchedRestrictions.add(productRestriction)
-                }
+               if (userRestriction == productRestriction){
+
+               }
             }
         }
 
-
-        return matchedRestrictions.joinToString(", "){ restriction ->
+        return productRestrictions.joinToString(","){ restriction ->
             restriction.conclusionString
         }
     }
     fun getAllergenConclusion(productAllergens: List<Allergen>, userAllergens: List<Allergen>?): String{
         if (productAllergens.isEmpty() || userAllergens == null || userAllergens?.isEmpty() == true){
-            return ""
+            return "This product does not contain any allergens of your preference."
         }
         val commonAllergens = mutableListOf<Allergen>()
         productAllergens.forEach {productAllergen ->
@@ -309,10 +288,7 @@ object AppResources{
                 commonAllergens.add(productAllergen)
             }
         }
-        if (commonAllergens.isEmpty()){
-            return "This product is allergen-free, as per your selection."
-        }
-        return "This product contains ${commonAllergens.size} allergen(s) as per your selection."
+        return "This product contains ${commonAllergens.size} allergen(s) of your preference."
     }
     fun getAllergens(allergensHierarchy: List<String>?): List<Allergen>{
         if (allergensHierarchy == null){
@@ -380,7 +356,7 @@ object AppResources{
             return "Not enough data available to calculate Dietary Preferences."
         }
         if (filteredUserPreference.isNullOrEmpty()){
-            return ""
+            return "No Preferences for the product"
         }
         val commonPreferences = mutableListOf<NutrientPreference>()
 
