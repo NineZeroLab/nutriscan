@@ -106,7 +106,7 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                         )
                     }
                     if (allergensForView.isNotEmpty()){
-                        buildAllergensView(AppResources.getAllergens(product.allergensHierarchy))
+//                        buildAllergensView(AppResources.getAllergens(product.allergensHierarchy))
                     }
                 }
             }
