@@ -45,7 +45,10 @@ class SearchHistoryAdapter(private val viewModel: HomePageViewModel ,private var
         holder.tvSearchHistoryName.text = item.mainDetailsForView.productName
         holder.tvSearchHistoryBrand.text = item.mainDetailsForView.productBrand
         holder.tvTimeStamp.text = TimeCalculator.getTime(duration)
-        Glide.with(holder.ivSearchHistoryImage.context).load(item.mainDetailsForView.imageUrl).into(holder.ivSearchHistoryImage)
+        Glide.with(holder.ivSearchHistoryImage.context)
+            .load(item.mainDetailsForView.imageUrl)
+            .error(R.mipmap.app_icon)
+            .into(holder.ivSearchHistoryImage)
         Glide.with(holder.ivSearchHistoryHealthCategory.context).load(healthCategoryIcon).into(holder.ivSearchHistoryHealthCategory)
         holder.cvListItem.setOnClickListener{
             viewModel.onEvent(HomePageEvent.FetchProductDetails(item.mainDetailsForView.productId ?: ""))

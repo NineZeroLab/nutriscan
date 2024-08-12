@@ -213,8 +213,12 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         tvProductBrand.text = mainDetailsForView.productBrand
         tvProductHealthGrade.text = mainDetailsForView.healthCategory.description
         tvDietaryPreferenceConclusion.text = dietaryPreferenceConclusion
+        Log.d("logger", mainDetailsForView.imageUrl ?: "null")
+        val imageUrl = if (mainDetailsForView.imageUrl == "") null else mainDetailsForView.imageUrl
+
         Glide.with(ivProductImageView)
-            .load(mainDetailsForView.imageUrl)
+            .load(imageUrl ?: R.mipmap.app_icon)
+            .error(R.mipmap.app_icon)
             .into(ivProductImageView)
         Glide.with(ivProductHealthIcon)
             .load(healthCategoryIcon)
