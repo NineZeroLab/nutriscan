@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -23,6 +24,8 @@ import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.data.models.Nutrient
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.data.models.NutrientGenerator
+import com.zero1labs.nutriscan.databinding.FragmentHomePageBinding
+import com.zero1labs.nutriscan.databinding.FragmentProductDetailsPageBinding
 import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.pages.homepage.ProductScanState
@@ -35,7 +38,16 @@ import kotlinx.coroutines.launch
 class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
 
     private lateinit var llProductDetailsLayout: LinearLayout
+    private lateinit var viewBinding: FragmentProductDetailsPageBinding
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return super.onCreateView(inflater, container, savedInstanceState)
+        viewBinding = FragmentProductDetailsPageBinding.inflate(inflater, container,false)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
@@ -46,6 +58,9 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         materialToolbar.setupWithNavController(navController)
         materialToolbar.title = "Product Details"
 
+
+
+//        viewBinding.llProductDetailsLayout.
         llProductDetailsLayout = view.findViewById(R.id.ll_product_details_layout)
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -57,6 +72,7 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                 ProductScanState.Failure -> {
                     Log.d("logger" , "product data fetching error in viewModel")
                     findNavController().navigate(R.id.action_productDetailsPageLayout_to_ProductFetchErrorPage)
+
                     }
                 ProductScanState.Loading -> {
                     Log.d("logger" , "loading product details in viewModel")

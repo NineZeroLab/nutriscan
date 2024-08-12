@@ -58,11 +58,7 @@ object AppModule{
         return AppRepository(retrofit)
     }
 
-    @Provides
-    @Singleton
-    fun providesNetworkUtils(@ApplicationContext context: Context): NetworkUtils{
-        return NetworkUtils(context)
-    }
+
     @Provides
     @Singleton
     fun providesFirebase(): Firebase{

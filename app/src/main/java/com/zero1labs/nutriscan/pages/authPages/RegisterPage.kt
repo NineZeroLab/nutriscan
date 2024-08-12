@@ -1,18 +1,24 @@
 package com.zero1labs.nutriscan.pages.authPages
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
+import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.utils.AppResources.isValidEmail
 import com.zero1labs.nutriscan.utils.AppResources.isValidPassword
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class RegisterPage: Fragment(R.layout.fragment_register_page){
 
@@ -40,16 +46,39 @@ class RegisterPage: Fragment(R.layout.fragment_register_page){
             if (!isValidEmail(email)){
                 tilEmail.error = "Invalid Email"
             }else if (!isValidPassword(password).first){
-                tilPassword.error = "${isValidPassword(password).second}"
+                tilPassword.error = isValidPassword(password).second
             }else if(password != confirmPassword){
                 tilPassword.error = "Passwords don't match"
                 tilConfirmPassword.error = "Passwords don't match"
             }else if (isValidEmail(email) && isValidPassword(password).first){
                 //TODO: Register User and navigate to signIn Page
                 viewModel.onEvent(AuthEvent.RegisterUserWithEmailAndPassword(email,password))
-                findNavController().popBackStack()
             }else{
 
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect{state ->
+                when(state.registerStatus){
+                    RegisterStatus.LOADING -> {
+                        Log.d(TAG,state.registerStatus.name)
+                        Snackbar.make(view,"trying to register", Snackbar.LENGTH_SHORT).show()
+                    }
+                    RegisterStatus.SUCCESS -> {
+                        Log.d(TAG,state.registerStatus.name)
+                        Snackbar.make(view,"Registration Success", Snackbar.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    }
+                    RegisterStatus.FAILURE -> {
+                        Log.d(TAG,state.registerStatus.name)
+                        Snackbar.make(view,state.errorMsg.toString(), Snackbar.LENGTH_SHORT).show()
+                    }
+                    RegisterStatus.NOT_STARTED -> {
+                        Log.d(TAG,state.registerStatus.name)
+                    }
+
+                }
             }
         }
 

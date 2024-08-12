@@ -1,6 +1,5 @@
 package com.zero1labs.nutriscan.pages.authPages
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.gms.common.api.ApiException
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -23,7 +21,6 @@ import com.zero1labs.nutriscan.pages.homepage.HomePageEvent
 import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.utils.AppResources.isValidEmail
-import com.zero1labs.nutriscan.viewModels.AppEvent
 import com.zero1labs.nutriscan.viewModels.AppViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -56,12 +53,12 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
-                when(state.authStatus){
-                    AuthStatus.SIGNED_IN -> {
+                when(state.signInStatus){
+                    SignInStatus.SIGNED_IN -> {
                         ViewModelProvider(requireActivity())[HomePageViewModel::class.java].onEvent(
                             HomePageEvent.UpdateUserDetails
                         )
-                        Log.d(TAG,"${state.authStatus}")
+                        Log.d(TAG,"${state.signInStatus}")
                         Snackbar.make(view,"Signing In...",Snackbar.LENGTH_SHORT).show()
                         //delaying navigation so that HomepageViewModel is initialized with loading state
                         //and the user is appUser is not null when signed in
@@ -73,19 +70,20 @@ class SignInPage : Fragment(R.layout.fragment_sign_in_page) {
                         }
 
                     }
-                    AuthStatus.SIGNED_OUT ->{
-                        Log.d(TAG,"${state.authStatus}")
+                    SignInStatus.SIGNED_OUT ->{
+                        Log.d(TAG,"${state.signInStatus}")
                     }
-                    AuthStatus.ERROR -> {
-                        Log.d(TAG,"${state.authStatus}")
-                        state.errorMsg?.let { Snackbar.make(view, it,Snackbar.LENGTH_LONG).show() }
-                    }
-
-                    AuthStatus.NOT_STARTED -> {
-                        Log.d(TAG,"${state.authStatus}")
+                    SignInStatus.ERROR -> {
+                        Log.d(TAG,"${state.signInStatus}")
+//                        state.errorMsg?.let { Snackbar.make(view, it,Snackbar.LENGTH_LONG).show() }
+                        tilPassword.error = state.errorMsg
                     }
 
-                    AuthStatus.LOADING -> TODO()
+                    SignInStatus.NOT_STARTED -> {
+                        Log.d(TAG,"${state.signInStatus}")
+                    }
+
+                    SignInStatus.LOADING -> TODO()
                 }
             }
         }

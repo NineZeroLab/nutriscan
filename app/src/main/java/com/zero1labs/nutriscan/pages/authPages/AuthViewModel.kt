@@ -20,16 +20,23 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AuthState(
-    val authStatus: AuthStatus = AuthStatus.SIGNED_OUT,
+    val signInStatus: SignInStatus = SignInStatus.SIGNED_OUT,
+    val registerStatus: RegisterStatus = RegisterStatus.NOT_STARTED,
     val errorMsg: String? = null,
     val appUser: AppUser? =null,
 )
 
-enum class AuthStatus{
+enum class SignInStatus{
     LOADING,
     SIGNED_IN,
     SIGNED_OUT,
     ERROR,
+    NOT_STARTED
+}
+enum class RegisterStatus{
+    LOADING,
+    SUCCESS,
+    FAILURE,
     NOT_STARTED
 }
 
@@ -46,7 +53,7 @@ class AuthViewModel @Inject constructor(
         auth.currentUser?.let {
             _uiState.update { state ->
                 state.copy(
-                    authStatus = AuthStatus.SIGNED_IN
+                    signInStatus = SignInStatus.SIGNED_IN
                 )
             }
         }
@@ -61,22 +68,37 @@ class AuthViewModel @Inject constructor(
                     ).addOnCompleteListener { task ->
                         if (task.isSuccessful){
                             fetchUserDetails()
-
-
-                        }
-                    }
-                }catch (e: Exception){
-                    when(e){
-                        is FirebaseAuthInvalidCredentialsException -> {
+                        }else{
+                            Log.d(TAG,task.exception?.message.toString())
                             _uiState.update {
                                 it.copy(
-                                    authStatus = AuthStatus.ERROR,
+                                    signInStatus = SignInStatus.ERROR,
                                     errorMsg = AppResources.INVALID_USERNAME_PASSWORD
                                 )
                             }
                             _uiState.update {
                                 it.copy(
-                                    authStatus = AuthStatus.NOT_STARTED
+                                    signInStatus = SignInStatus.NOT_STARTED
+                                )
+                            }
+                        }
+                    }
+                }catch (e: Exception){
+                    Log.d(TAG,e.message.toString())
+                    when(e){
+                        is FirebaseAuthInvalidCredentialsException -> {
+
+                        }
+                        else -> {
+                            _uiState.update {
+                                it.copy(
+                                    signInStatus = SignInStatus.ERROR,
+                                    errorMsg = AppResources.INVALID_USERNAME_PASSWORD
+                                )
+                            }
+                            _uiState.update {
+                                it.copy(
+                                    signInStatus = SignInStatus.NOT_STARTED
                                 )
                             }
                         }
@@ -86,6 +108,11 @@ class AuthViewModel @Inject constructor(
 
             is AuthEvent.RegisterUserWithEmailAndPassword -> {
                 viewModelScope.launch {
+                    _uiState.update {
+                        it.copy(
+                            registerStatus = RegisterStatus.LOADING
+                        )
+                    }
                     auth.createUserWithEmailAndPassword(
                         event.email, event.password
                     ).addOnCompleteListener { task ->
@@ -102,7 +129,28 @@ class AuthViewModel @Inject constructor(
                                     Log.d(TAG,"Error: ${task.exception}")
                                 }
                             }
+                            _uiState.update {
+                                it.copy(
+                                    registerStatus = RegisterStatus.SUCCESS,
+                                )
+                            }
+                            _uiState.update {
+                                it.copy(
+                                    registerStatus = RegisterStatus.NOT_STARTED
+                                )
+                            }
                         }else{
+                            _uiState.update {
+                                it.copy(
+                                    registerStatus = RegisterStatus.FAILURE,
+                                    errorMsg = task.exception?.message.toString()
+                                )
+                            }
+                            _uiState.update {
+                                it.copy(
+                                    registerStatus = RegisterStatus.NOT_STARTED
+                                )
+                            }
                             Log.d(TAG,"Error: ${task.exception}")
                         }
                     }
@@ -119,12 +167,12 @@ class AuthViewModel @Inject constructor(
                 _uiState.update { state ->
                     state.copy(
                         appUser = userSnapshot.toObject(AppUser::class.java),
-                        authStatus = AuthStatus.SIGNED_IN
+                        signInStatus = SignInStatus.SIGNED_IN
                     )
                 }
                 _uiState.update {
                     it.copy(
-                        authStatus = AuthStatus.NOT_STARTED,
+                        signInStatus = SignInStatus.NOT_STARTED,
                         appUser = null
                     )
                 }
