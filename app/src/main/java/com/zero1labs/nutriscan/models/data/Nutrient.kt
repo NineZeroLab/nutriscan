@@ -8,6 +8,7 @@ import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.utils.NutrientType
 import com.zero1labs.nutriscan.utils.PointsLevel
+import com.zero1labs.nutriscan.utils.round
 
 class NutrientGenerator(product: Product){
     private var nutrients : MutableList<Nutrient>
@@ -50,8 +51,8 @@ class NutrientGenerator(product: Product){
                 nutrientType = NutrientType.FRUITS_VEGETABLES_AND_NUTS,
                 points = nutriScoreData?.fruitsVegetablesNutsColzaWalnutOliveOilsPoints ?: NutriScoreCalculator.getPoints(
                     NutrientType.FRUITS_VEGETABLES_AND_NUTS, productNutrients?.fruitsVegetablesNutsEstimateFromIngredients100g),
-                contentPerHundredGrams = productNutrients?.fruitsVegetablesNutsEstimateFromIngredients100g ?: 0,
-                servingUnit = "%" //TODO: replace hard value (found it to be "%" per 100g in page 28 of QR_Nutri-Score_EN.pdf (Yuka))
+                contentPerHundredGrams = productNutrients?.fruitsVegetablesNutsEstimateFromIngredients100g?.round() ?: 0,
+                servingUnit = "%"
             )
             val protein = Nutrient.getNutrient(
                 nutrientType = NutrientType.PROTEIN,

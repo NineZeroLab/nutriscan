@@ -34,7 +34,7 @@
         android:paddingTop="4dp"
         android:text="@string/per_serving_100_gm"
         android:textAlignment="viewStart"
-        android:textSize="8sp"
+        android:textSize="10sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
