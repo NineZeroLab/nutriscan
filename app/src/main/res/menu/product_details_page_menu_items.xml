@@ -3,12 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/mi_favourite"
-        android:title="Favourite"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/mi_scan_again"
-        android:icon="@mipmap/barcode"
+        android:icon="@mipmap/barcode_white"
         android:title="scan again"
         app:showAsAction="ifRoom" />
 </menu>

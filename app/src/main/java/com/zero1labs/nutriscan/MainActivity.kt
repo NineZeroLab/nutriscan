@@ -24,17 +24,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-//        splashScreen.setKeepOnScreenCondition { true }
-        Log.d("logger", "Showing splash screen")
         super.onCreate(savedInstanceState)
-        var keepSplashScreenVisible = true
-        val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition{keepSplashScreenVisible}
-        enableEdgeToEdge()
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(2000)
-            keepSplashScreenVisible = false
-        }
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

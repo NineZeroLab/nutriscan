@@ -5,8 +5,7 @@
     android:id="@+id/homePage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_background"
-    android:backgroundTint="@color/md_theme_background"
+    android:background="@color/md_theme_onPrimary"
     tools:context=".pages.homepage.HomePage">
 
 
@@ -18,8 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/blurBg"

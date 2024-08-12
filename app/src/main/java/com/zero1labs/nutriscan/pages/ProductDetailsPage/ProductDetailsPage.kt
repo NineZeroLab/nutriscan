@@ -4,6 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
@@ -13,19 +16,22 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.data.models.Nutrient
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.data.models.NutrientGenerator
-import com.zero1labs.nutriscan.databinding.FragmentHomePageBinding
 import com.zero1labs.nutriscan.databinding.FragmentProductDetailsPageBinding
+import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
+import com.zero1labs.nutriscan.pages.homepage.HomePageEvent
 import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.pages.homepage.ProductScanState
@@ -39,7 +45,7 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
 
     private lateinit var llProductDetailsLayout: LinearLayout
     private lateinit var viewBinding: FragmentProductDetailsPageBinding
-
+    private lateinit var viewModel: HomePageViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,15 +56,14 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
         val appCompatActivity: AppCompatActivity = activity as AppCompatActivity
         val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
         appCompatActivity.setSupportActionBar(materialToolbar)
         val navController = findNavController()
         materialToolbar.setupWithNavController(navController)
         materialToolbar.title = "Product Details"
-
-
+        materialToolbar.setNavigationIcon(R.drawable.baseline_arrow_back_24)
 
 //        viewBinding.llProductDetailsLayout.
         llProductDetailsLayout = view.findViewById(R.id.ll_product_details_layout)
@@ -72,7 +77,6 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                 ProductScanState.Failure -> {
                     Log.d("logger" , "product data fetching error in viewModel")
                     findNavController().navigate(R.id.action_productDetailsPageLayout_to_ProductFetchErrorPage)
-
                     }
                 ProductScanState.Loading -> {
                     Log.d("logger" , "loading product details in viewModel")
@@ -81,7 +85,6 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                 }
             }
         }
-
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect{state ->
@@ -107,6 +110,9 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                         dietaryRestrictionConclusion = dietaryRestrictionConclusion,
                         allergenConclusion = allergenConclusion
                     )
+                    if (dietaryRestrictionConclusion != "" || allergenConclusion != ""){
+                        buildFoodConsiderations(dietaryRestrictionConclusion,allergenConclusion)
+                    }
                     if (negativeNutrientsForView.isNotEmpty()){
                         buildNutrientsView(
                             nutrientCategory = NutrientCategory.NEGATIVE,
@@ -126,6 +132,42 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                     }
                 }
             }
+        }
+    }
+
+    private fun buildScanAgain() {
+        Log.d("logger", "starting gms barcode scanner")
+
+        val scanner = GmsBarcodeScanning.getClient(requireContext(), BarCodeScannerOptions.options)
+        scanner.startScan()
+            .addOnSuccessListener { barcode ->
+                Log.d("logger", "product scan successfully")
+                viewModel.onEvent(HomePageEvent.FetchProductDetails(barcode.rawValue.toString()))
+            }
+            .addOnCanceledListener {
+                Log.d("logger", "action cancelled by user")
+            }
+            .addOnFailureListener {
+                Log.d("logger", it.message.toString())
+            }
+    }
+
+    private fun buildFoodConsiderations(dietaryRestrictionConclusion: String, allergenConclusion: String) {
+        if (dietaryRestrictionConclusion == "" && allergenConclusion == "") return
+        val headerView = LayoutInflater.from(requireContext()).inflate(R.layout.nutrients_header,llProductDetailsLayout, false)
+        headerView.findViewById<TextView>(R.id.tv_nutrients_header).text = "Food Considerations"
+        headerView.findViewById<TextView>(R.id.serving_quantity).text = ""
+        llProductDetailsLayout.addView(headerView)
+        if (dietaryRestrictionConclusion != ""){
+
+            val restrictionConclusionView = LayoutInflater.from(requireContext()).inflate(R.layout.food_considerations_text, llProductDetailsLayout, false)
+            restrictionConclusionView.findViewById<TextView>(R.id.tv_conclusion).text = dietaryRestrictionConclusion
+            llProductDetailsLayout.addView(restrictionConclusionView)
+        }
+        if (allergenConclusion != ""){
+            val allergenConclusionView = LayoutInflater.from(requireContext()).inflate(R.layout.food_considerations_text, llProductDetailsLayout, false)
+            allergenConclusionView.findViewById<TextView>(R.id.tv_conclusion).text = allergenConclusion
+            llProductDetailsLayout.addView(allergenConclusionView)
         }
     }
 
@@ -163,8 +205,6 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         val ivProductHealthIcon: ImageView = itemView.findViewById(R.id.iv_product_health_icon)
         val tvProductHealthGrade: TextView = itemView.findViewById(R.id.tv_product_health_grade)
         val tvDietaryPreferenceConclusion: TextView = itemView.findViewById(R.id.tv_dietary_preference_conclusion)
-        val tvDietaryRestrictionConclusion: TextView = itemView.findViewById(R.id.tv_dietary_restriction_conclusion)
-        val tvAllergenConclusion: TextView = itemView.findViewById(R.id.tv_allergen_conclusion)
 
         val (healthCategoryIcon, healthCategoryBg) = getHealthCategoryIcon(
             requireContext(),mainDetailsForView.healthCategory
@@ -173,8 +213,6 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         tvProductBrand.text = mainDetailsForView.productBrand
         tvProductHealthGrade.text = mainDetailsForView.healthCategory.description
         tvDietaryPreferenceConclusion.text = dietaryPreferenceConclusion
-        tvDietaryRestrictionConclusion.text = dietaryRestrictionConclusion
-        tvAllergenConclusion.text = allergenConclusion
         Glide.with(ivProductImageView)
             .load(mainDetailsForView.imageUrl)
             .into(ivProductImageView)

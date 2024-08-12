@@ -8,14 +8,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">24sp</item>
     </style>
-    <style name="Theme.AppSplash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/md_theme_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/sugar</item>
-        <item name="postSplashScreenTheme">@style/AppTheme</item>
-        <item name="windowSplashScreenAnimationDuration">4000</item>
-        <item name="android:windowSplashScreenBrandingImage">@string/app_name</item>
 
-    </style>
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>

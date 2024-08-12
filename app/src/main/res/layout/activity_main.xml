@@ -16,6 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:navigationIconTint="@color/md_theme_onPrimary"
         app:title="SignIn Page"
         app:titleTextAppearance="@style/AppToolBarTextAppearance"
         app:titleTextColor="@color/md_theme_background" />

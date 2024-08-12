@@ -11,10 +11,12 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -30,6 +32,7 @@ import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.utils.AppResources.TAG
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomePage : Fragment(R.layout.fragment_home_page) {
@@ -59,6 +62,7 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
         viewModel.uiState.value.appUser.let { user ->
             if (user != null){
                 materialToolbar.title = "Hi ${user.name}"
+                materialToolbar.overflowIcon?.setTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
             }
         }
         Log.d(TAG,"Products from firebase: ${viewModel.uiState.value.searchHistory}")
@@ -119,51 +123,52 @@ class HomePage : Fragment(R.layout.fragment_home_page) {
 
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect{state ->
-                when(state.productScanState){
-                    ProductScanState.Success -> {
-                        hideProgressBar()
-                        Log.d("logger","Product fetch success")
-                        findNavController().navigate(R.id.action_home_page_to_product_details_page)
-                    }
-                    ProductScanState.Failure ->{
-                        hideProgressBar()
-                        Log.d("logger","Product fetch failure")
-                        Snackbar.make(view,state.msg.toString(),Snackbar.LENGTH_LONG).show()
+            viewModel.uiState.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
+                .collectLatest {state ->
+                    when(state.productScanState){
+                        ProductScanState.Success -> {
+                            hideProgressBar()
+                            Log.d("logger","Product fetch success")
+                            findNavController().navigate(R.id.action_home_page_to_product_details_page)
+                        }
+                        ProductScanState.Failure ->{
+                            hideProgressBar()
+                            Log.d("logger","Product fetch failure")
+                            Snackbar.make(view,state.msg.toString(),Snackbar.LENGTH_LONG).show()
 //                        findNavController().navigate(R.id.action_home_page_to_error_page)
-                    }
-                    ProductScanState.Loading -> {
+                        }
+                        ProductScanState.Loading -> {
 
-                        Log.d("logger","Loading Product Details...")
-                        showProgressBar()
+                            Log.d("logger","Loading Product Details...")
+                            showProgressBar()
+                        }
+                        ProductScanState.NotStarted -> Log.d("logger" , "product Scan not started")
                     }
-                    ProductScanState.NotStarted -> Log.d("logger" , "product Scan not started")
-                }
 
-                when(state.firebaseDataFetchState){
-                    FirebaseDataFetchState.Loading -> {
-                        Log.d("logger","Firebase Data Fetch State : Loading")
-                        showProgressBar()
-                    }
-                    FirebaseDataFetchState.Success -> {
-                        hideProgressBar()
-                        materialToolbar.title = "Hi ${state.appUser?.name}"
-                        Log.d("logger","Firebase Data Fetch State : Success")
-                        searchHistoryAdapter.updateData(state.searchHistory)
-                    }
-                    FirebaseDataFetchState.Failure -> {
-                        hideProgressBar()
-                        Log.d("logger","Firebase Data Fetch State : Failure")
-                    }
-                    FirebaseDataFetchState.NotStarted -> {
-                        Log.d("logger","Firebase Data Fetch State : Not Started")
-                        if(state.appUser == null){
-                            Log.d("logger","appUser is null")
-                            findNavController().navigate(R.id.action_home_page_to_sign_in_page)
+                    when(state.firebaseDataFetchState){
+                        FirebaseDataFetchState.Loading -> {
+                            Log.d("logger","Firebase Data Fetch State : Loading")
+                            showProgressBar()
+                        }
+                        FirebaseDataFetchState.Success -> {
+                            hideProgressBar()
+                            materialToolbar.title = "Hi ${state.appUser?.name}"
+                            Log.d("logger","Firebase Data Fetch State : Success")
+                            searchHistoryAdapter.updateData(state.searchHistory)
+                        }
+                        FirebaseDataFetchState.Failure -> {
+                            hideProgressBar()
+                            Log.d("logger","Firebase Data Fetch State : Failure")
+                        }
+                        FirebaseDataFetchState.NotStarted -> {
+                            Log.d("logger","Firebase Data Fetch State : Not Started")
+                            if(state.appUser == null){
+                                Log.d("logger","appUser is null")
+                                findNavController().navigate(R.id.action_home_page_to_sign_in_page)
+                            }
                         }
                     }
                 }
-            }
         }
     }
 

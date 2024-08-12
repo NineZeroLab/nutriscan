@@ -4,6 +4,8 @@ import android.util.Log
 import com.zero1labs.nutriscan.models.data.NutrientPreference
 import com.zero1labs.nutriscan.models.data.NutrientPreferenceType
 import com.zero1labs.nutriscan.utils.DietaryRestriction.*
+import java.text.DecimalFormat
+
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T?): Resource<T>(data)
     class Error<T>(message: String, data: T? = null): Resource<T>(data,message)
@@ -242,9 +244,14 @@ object AppResources{
             SEASONED_PEANUTS,
             ALOO_LACHHA,
             COCA_COLA_CAN,
-            "40822099",
-            "0049000042559",
-            "1123"
+//            "40822099",
+//            "0049000042559",
+            "1123",
+            "20724696",
+            "3046920028004",
+            "3168930009078",
+            "87157277",
+            "7622300489434",
         ).random()
     }
 
@@ -403,4 +410,9 @@ object AppResources{
 
         return "Some of the nutrients match your preference"
     }
+}
+
+fun Double.round(): Double{
+    val decimalFormat = DecimalFormat("#.00")
+    return decimalFormat.format(this).toDouble()
 }

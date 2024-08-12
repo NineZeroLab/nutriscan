@@ -47,9 +47,12 @@ class RegisterPage: Fragment(R.layout.fragment_register_page){
                 tilEmail.error = "Invalid Email"
             }else if (!isValidPassword(password).first){
                 tilPassword.error = isValidPassword(password).second
+                tilPassword.errorIconDrawable = null
             }else if(password != confirmPassword){
                 tilPassword.error = "Passwords don't match"
                 tilConfirmPassword.error = "Passwords don't match"
+                tilPassword.errorIconDrawable = null
+                tilConfirmPassword.errorIconDrawable = null
             }else if (isValidEmail(email) && isValidPassword(password).first){
                 //TODO: Register User and navigate to signIn Page
                 viewModel.onEvent(AuthEvent.RegisterUserWithEmailAndPassword(email,password))

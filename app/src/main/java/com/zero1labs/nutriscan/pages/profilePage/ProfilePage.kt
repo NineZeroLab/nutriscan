@@ -11,6 +11,7 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -18,7 +19,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
@@ -67,6 +70,7 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
         clAllergenCollapsableLayout = view.findViewById(R.id.cl_allergen_collapsable)
         val flAllergenCollapsableFlow: Flow = view.findViewById(R.id.fl_allergen_layout)
         val appUser = viewModel.uiState.value.appUser
+        buildToolbar()
 
         tifUserName.editText?.setText(appUser?.name)
         Log.d(TAG, "${appUser?.profileUpdated}")
@@ -264,9 +268,18 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
                 }
             }
         }
-
-
    }
+
+    private fun buildToolbar() {
+        val appCompatActivity = activity as AppCompatActivity
+        val materialToolbar = appCompatActivity.findViewById<MaterialToolbar>(R.id.mt_app_toolbar)
+        appCompatActivity.setSupportActionBar(materialToolbar)
+        materialToolbar.setupWithNavController(findNavController())
+        materialToolbar.navigationIcon = ContextCompat.getDrawable(requireContext(),R.drawable.baseline_arrow_back_24)
+        materialToolbar.setNavigationIconTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+        materialToolbar.title = "Profile Page"
+    }
+
     private fun expandLayout(layout: ConstraintLayout, iconView: ImageView){
         val headers = mutableListOf(
             Pair(clDietaryRestrictionCollapsable,ivDietaryRestrictionCollapsableIcon),
