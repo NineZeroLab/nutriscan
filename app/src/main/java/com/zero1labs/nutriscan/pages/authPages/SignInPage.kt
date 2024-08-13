@@ -26,12 +26,13 @@ import com.zero1labs.nutriscan.databinding.FragmentSignInPageBinding
 import com.zero1labs.nutriscan.pages.homepage.HomePageEvent
 import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources.TAG
-import com.zero1labs.nutriscan.utils.AppResources.isValidEmail
 import com.zero1labs.nutriscan.utils.getInput
 import com.zero1labs.nutriscan.utils.isValidEmail
+import com.zero1labs.nutriscan.utils.logger
 import com.zero1labs.nutriscan.utils.removeError
 import com.zero1labs.nutriscan.viewModels.AppViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -82,8 +83,7 @@ class SignInPage : Fragment() {
 
     private fun handleUiState(view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.uiState.collectLatest { state ->
+                viewModel.uiState.collect { state ->
                     when (state.signInStatus) {
                         SignInStatus.SIGNED_IN -> {
                             ViewModelProvider(requireActivity())[HomePageViewModel::class.java].onEvent(
@@ -95,8 +95,10 @@ class SignInPage : Fragment() {
                             //and the user is appUser is not null when signed in
                             delay(500)
                             if (state.appUser?.profileUpdated == true) {
+                                logger("navigating to homepage")
                                 findNavController().navigate(R.id.homePage)
                             }else {
+                                logger("navigating to profile page")
                                 findNavController().navigate(R.id.welcome_page)
                             }
                         }
@@ -111,7 +113,6 @@ class SignInPage : Fragment() {
                             Log.d(TAG, "${state.signInStatus}")
                         }
                         SignInStatus.LOADING -> {}
-                    }
                 }
             }
         }

@@ -5,32 +5,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.databinding.FragmentRegisterPageBinding
-import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources.TAG
-import com.zero1labs.nutriscan.utils.AppResources.isValidEmail
-import com.zero1labs.nutriscan.utils.AppResources.isValidPassword
 import com.zero1labs.nutriscan.utils.getInput
 import com.zero1labs.nutriscan.utils.isValidEmail
 import com.zero1labs.nutriscan.utils.isValidPassword
 import com.zero1labs.nutriscan.utils.logger
 import com.zero1labs.nutriscan.utils.removeError
 import com.zero1labs.nutriscan.utils.showSnackBar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -110,11 +102,13 @@ class RegisterPage: Fragment(){
             val email = viewBinding.tilRegisterEmail.getInput()
             val password = viewBinding.tilRegisterPassword.getInput()
             val confirmPassword = viewBinding.tilRegisterConfirmPassword.getInput()
-            if (!email.isValidEmail().first) {
+            val isValidEmail = email.isValidEmail()
+            val isValidPassword = password.isValidPassword()
+            if (!isValidEmail.first) {
                 viewBinding.tilRegisterEmail.error = "Invalid Email"
-            } else if (!password.isValidPassword().first) {
+            } else if (!isValidPassword.first) {
                 viewBinding.tilRegisterPassword.apply {
-                    error = isValidPassword(password).second
+                    error = isValidPassword.second
                     errorIconDrawable = null
                 }
             } else if (password != confirmPassword) {

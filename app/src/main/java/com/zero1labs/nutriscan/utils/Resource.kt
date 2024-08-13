@@ -356,29 +356,6 @@ object AppResources{
             ProductType.UNKNOWN -> "Per Serving 100gm"
         }
     }
-    fun isValidEmail(email: String): Boolean {
-        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
-        return emailRegex.matches(email)
-    }
-    fun isValidPassword(password: String): Pair<Boolean, String> {
-        // Minimum 8 characters, at least one letter and one number
-        val symbols = "~`!@#$%^&*()_-+={[}]|:;'\"\\<,>.?/"
-        if (password.length < 8) return Pair(false, "should be at least 8 letters")
-        val containsSymbol = password.any { char ->
-            symbols.contains(char)
-        }
-        if (!containsSymbol) return Pair(false, "should contain at least 1 symbol")
-        val containsUpperCase = password.any { char ->
-            char.isUpperCase()
-        }
-        if (!containsUpperCase) return Pair(false, "should contain at least 1 uppercase letter")
-
-        val containsDigit = password.any { char ->
-            char.isDigit()
-        }
-        if (!containsDigit) return Pair(false, "should contain at least 1 digit")
-        return Pair(true, "valid password")
-    }
 
     fun getDietaryPreferenceConclusion(productPreferences: List<NutrientPreference>, userPreferences: List<NutrientPreference>?): String {
         Log.d(TAG,"user Preferences: $userPreferences")
@@ -393,7 +370,6 @@ object AppResources{
             return ""
         }
         val commonPreferences = mutableListOf<NutrientPreference>()
-
         productPreferences.forEach { productPreference ->
             filteredUserPreference.forEach { nutrientPreference ->
                 if (productPreference == nutrientPreference){
@@ -407,7 +383,6 @@ object AppResources{
         if (commonPreferences.size == filteredUserPreference.size){
             return "All the nutrients match your preference"
         }
-
         return "Some of the nutrients match your preference"
     }
 }
