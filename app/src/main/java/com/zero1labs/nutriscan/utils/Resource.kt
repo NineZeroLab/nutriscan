@@ -2,7 +2,6 @@ package com.zero1labs.nutriscan.utils
 
 import android.util.Log
 import com.zero1labs.nutriscan.models.data.NutrientPreference
-import com.zero1labs.nutriscan.models.data.NutrientPreferenceType
 import com.zero1labs.nutriscan.utils.DietaryRestriction.*
 import java.text.DecimalFormat
 
@@ -258,9 +257,7 @@ object AppResources{
     fun getDietaryRestrictions(ingredientsHierarchy: List<String>?): List<DietaryRestriction>{
         Log.d(TAG,"restrictions: ${ingredientsHierarchy.toString()}")
         val restrictionsList = mutableListOf<DietaryRestriction>()
-        if (ingredientsHierarchy == null) restrictionsList
-
-        DietaryRestriction.values().forEach {restriction ->
+        DietaryRestriction.entries.forEach {restriction ->
             if (ingredientsHierarchy?.contains(restriction.response) == true){
                 restrictionsList.add(restriction)
             }
@@ -310,7 +307,7 @@ object AppResources{
         if (productAllergens.isEmpty() || userAllergens == null ){
             return ""
         }
-        if (userAllergens?.isEmpty() == true){
+        if (userAllergens.isEmpty()){
             return "No Allergens preference."
         }
         val commonAllergens = mutableListOf<Allergen>()
