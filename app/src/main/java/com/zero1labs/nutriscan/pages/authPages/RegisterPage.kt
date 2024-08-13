@@ -2,98 +2,131 @@ package com.zero1labs.nutriscan.pages.authPages
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
+import com.zero1labs.nutriscan.databinding.FragmentRegisterPageBinding
+import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.utils.AppResources.isValidEmail
 import com.zero1labs.nutriscan.utils.AppResources.isValidPassword
+import com.zero1labs.nutriscan.utils.getInput
+import com.zero1labs.nutriscan.utils.isValidEmail
+import com.zero1labs.nutriscan.utils.isValidPassword
+import com.zero1labs.nutriscan.utils.logger
+import com.zero1labs.nutriscan.utils.removeError
+import com.zero1labs.nutriscan.utils.showSnackBar
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class RegisterPage: Fragment(R.layout.fragment_register_page){
+class RegisterPage: Fragment(){
+
+    private lateinit var viewModel: AuthViewModel
+    private lateinit var viewBinding: FragmentRegisterPageBinding
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View{
+        viewModel = ViewModelProvider(requireActivity())[AuthViewModel::class.java]
+        viewBinding = FragmentRegisterPageBinding.inflate(inflater, container, false)
+        return viewBinding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val tilEmail: TextInputLayout = view.findViewById(R.id.til_register_email)
-        val tilPassword: TextInputLayout = view.findViewById(R.id.til_register_password)
-        val tilConfirmPassword: TextInputLayout = view.findViewById(R.id.til_register_confirm_password)
-        val tvSignIn: TextView = view.findViewById(R.id.tv_sign_in)
-        val btnRegister: Button = view.findViewById(R.id.btn_register)
-        val viewModel = ViewModelProvider(requireActivity())[AuthViewModel::class.java]
 
+        buildToolbar()
+        handleRegisterButton()
+        handleUiState(view)
+        handleLoginTextView()
+    }
+
+    private fun buildToolbar() {
         val appCompatActivity = activity as AppCompatActivity
         val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
-        appCompatActivity.setSupportActionBar(materialToolbar)
         materialToolbar.title = "Register Page"
+    }
 
-        btnRegister.setOnClickListener {
-            tilEmail.error = null
-            tilPassword.error = null
-            tilConfirmPassword.error = null
-            val email = tilEmail.editText?.text.toString()
-            val password = tilPassword.editText?.text.toString()
-            val confirmPassword = tilConfirmPassword.editText?.text.toString()
-            if (!isValidEmail(email)){
-                tilEmail.error = "Invalid Email"
-            }else if (!isValidPassword(password).first){
-                tilPassword.error = isValidPassword(password).second
-                tilPassword.errorIconDrawable = null
-            }else if(password != confirmPassword){
-                tilPassword.error = "Passwords don't match"
-                tilConfirmPassword.error = "Passwords don't match"
-                tilPassword.errorIconDrawable = null
-                tilConfirmPassword.errorIconDrawable = null
-            }else if (isValidEmail(email) && isValidPassword(password).first){
-                //TODO: Register User and navigate to signIn Page
-                viewModel.onEvent(AuthEvent.RegisterUserWithEmailAndPassword(email,password))
-            }else{
-
-            }
+    private fun handleLoginTextView() {
+        viewBinding.tvSignIn.setOnClickListener {
+            findNavController().popBackStack()
         }
+    }
 
+    private fun handleUiState(view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect{state ->
-                when(state.registerStatus){
-                    RegisterStatus.LOADING -> {
-                        Log.d(TAG,state.registerStatus.name)
-                        Snackbar.make(view,"trying to register", Snackbar.LENGTH_SHORT).show()
-                    }
-                    RegisterStatus.SUCCESS -> {
-                        Log.d(TAG,state.registerStatus.name)
-                        Snackbar.make(view,"Registration Success", Snackbar.LENGTH_SHORT).show()
-                        findNavController().popBackStack()
-                    }
-                    RegisterStatus.FAILURE -> {
-                        Log.d(TAG,state.registerStatus.name)
-                        Snackbar.make(view,state.errorMsg.toString(), Snackbar.LENGTH_SHORT).show()
-                    }
-                    RegisterStatus.NOT_STARTED -> {
-                        Log.d(TAG,state.registerStatus.name)
-                    }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collectLatest { state ->
+                    when (state.registerStatus) {
+                        RegisterStatus.LOADING -> {
+                            logger(state.registerStatus.name)
+                            Snackbar.make(view, "trying to register", Snackbar.LENGTH_SHORT).show()
+                        }
 
+                        RegisterStatus.SUCCESS -> {
+                            logger(state.registerStatus.name)
+                            Log.d(TAG, state.registerStatus.name)
+                            view.showSnackBar("Registration Success", Snackbar.LENGTH_SHORT)
+                            findNavController().popBackStack()
+                        }
+
+                        RegisterStatus.FAILURE -> {
+                            logger(state.registerStatus.name)
+                            view.showSnackBar(state.errorMsg.toString(), Snackbar.LENGTH_SHORT)
+                        }
+
+                        RegisterStatus.NOT_STARTED -> {
+                            logger(state.registerStatus.name)
+                        }
+                    }
                 }
             }
         }
-
-        tvSignIn.setOnClickListener {
-            //TODO: navigate to sign in page
-            findNavController().popBackStack()
-        }
-
-
     }
 
-
-
-
+    private fun handleRegisterButton() {
+        viewBinding.btnRegister.setOnClickListener {
+            viewBinding.apply {
+                tilRegisterEmail.removeError()
+                tilRegisterPassword.removeError()
+                tilRegisterConfirmPassword.removeError()
+            }
+            val email = viewBinding.tilRegisterEmail.getInput()
+            val password = viewBinding.tilRegisterPassword.getInput()
+            val confirmPassword = viewBinding.tilRegisterConfirmPassword.getInput()
+            if (!email.isValidEmail().first) {
+                viewBinding.tilRegisterEmail.error = "Invalid Email"
+            } else if (!password.isValidPassword().first) {
+                viewBinding.tilRegisterPassword.apply {
+                    error = isValidPassword(password).second
+                    errorIconDrawable = null
+                }
+            } else if (password != confirmPassword) {
+                viewBinding.apply {
+                    tilRegisterPassword.error = "Passwords don't match"
+                    tilRegisterPassword.errorIconDrawable = null
+                    tilRegisterConfirmPassword.error = "Passwords don't match"
+                    tilRegisterConfirmPassword.errorIconDrawable = null
+                }
+            } else{
+                viewModel.onEvent(AuthEvent.RegisterUserWithEmailAndPassword(email, password))
+            }
+        }
+    }
 }
