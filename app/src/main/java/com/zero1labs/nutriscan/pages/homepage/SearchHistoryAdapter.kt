@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
@@ -47,10 +48,12 @@ class SearchHistoryAdapter(private val viewModel: HomePageViewModel ,private var
         holder.tvTimeStamp.text = TimeCalculator.getTime(duration)
         Glide.with(holder.ivSearchHistoryImage.context)
             .load(item.mainDetailsForView.imageUrl)
-            .error(R.mipmap.app_icon)
+            .error(R.mipmap.app_icon_small)
             .into(holder.ivSearchHistoryImage)
+
         Glide.with(holder.ivSearchHistoryHealthCategory.context).load(healthCategoryIcon).into(holder.ivSearchHistoryHealthCategory)
-        holder.cvListItem.setOnClickListener{
+        holder.cvListItem.setOnClickListener{view ->
+            view.isClickable = false
             viewModel.onEvent(HomePageEvent.FetchProductDetails(item.mainDetailsForView.productId ?: ""))
         }
     }

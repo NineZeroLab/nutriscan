@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -25,6 +26,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
+import com.zero1labs.nutriscan.databinding.FragmentWelcomePageBinding
 import com.zero1labs.nutriscan.models.data.AppUser
 import com.zero1labs.nutriscan.models.data.NutrientPreference
 import com.zero1labs.nutriscan.models.data.NutrientPreferenceType
@@ -37,96 +39,270 @@ import com.zero1labs.nutriscan.utils.DietaryRestriction
 import com.zero1labs.nutriscan.utils.NutrientType
 import kotlinx.coroutines.launch
 import com.zero1labs.nutriscan.utils.DietaryRestriction.*
+import com.zero1labs.nutriscan.utils.addImage
+import com.zero1labs.nutriscan.utils.getInput
+import com.zero1labs.nutriscan.utils.hide
+import com.zero1labs.nutriscan.utils.isValidUserName
+import com.zero1labs.nutriscan.utils.isVisible
+import com.zero1labs.nutriscan.utils.show
+import com.zero1labs.nutriscan.utils.showSnackBar
 
 class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
 
 
-    private lateinit var clAllergenCollapsableLayout: ConstraintLayout
-    private lateinit var clDietaryPreferenceCollapsable: ConstraintLayout
-    private lateinit var clDietaryRestrictionCollapsable: ConstraintLayout
-    private lateinit var ivDietaryPreferenceCollapsableIcon: ImageView
-    private lateinit var ivDietaryRestrictionCollapsableIcon: ImageView
-    private lateinit var ivAllergenCollapsableIcon: ImageView
+    private lateinit var dietaryPreferences: MutableList<NutrientPreference>
+    private lateinit var dietaryRestrictions: MutableList<DietaryRestriction>
+    private lateinit var allergens: MutableList<Allergen>
+    private lateinit var viewBinding: FragmentWelcomePageBinding
+    private lateinit var viewModel: HomePageViewModel
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        viewBinding = FragmentWelcomePageBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
+        return viewBinding.root
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lateinit var dietaryPreferences: MutableList<NutrientPreference>
-        lateinit var userName: String
-        lateinit var dietaryRestrictions: MutableList<DietaryRestriction>
-        lateinit var allergens: MutableList<Allergen>
-        val viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
-        val btnSaveUserData: Button = view.findViewById(R.id.btn_save_user_details)
-        val mainView: View = view.findViewById(R.id.welcome_page_layout)
-        val llNutrientPreferenceCollapsable: LinearLayout = view.findViewById(R.id.nutrients_collapsable_layout)
-        clDietaryPreferenceCollapsable = view.findViewById(R.id.cl_dietary_preference_collapsable)
-        clDietaryRestrictionCollapsable = view.findViewById(R.id.cl_collapsable_dietary_restriction)
-        val flNutrientRestrictionCollapsableFlow: Flow = view.findViewById(R.id.ll_dietary_restriction_collapsable_layout)
-        val tifUserName: TextInputLayout = view.findViewById(R.id.tif_username)
-        ivDietaryPreferenceCollapsableIcon = view.findViewById(R.id.iv_dietary_preference_expand_collapse)
-        ivDietaryRestrictionCollapsableIcon = view.findViewById(R.id.iv_dietary_restriction_expand_collapse)
-        val llDietaryPreferenceHeader: LinearLayout = view.findViewById(R.id.ll_dietary_preferene_header)
-        val llDietaryRestrictionHeader: LinearLayout = view.findViewById(R.id.ll_dietary_restriction_header)
-        val llAllergenHeaderLayout: LinearLayout = view.findViewById(R.id.ll_allergen_header_layout)
-        ivAllergenCollapsableIcon = view.findViewById(R.id.iv_allergen_expand_collapse)
-        clAllergenCollapsableLayout = view.findViewById(R.id.cl_allergen_collapsable)
-        val flAllergenCollapsableFlow: Flow = view.findViewById(R.id.fl_allergen_layout)
-        val appUser = viewModel.uiState.value.appUser
         buildToolbar()
+        prefillUserName()
+        updateUserPreferences()
+        handleDietaryPreferenceCollapsableButton()
+        handleDietaryRestrictionColllapsableButton()
+        handleAllergenCollapsableButton()
+        buildDietaryPreferenceView()
+        buildDietaryRestrictionView()
+        buildAllergenView()
+        handleSaveButton(view)
+        handleUiState(view)
+   }
 
-        tifUserName.editText?.setText(appUser?.name)
-        Log.d(TAG, "${appUser?.profileUpdated}")
+    private fun handleUiState(view: View) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                when (state.userDetailsUpdateState) {
+                    UserDetailsUpdateState.LOADING -> {}
+                    UserDetailsUpdateState.SUCCESS -> {
+                        view.showSnackBar(state.msg.toString())
+                        findNavController().popBackStack(R.id.homePage, false)
+                    }
 
-        if (appUser?.profileUpdated == true){
-            Log.d(TAG, "Profile detailed was updated earlier")
-            Log.d(TAG, "Prefilling existing values...")
-            dietaryPreferences = appUser.dietaryPreferences.toMutableList()
-            dietaryRestrictions = appUser.dietaryRestrictions.toMutableList()
-            allergens = appUser.allergens.toMutableList()
-        }else{
-
-            Log.d(TAG, "Profile detailed was not updated earlier")
-            dietaryPreferences = mutableListOf<NutrientPreference>()
-            dietaryRestrictions = mutableListOf<DietaryRestriction>()
-            allergens = mutableListOf<Allergen>()
-            NutrientType.values().forEach { nutrientType ->
-                dietaryPreferences.add(element = NutrientPreference(
-                    nutrientType = nutrientType,
-                    nutrientPreferenceType = null
-                ))
+                    UserDetailsUpdateState.FAILURE -> {
+                        view.showSnackBar(state.msg.toString())
+                    }
+                    UserDetailsUpdateState.NOT_STARTED -> {}
+                }
             }
         }
+    }
 
+    private fun handleSaveButton(view: View) {
+        viewBinding.btnSaveUserDetails.setOnClickListener {
+            val userName = viewBinding.tifUsername.getInput()
+            val uid = viewModel.uiState.value.appUser?.uid ?: ""
+            if (userName.isValidUserName()) {
+                Log.d("logger", "Saving user details to viewModel s${dietaryPreferences}")
+                val appUser = AppUser(
+                    name = userName,
+                    uid = uid,
+                    profileUpdated = true,
+                    dietaryPreferences = dietaryPreferences,
+                    dietaryRestrictions = dietaryRestrictions,
+                    allergens = allergens
+                )
+                viewModel.onEvent(HomePageEvent.UpdateUserPreferences(appUser))
+            }else {
+                view.showSnackBar("Invalid UserName")
+            }
+        }
+    }
 
+    private fun buildAllergenView() {
+        for (allergen in Allergen.values()) {
+            val button = ToggleButton(requireContext())
+            button.apply {
+                background = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.dietary_restriction_selector
+                )
+                textOn = allergen.heading
+                textOff = allergen.heading
+                text = allergen.heading
+                isChecked = allergen in allergens
+                transformationMethod = null
+                if (isChecked) {
+                    setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.md_theme_onPrimary
+                        )
+                    )
+                } else {
+                    setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.md_theme_onSurface
+                        )
+                    )
+                }
 
+                setPadding(12, 0, 12, 0)
+                id = View.generateViewId()
+                setOnCheckedChangeListener { buttonView, isChecked ->
+                    if (isChecked) {
+                        allergens.add(allergen)
+                        buttonView.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.md_theme_onPrimary
+                            )
+                        )
 
-        for (i in 0..<dietaryPreferences.size){
+                    } else {
+                        allergens.remove(allergen)
+                        buttonView.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.md_theme_onSurface
+                            )
+                        )
+                    }
+                }
+            }
+            val buttonIds = viewBinding.flAllergenLayout.referencedIds.toMutableList()
+            buttonIds.add(button.id)
+            viewBinding.flAllergenLayout.referencedIds = buttonIds.toIntArray()
+
+            Log.d("logger", "adding ${allergen.heading} button to layout")
+            viewBinding.clAllergenCollapsable.addView(button)
+        }
+    }
+
+    private fun buildDietaryRestrictionView() {
+        val restrictions = mutableListOf(
+            VEGAN,
+            VEGETARIAN,
+            PALM_OIL_FREE
+        )
+        restrictions.forEach { restriction ->
+            val button = ToggleButton(requireContext())
+            button.apply {
+                button.background = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.dietary_restriction_selector
+                )
+                button.textOn = restriction.heading
+                button.textOff = restriction.heading
+                button.text = restriction.heading
+                button.isChecked = restriction in dietaryRestrictions
+                transformationMethod = null
+                if (isChecked) {
+                    setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.md_theme_onPrimary
+                        )
+                    )
+                } else {
+                    setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.md_theme_onSurface
+                        )
+                    )
+                }
+                setPadding(12, 0, 12, 0)
+                id = View.generateViewId()
+                setOnCheckedChangeListener { buttonView, isChecked ->
+                    if (isChecked) {
+                        buttonView.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.md_theme_onPrimary
+                            )
+                        )
+                        dietaryRestrictions.add(restriction)
+
+                    } else {
+                        dietaryRestrictions.remove(restriction)
+                        buttonView.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.md_theme_onSurface
+                            )
+                        )
+                    }
+                }
+    //                background = ContextCompat.getDrawable(requireContext(),R.color.md_theme_primary)
+            }
+            val buttonIds = viewBinding.flDietaryRestrictionCollapsableLayout.referencedIds.toMutableList()
+            buttonIds.add(button.id)
+            viewBinding.flDietaryRestrictionCollapsableLayout.referencedIds = buttonIds.toIntArray()
+            Log.d("logger", "adding ${restriction.heading} button to layout")
+            viewBinding.clCollapsableDietaryRestriction.addView(button)
+        }
+    }
+
+    private fun handleAllergenCollapsableButton() {
+        viewBinding.llAllergenHeaderLayout.setOnClickListener {
+            viewBinding.apply {
+                expandLayout(clAllergenCollapsable, ivAllergenExpandCollapse)
+            }
+        }
+    }
+
+    private fun handleDietaryRestrictionColllapsableButton() {
+        viewBinding.llDietaryRestrictionHeader.setOnClickListener {
+            viewBinding.apply {
+                expandLayout(clCollapsableDietaryRestriction, ivDietaryRestrictionExpandCollapse)
+            }
+        }
+    }
+
+    private fun handleDietaryPreferenceCollapsableButton() {
+        viewBinding.llDietaryPrefereneHeader.setOnClickListener {
+            viewBinding.apply {
+                expandLayout(clDietaryPreferenceCollapsable, ivDietaryPreferenceExpandCollapse)
+            }
+        }
+    }
+
+    private fun buildDietaryPreferenceView() {
+        for (i in 0..<dietaryPreferences.size) {
             val nutrient = dietaryPreferences[i]
-            val itemView = LayoutInflater.from(requireContext()).inflate(R.layout.nutrient_radio_group,llNutrientPreferenceCollapsable,false)
+            val itemView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.nutrient_radio_group, viewBinding.nutrientsCollapsableLayout, false)
             val tvNutrientName: TextView = itemView.findViewById(R.id.tv_rg_nutrient_name)
-            val rgNutrientPreference: RadioGroup = itemView.findViewById(R.id.rg_nutrient_preference)
+            val rgNutrientPreference: RadioGroup =
+                itemView.findViewById(R.id.rg_nutrient_preference)
             val rbNutrientLow: RadioButton = itemView.findViewById(R.id.rb_nutrient_low)
             val rbNutrientModerate: RadioButton = itemView.findViewById(R.id.rb_nutrient_moderate)
             val rbNutrientHigh: RadioButton = itemView.findViewById(R.id.rb_nutrient_high)
             tvNutrientName.text = nutrient.nutrientType?.heading
             rbNutrientLow.isChecked = nutrient.nutrientPreferenceType == NutrientPreferenceType.LOW
-            rbNutrientModerate.isChecked = nutrient.nutrientPreferenceType == NutrientPreferenceType.MODERATE
-            rbNutrientHigh.isChecked = nutrient.nutrientPreferenceType == NutrientPreferenceType.HIGH
+            rbNutrientModerate.isChecked =
+                nutrient.nutrientPreferenceType == NutrientPreferenceType.MODERATE
+            rbNutrientHigh.isChecked =
+                nutrient.nutrientPreferenceType == NutrientPreferenceType.HIGH
 
             rbNutrientLow.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked){
+                if (isChecked) {
                     dietaryPreferences[i] = nutrient.copy(
                         nutrientPreferenceType = NutrientPreferenceType.LOW
                     )
                 }
             }
-            rbNutrientModerate.setOnCheckedChangeListener{_, isChecked ->
-                if (isChecked){
+            rbNutrientModerate.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
                     dietaryPreferences[i] = nutrient.copy(
                         nutrientPreferenceType = NutrientPreferenceType.MODERATE
                     )
                 }
             }
-            rbNutrientHigh.setOnCheckedChangeListener{_, isChecked ->
-                if (isChecked){
+            rbNutrientHigh.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
                     dietaryPreferences[i] = nutrient.copy(
                         nutrientPreferenceType = NutrientPreferenceType.HIGH
                     )
@@ -139,200 +315,70 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
                 )
                 true
             }
-
-
-
-            llNutrientPreferenceCollapsable.addView(itemView)
+            viewBinding.nutrientsCollapsableLayout.addView(itemView)
         }
+    }
 
-        llDietaryPreferenceHeader.setOnClickListener {
-            expandLayout(clDietaryPreferenceCollapsable, ivDietaryPreferenceCollapsableIcon)
-        }
+    private fun updateUserPreferences() {
+        val appUser = viewModel.uiState.value.appUser
+        if (appUser?.profileUpdated == true) {
+            Log.d(TAG, "Profile detailed was updated earlier")
+            Log.d(TAG, "Prefilling existing values...")
+            dietaryPreferences = appUser.dietaryPreferences.toMutableList()
+            dietaryRestrictions = appUser.dietaryRestrictions.toMutableList()
+            allergens = appUser.allergens.toMutableList()
+        } else {
 
-        llDietaryRestrictionHeader.setOnClickListener {
-            expandLayout(clDietaryRestrictionCollapsable, ivDietaryRestrictionCollapsableIcon)
-        }
-        llAllergenHeaderLayout.setOnClickListener{
-            expandLayout(clAllergenCollapsableLayout, ivAllergenCollapsableIcon)
-        }
-
-
-        val restrictions = mutableListOf<DietaryRestriction>(
-            VEGAN,
-            VEGETARIAN,
-            PALM_OIL_FREE
-        )
-        restrictions.forEach{restriction ->
-            val button = ToggleButton(requireContext())
-            button.apply {
-                button.background = ContextCompat.getDrawable(requireContext(), R.drawable.dietary_restriction_selector)
-                button.textOn = restriction.heading
-                button.textOff = restriction.heading
-                button.text = restriction.heading
-                button.isChecked = restriction in dietaryRestrictions
-                transformationMethod = null
-                if (isChecked){
-                    setTextColor(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
-                }else{
-                    setTextColor(ContextCompat.getColor(requireContext(),R.color.md_theme_onSurface))
-                }
-                setPadding(12,0,12,0)
-                id = View.generateViewId()
-                setOnCheckedChangeListener { buttonView,isChecked ->
-                    if (isChecked){
-                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onPrimary))
-                        dietaryRestrictions.add(restriction)
-
-                    }else{
-                        dietaryRestrictions.remove(restriction)
-                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onSurface))
-                    }
-                }
-//                background = ContextCompat.getDrawable(requireContext(),R.color.md_theme_primary)
-            }
-            val buttonIds = flNutrientRestrictionCollapsableFlow.referencedIds.toMutableList()
-            buttonIds.add(button.id)
-            flNutrientRestrictionCollapsableFlow.referencedIds = buttonIds.toIntArray()
-
-
-            Log.d("logger", "adding ${restriction.heading} button to layout")
-            clDietaryRestrictionCollapsable.addView(button)
-        }
-
-
-        for(allergen in Allergen.values()){
-            val button = ToggleButton(requireContext())
-            button.apply {
-                background = ContextCompat.getDrawable(requireContext(), R.drawable.dietary_restriction_selector)
-                textOn = allergen.heading
-                textOff = allergen.heading
-                text = allergen.heading
-                isChecked = allergen in allergens
-                transformationMethod = null
-                if (isChecked){
-                    setTextColor(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
-                }else{
-                    setTextColor(ContextCompat.getColor(requireContext(),R.color.md_theme_onSurface))
-                }
-
-                setPadding(12,0,12,0)
-                id = View.generateViewId()
-                setOnCheckedChangeListener { buttonView,isChecked ->
-                    if (isChecked){
-                        allergens.add(allergen)
-                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onPrimary))
-
-                    }else{
-                        allergens.remove(allergen)
-                        buttonView.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_onSurface))
-                    }
-                }
-            }
-            val buttonIds = flAllergenCollapsableFlow.referencedIds.toMutableList()
-            buttonIds.add(button.id)
-            flAllergenCollapsableFlow.referencedIds = buttonIds.toIntArray()
-
-            Log.d("logger", "adding ${allergen.heading} button to layout")
-            clAllergenCollapsableLayout.addView(button)
-        }
-
-          btnSaveUserData.setOnClickListener{
-              val userName = tifUserName.editText?.text.toString()
-              val uid = viewModel.uiState.value.appUser?.uid ?: ""
-            if (validateUserData(mainView, userName, dietaryPreferences)){
-                Log.d("logger", "Saving user details to viewModel s${dietaryPreferences.toString()}")
-                val appUser = AppUser(
-                    name = tifUserName.editText?.text.toString(),
-                    uid = uid,
-                    profileUpdated = true,
-                    dietaryPreferences = dietaryPreferences,
-                    dietaryRestrictions = dietaryRestrictions,
-                    allergens = allergens
+            Log.d(TAG, "Profile detailed was not updated earlier")
+            dietaryPreferences = mutableListOf()
+            dietaryRestrictions = mutableListOf()
+            allergens = mutableListOf()
+            NutrientType.entries.forEach { nutrientType ->
+                dietaryPreferences.add(
+                    element = NutrientPreference(
+                        nutrientType = nutrientType,
+                        nutrientPreferenceType = null
+                    )
                 )
-               viewModel.onEvent(HomePageEvent.UpdateUserPreferences(appUser))
             }
         }
+    }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect{state ->
-                when(state.userDetailsUpdateState){
-                    UserDetailsUpdateState.LOADING -> {}
-                    UserDetailsUpdateState.SUCCESS -> {
-                        Snackbar.make(view,state.msg.toString(),Snackbar.LENGTH_LONG).show()
-                        findNavController().popBackStack(R.id.homePage,false)
-                    }
-                    UserDetailsUpdateState.FAILURE -> {
-                        Snackbar.make(view,state.msg.toString(),Snackbar.LENGTH_LONG).show()
-                    }
-                    UserDetailsUpdateState.NOT_STARTED -> {}
-                }
-            }
-        }
-   }
+    private fun prefillUserName() {
+        viewBinding.tifUsername.editText?.setText(viewModel.uiState.value.appUser?.name)
+    }
 
     private fun buildToolbar() {
         val appCompatActivity = activity as AppCompatActivity
         val materialToolbar = appCompatActivity.findViewById<MaterialToolbar>(R.id.mt_app_toolbar)
         appCompatActivity.setSupportActionBar(materialToolbar)
-        materialToolbar.setupWithNavController(findNavController())
-        materialToolbar.navigationIcon = ContextCompat.getDrawable(requireContext(),R.drawable.baseline_arrow_back_24)
-        materialToolbar.setNavigationIconTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
-        materialToolbar.title = "Profile Page"
+        materialToolbar.apply {
+            setupWithNavController(findNavController())
+            navigationIcon = ContextCompat.getDrawable(requireContext(),R.drawable.baseline_arrow_back_24)
+            setNavigationIconTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+            title = "Profile Page"
+        }
     }
 
     private fun expandLayout(layout: ConstraintLayout, iconView: ImageView){
         val headers = mutableListOf(
-            Pair(clDietaryRestrictionCollapsable,ivDietaryRestrictionCollapsableIcon),
-            Pair(clDietaryPreferenceCollapsable,ivDietaryPreferenceCollapsableIcon),
-            Pair(clAllergenCollapsableLayout,ivAllergenCollapsableIcon)
+            Pair(viewBinding.clDietaryPreferenceCollapsable,viewBinding.ivDietaryPreferenceExpandCollapse),
+            Pair(viewBinding.clCollapsableDietaryRestriction,viewBinding.ivDietaryRestrictionExpandCollapse),
+            Pair(viewBinding.clAllergenCollapsable,viewBinding.ivAllergenExpandCollapse)
         )
-        if (layout.visibility == View.VISIBLE){
-            layout.visibility = View.GONE
-            Glide.with(requireContext())
-                .load(R.mipmap.arrow_down)
-                .into(iconView)
+        if (layout.isVisible()){
+            layout.hide()
+            iconView.addImage(R.mipmap.arrow_down)
             return
         }
         for((header, imageView) in headers){
             if (header == layout){
-                header.visibility = View.VISIBLE
-                Glide.with(requireContext())
-                    .load(R.mipmap.arrow_up)
-                    .into(imageView)
+                layout.show()
+                imageView.addImage(R.mipmap.arrow_up)
             }else{
-                header.visibility = View.GONE
-                Glide.with(requireContext())
-                    .load(R.mipmap.arrow_down)
-                    .into(imageView)
+                layout.hide()
+                imageView.addImage(R.mipmap.arrow_down)
             }
         }
-    }
-
-    private fun validateUserData(view: View, userName: String, nutrientPreference: List<NutrientPreference>): Boolean {
-        if (userName == ""){
-            showSnackBar(view,"Invalid Username")
-            return false
-        }
-        nutrientPreference.forEach { nutrientPreference ->
-            if (nutrientPreference.nutrientPreferenceType == null){
-//                showSnackBar(view, message = "${nutrientPreference.nutrientType?.heading} is not selected")
-//                return false
-            }
-        }
-        return  true
-    }
-
-    private fun showSnackBar(view: View, message: String){
-        val snackbar = Snackbar.make(view,message,Snackbar.ANIMATION_MODE_SLIDE)
-            .setAction("X", View.OnClickListener {  })
-        snackbar.show()
-    }
-
-
-    private fun createDietaryPreference(nutrientType: NutrientType):NutrientPreference {
-        return NutrientPreference(
-            nutrientType =nutrientType ,
-            nutrientPreferenceType = null
-    )
     }
 }

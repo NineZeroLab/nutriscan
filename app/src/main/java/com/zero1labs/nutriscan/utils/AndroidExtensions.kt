@@ -3,6 +3,9 @@ package com.zero1labs.nutriscan.utils
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
+import androidx.annotation.DrawableRes
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
@@ -35,3 +38,18 @@ fun TextInputLayout.getInput(): String{
     return  this.editText?.text.toString()
 }
 
+fun ImageView.addImage(@DrawableRes id: Int){
+    Glide.with(this)
+        .load(id)
+        .into(this)
+}
+
+fun ImageView.addImageFromUrl(imageUrl: String ,@DrawableRes errorImage: Int){
+    Glide.with(this)
+        .load(imageUrl)
+        .error(errorImage)
+        .into(this)
+}
+fun View.isVisible(): Boolean{
+    return this.visibility == View.VISIBLE
+}

@@ -34,6 +34,11 @@ fun logger(message: String){
     Log.d(TAG, message)
 }
 
-
+fun String.isValidUserName(): Boolean{
+    val symbols = "~`!@#$%^&*()_-+={[}]|:;'\"\\<,>.?/"
+    if (this.length < 6) return false
+    if (this.any { symbols.contains(it) }) return false
+    return true
+}
 
 

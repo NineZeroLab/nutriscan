@@ -171,7 +171,7 @@
                         tools:visibility="gone">
 
                         <androidx.constraintlayout.helper.widget.Flow
-                            android:id="@+id/ll_dietary_restriction_collapsable_layout"
+                            android:id="@+id/fl_dietary_restriction_collapsable_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
