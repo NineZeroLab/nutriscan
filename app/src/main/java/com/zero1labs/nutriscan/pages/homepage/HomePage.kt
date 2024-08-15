@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -18,7 +17,6 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
@@ -28,6 +26,7 @@ import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.utils.hide
+import com.zero1labs.nutriscan.utils.invisible
 import com.zero1labs.nutriscan.utils.logger
 import com.zero1labs.nutriscan.utils.show
 import kotlinx.coroutines.flow.collectLatest
@@ -37,9 +36,6 @@ class HomePage : Fragment() {
 
     private lateinit var viewModel: HomePageViewModel
     private lateinit var viewBinding: FragmentHomePageBinding
-    private lateinit var materialToolbar: MaterialToolbar
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,14 +48,10 @@ class HomePage : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        buildToolbar()
         viewModel.onEvent(HomePageEvent.UpdateUserDetails)
-
-
+        buildToolbar()
         Log.d(TAG,"Products from firebase: ${viewModel.uiState.value.searchHistory}")
-
         handleScanButton()
-
         handleDemoItemButton()
         buildSearchHistoryRv()
         handleUiState(view)
@@ -74,49 +66,51 @@ class HomePage : Fragment() {
                 .collectLatest { state ->
                     when (state.productScanState) {
                         ProductScanState.Success -> {
-                            hideProgressBar()
-                            logger(state.productScanState.name)
-                            findNavController().navigate(R.id.action_home_page_to_product_details_page)
+//                            hideProgressBar()
+                            logger("product Scan state: ${state.productScanState.name}")
+                            logger("Showing progressBar")
+//                            findNavController().navigate(R.id.action_home_page_to_product_details_page)
                         }
 
                         ProductScanState.Failure -> {
-                            hideProgressBar()
-                            logger(state.productScanState.name)
+//                            hideProgressBar()
+                            logger("Hiding progressBar")
+                            logger("product Scan state: ${state.productScanState.name}")
                             Snackbar.make(view, state.msg.toString(), Snackbar.LENGTH_LONG).show()
     //                        findNavController().navigate(R.id.action_home_page_to_error_page)
                         }
 
                         ProductScanState.Loading -> {
-                            logger(state.productScanState.name)
-                            showProgressBar()
+                            logger("product Scan state: ${state.productScanState.name}")
+                            findNavController().navigate(R.id.action_home_page_to_product_details_page)
+//                            showProgressBar()
                         }
 
                         ProductScanState.NotStarted -> {
-                            logger(state.productScanState.name)
-                        }
+                            logger("product Scan state: ${state.productScanState.name}")                        }
                     }
 
                     when (state.firebaseDataFetchState) {
                         FirebaseDataFetchState.Loading -> {
                             showProgressBar()
-                            logger(state.firebaseDataFetchState.name)
+                            logger("firebase data fetch state ${state.firebaseDataFetchState.name}")
                         }
                         FirebaseDataFetchState.Success -> {
+                            logger("firebase data fetch state ${state.firebaseDataFetchState.name}")
                             hideProgressBar()
-                            materialToolbar.title = "Hi ${state.appUser?.name}"
-                            logger(state.firebaseDataFetchState.name)
+                            viewBinding.mtbHomepage.title = "Hi ${state.appUser?.name}"
                             (viewBinding.rvSearchHistory.adapter as SearchHistoryAdapter).updateData(
                                 state.searchHistory
                             )
                         }
 
                         FirebaseDataFetchState.Failure -> {
+                            logger("firebase data fetch state ${state.firebaseDataFetchState.name}")
                             hideProgressBar()
-                            logger(state.firebaseDataFetchState.name)
                         }
 
                         FirebaseDataFetchState.NotStarted -> {
-                            logger(state.firebaseDataFetchState.name)
+                            logger("firebase data fetch state ${state.firebaseDataFetchState.name}")
                             if (state.appUser == null) {
                                 logger("app user is null... navigating to sign in page")
                                 findNavController().navigate(R.id.action_home_page_to_sign_in_page)
@@ -162,17 +156,14 @@ class HomePage : Fragment() {
     }
 
     private fun buildToolbar() {
-        val appCompatActivity: AppCompatActivity = activity as AppCompatActivity
-        materialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
-        appCompatActivity.setSupportActionBar(materialToolbar)
-        viewModel.uiState.value.appUser.let { user ->
-            if (user != null){
-                materialToolbar.title = "Hi ${user.name}"
-                materialToolbar.overflowIcon?.setTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+
+        viewBinding.mtbHomepage.overflowIcon?.setTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+        viewModel.uiState.value.appUser?.let { user ->
+            viewBinding.mtbHomepage.apply {
+                title = "Hi ${user.name}"
             }
         }
-
-        requireActivity().addMenuProvider(object: MenuProvider{
+        viewBinding.mtbHomepage.addMenuProvider(object: MenuProvider{
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.homepage_menu,menu)
             }
@@ -190,25 +181,18 @@ class HomePage : Fragment() {
                 }
             }
         },viewLifecycleOwner)
-
     }
 
     private fun showProgressBar(){
-        viewBinding.apply {
-            progressBar.show()
-            blurBg.show()
-            fabScanProduct.isClickable = false
-            fabGetDemoItem.isClickable = false
-        }
+        logger("trying to show progress bar")
+        viewBinding.homepageMainLayout.invisible()
+        viewBinding.progressbarLayout.show()
     }
 
     private fun hideProgressBar(){
-        viewBinding.apply {
-            progressBar.hide()
-            blurBg.hide()
-            fabScanProduct.isClickable = true
-            fabGetDemoItem.isClickable = true
-        }
+        logger("trying to hide progress bar")
+        viewBinding.homepageMainLayout.show()
+        viewBinding.progressbarLayout.hide()
     }
 
 

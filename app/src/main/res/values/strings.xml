@@ -48,4 +48,6 @@
     <string name="home_page_label">HomePage</string>
     <string name="per_serving_100_gm">Per serving 100 gm</string>
     <string name="negatives">Negatives</string>
+    <string name="food_considerations">Food Considerations</string>
+    <string name="allergens">Allergens</string>
 </resources>

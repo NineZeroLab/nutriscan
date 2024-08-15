@@ -7,7 +7,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.toObject
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.data.models.remote.Product
@@ -17,12 +16,15 @@ import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.utils.FirebaseCollection
 import com.zero1labs.nutriscan.utils.Resource
+import com.zero1labs.nutriscan.utils.logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class HomePageState(
@@ -67,24 +69,31 @@ class HomePageViewModel @Inject constructor(
                 firebaseDataFetchState = FirebaseDataFetchState.Loading
             )
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             auth.currentUser?.let {user ->
-                _uiState.update {state ->
-                    state.copy(
-                        appUser = AppUser(
-                            name = user.email.toString(),
-                            uid = user.uid,
+                withContext(Dispatchers.Main){
+                    _uiState.update {state ->
+                        state.copy(
+                            appUser = AppUser(
+                                name = user.email.toString(),
+                                uid = user.uid,
 
-                        ),
-                        firebaseDataFetchState = FirebaseDataFetchState.Success
+                                ),
+                            firebaseDataFetchState = FirebaseDataFetchState.Success
+                        )
+                    }
+                    _uiState.update {
+                        it.copy(
+                            firebaseDataFetchState = FirebaseDataFetchState.NotStarted
+                        )
+                    }
+                }
+                _uiState.update {
+                    it.copy(
+                        firebaseDataFetchState = FirebaseDataFetchState.NotStarted
                     )
                 }
 
-            }
-            _uiState.update {
-                it.copy(
-                    firebaseDataFetchState = FirebaseDataFetchState.NotStarted
-                )
             }
             Log.d(TAG,"Search History after viewModel init: ${uiState.value.searchHistory}")
         }
@@ -96,40 +105,7 @@ class HomePageViewModel @Inject constructor(
 
             }
             is HomePageEvent.FetchProductDetails -> {
-                _uiState.update {
-                    it.copy(
-                        productScanState = ProductScanState.Loading
-                    )
-                }
-                viewModelScope.launch {
-                    val item: SearchHistoryListItem?
-                    val response: Resource<Product> =
-                        appRepository.getProductDetailsById(event.productId)
-                    when(response){
-                        is Resource.Success -> {
-
-                            item = response.data?.let { product ->
-                                SearchHistoryListItem(
-                                    mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
-                                    timeStamp = Timestamp.now()
-                                )
-                            }
-                            _uiState.update {
-                                it.copy(
-                                    productScanState = ProductScanState.Success,
-                                    product = response.data,
-                                )
-                            }
-                        }
-                        is Resource.Error -> {
-                            item = null
-                           updateProductScanState(ProductScanState.Failure,response.message)
-                        }
-                    }
-                   updateProductScanState(ProductScanState.NotStarted)
-                    //adding a delay to prevent item being added to search history before the user is taken to product details page
-                    addItemToSearchHistory(item)
-                }
+                fetchProductDetails(event.productId)
 
             }
             is HomePageEvent.SignOut -> {
@@ -148,6 +124,46 @@ class HomePageViewModel @Inject constructor(
             is HomePageEvent.UpdateUserPreferences -> {
                 updateUserPreferences(event.appUser)
                 updateUserDetails()
+            }
+        }
+    }
+
+    private fun fetchProductDetails(productId: String) {
+        _uiState.update {
+            it.copy(
+                productScanState = ProductScanState.Loading
+            )
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            appRepository.getProductDetailsById(productId){response ->
+                when (response) {
+                    is Resource.Success -> {
+
+                        val item = response.data?.let { product ->
+                            SearchHistoryListItem(
+                                mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
+                                timeStamp = Timestamp.now()
+                            )
+                        }
+
+                        viewModelScope.launch{
+                            updateState(
+                                productScanState = ProductScanState.Success,
+                                product = response.data
+                            )
+                            updateProductScanState(ProductScanState.NotStarted)
+                            addItemToSearchHistory(item)
+                        }
+
+                    }
+                    is Resource.Error -> {
+                        logger("Error in viewModel while fetching product details")
+                        viewModelScope.launch {
+                            updateProductScanState(ProductScanState.Failure, response.message)
+                            updateProductScanState(ProductScanState.NotStarted)
+                        }
+                    }
+                }
             }
         }
     }
@@ -200,7 +216,7 @@ class HomePageViewModel @Inject constructor(
 
     private fun addItemToFireStore(item: SearchHistoryListItem){
         auth.uid?.let {uid ->
-            item?.mainDetailsForView?.productId?.let {id ->
+            item.mainDetailsForView.productId?.let {id ->
 
                 firestore.collection(FirebaseCollection.USERS)
                     .document(uid)
@@ -228,8 +244,8 @@ class HomePageViewModel @Inject constructor(
         }
 
         _uiState.update {state ->
-            Log.d(TAG,"Adding ${newItem?.mainDetailsForView?.productName} to firebase")
-            newItem?.let { addItemToFireStore(it) }
+            Log.d(TAG,"Adding ${newItem.mainDetailsForView.productName} to firebase")
+            addItemToFireStore(newItem)
             state.copy(
                 searchHistory = updatedSearchHistory
             )
@@ -265,13 +281,14 @@ class HomePageViewModel @Inject constructor(
 //                           appUser = AppUser()
                        )
                    }
+                    _uiState.update {
+                        it.copy(
+                            firebaseDataFetchState = FirebaseDataFetchState.NotStarted
+                        )
+                    }
                 }
 
-            _uiState.update {
-                it.copy(
-                    firebaseDataFetchState = FirebaseDataFetchState.NotStarted
-                )
-            }
+
         }
         Log.d(TAG, "Profile detailed updated from firebase ${uiState.value.appUser?.allergens}")
 
@@ -329,5 +346,37 @@ class HomePageViewModel @Inject constructor(
             }
         }
 
+    }
+
+//    data class HomePageState(
+//        val product: Product? = null,
+//        val msg: String? = null,
+//        val productScanState: ProductScanState = ProductScanState.NotStarted,
+//        val searchHistory: List<SearchHistoryListItem> = mutableListOf(),
+//        val firebaseDataFetchState: FirebaseDataFetchState = FirebaseDataFetchState.Loading,
+//        val appUser: AppUser? = null,
+//        val userDetailsUpdateState: UserDetailsUpdateState = UserDetailsUpdateState.NOT_STARTED
+//    )
+    private fun updateState(
+       product: Product? = _uiState.value.product,
+       msg: String? = _uiState.value.msg,
+       productScanState: ProductScanState = _uiState.value.productScanState,
+       searchHistory: List<SearchHistoryListItem> = _uiState.value.searchHistory,
+       firebaseDataFetchState: FirebaseDataFetchState = _uiState.value.firebaseDataFetchState,
+       appUser: AppUser? = _uiState.value.appUser,
+       userDetailsUpdateState: UserDetailsUpdateState = _uiState.value.userDetailsUpdateState,
+    ){
+
+        _uiState.update {
+            it.copy(
+                product = product,
+                msg = msg,
+                productScanState = productScanState,
+                searchHistory = searchHistory,
+                firebaseDataFetchState = firebaseDataFetchState,
+                appUser = appUser,
+                userDetailsUpdateState = userDetailsUpdateState,
+            )
+        }
     }
 }

@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
     id("com.google.gms.google-services")
 }
 
@@ -70,12 +70,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
 
     implementation ("com.github.bumptech.glide:glide:4.12.0")
-    kapt("com.github.bumptech.glide:compiler:4.12.0")
+    ksp("com.github.bumptech.glide:compiler:4.12.0")
 
     implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
 //    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    kapt("com.google.dagger:hilt-compiler:2.51.1")
+    ksp("com.google.dagger:hilt-compiler:2.51.1")
 
     //firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
@@ -84,7 +84,4 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation ("com.google.android.material:material:1.4.0")
 
-}
-kapt{
-    correctErrorTypes = true
 }

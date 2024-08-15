@@ -1,23 +1,14 @@
 package com.zero1labs.nutriscan.di
 
-import android.content.Context
 import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.LocalCacheSettings
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.firestoreSettings
-import com.google.firebase.firestore.persistentCacheSettings
 import dagger.Module
 import dagger.Provides
 import com.google.gson.GsonBuilder
 import com.zero1labs.nutriscan.repository.AppRepository
 import com.zero1labs.nutriscan.utils.AppResources.BASE_URL
-import com.zero1labs.nutriscan.utils.NetworkUtils
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -33,9 +24,9 @@ object AppModule{
     @Singleton
     fun providesAppApi() : Retrofit{
         val gson = GsonBuilder().setLenient().create()
-        val connectTimeout : Long = 20
-        val readTimeout : Long = 20
-        val writeTimeout : Long = 20
+        val connectTimeout : Long = 10
+        val readTimeout : Long = 10
+        val writeTimeout : Long = 10
 
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(connectTimeout,TimeUnit.SECONDS)

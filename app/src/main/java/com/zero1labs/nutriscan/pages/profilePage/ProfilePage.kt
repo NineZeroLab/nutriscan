@@ -5,15 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.ToggleButton
-import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -21,10 +17,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.bumptech.glide.Glide
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.databinding.FragmentWelcomePageBinding
 import com.zero1labs.nutriscan.models.data.AppUser
@@ -42,14 +34,14 @@ import com.zero1labs.nutriscan.utils.DietaryRestriction.*
 import com.zero1labs.nutriscan.utils.addImage
 import com.zero1labs.nutriscan.utils.getInput
 import com.zero1labs.nutriscan.utils.hide
+import com.zero1labs.nutriscan.utils.hideKeyBoard
 import com.zero1labs.nutriscan.utils.isValidUserName
 import com.zero1labs.nutriscan.utils.isVisible
+import com.zero1labs.nutriscan.utils.logger
 import com.zero1labs.nutriscan.utils.show
 import com.zero1labs.nutriscan.utils.showSnackBar
 
 class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
-
-
     private lateinit var dietaryPreferences: MutableList<NutrientPreference>
     private lateinit var dietaryRestrictions: MutableList<DietaryRestriction>
     private lateinit var allergens: MutableList<Allergen>
@@ -70,7 +62,7 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
         prefillUserName()
         updateUserPreferences()
         handleDietaryPreferenceCollapsableButton()
-        handleDietaryRestrictionColllapsableButton()
+        handleDietaryRestrictionCollapsableButton()
         handleAllergenCollapsableButton()
         buildDietaryPreferenceView()
         buildDietaryRestrictionView()
@@ -120,7 +112,7 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
     }
 
     private fun buildAllergenView() {
-        for (allergen in Allergen.values()) {
+        for (allergen in Allergen.entries) {
             val button = ToggleButton(requireContext())
             button.apply {
                 background = ContextCompat.getDrawable(
@@ -189,14 +181,14 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
         restrictions.forEach { restriction ->
             val button = ToggleButton(requireContext())
             button.apply {
-                button.background = ContextCompat.getDrawable(
+                background = ContextCompat.getDrawable(
                     requireContext(),
                     R.drawable.dietary_restriction_selector
                 )
-                button.textOn = restriction.heading
-                button.textOff = restriction.heading
-                button.text = restriction.heading
-                button.isChecked = restriction in dietaryRestrictions
+                textOn = restriction.heading
+                textOff = restriction.heading
+                text = restriction.heading
+                isChecked = restriction in dietaryRestrictions
                 transformationMethod = null
                 if (isChecked) {
                     setTextColor(
@@ -247,14 +239,16 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
 
     private fun handleAllergenCollapsableButton() {
         viewBinding.llAllergenHeaderLayout.setOnClickListener {
+            it.hideKeyBoard()
             viewBinding.apply {
                 expandLayout(clAllergenCollapsable, ivAllergenExpandCollapse)
             }
         }
     }
 
-    private fun handleDietaryRestrictionColllapsableButton() {
+    private fun handleDietaryRestrictionCollapsableButton() {
         viewBinding.llDietaryRestrictionHeader.setOnClickListener {
+            it.hideKeyBoard()
             viewBinding.apply {
                 expandLayout(clCollapsableDietaryRestriction, ivDietaryRestrictionExpandCollapse)
             }
@@ -263,6 +257,7 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
 
     private fun handleDietaryPreferenceCollapsableButton() {
         viewBinding.llDietaryPrefereneHeader.setOnClickListener {
+            it.hideKeyBoard()
             viewBinding.apply {
                 expandLayout(clDietaryPreferenceCollapsable, ivDietaryPreferenceExpandCollapse)
             }
@@ -328,7 +323,6 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
             dietaryRestrictions = appUser.dietaryRestrictions.toMutableList()
             allergens = appUser.allergens.toMutableList()
         } else {
-
             Log.d(TAG, "Profile detailed was not updated earlier")
             dietaryPreferences = mutableListOf()
             dietaryRestrictions = mutableListOf()
@@ -349,34 +343,36 @@ class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
     }
 
     private fun buildToolbar() {
-        val appCompatActivity = activity as AppCompatActivity
-        val materialToolbar = appCompatActivity.findViewById<MaterialToolbar>(R.id.mt_app_toolbar)
-        appCompatActivity.setSupportActionBar(materialToolbar)
-        materialToolbar.apply {
-            setupWithNavController(findNavController())
-            navigationIcon = ContextCompat.getDrawable(requireContext(),R.drawable.baseline_arrow_back_24)
-            setNavigationIconTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+        viewBinding.mtbProfilePage.apply {
+            if (viewModel.uiState.value.appUser?.profileUpdated == true){
+                setupWithNavController(findNavController())
+                navigationIcon = ContextCompat.getDrawable(requireContext(),R.drawable.baseline_arrow_back_24)
+                setNavigationIconTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+            }
             title = "Profile Page"
         }
     }
 
     private fun expandLayout(layout: ConstraintLayout, iconView: ImageView){
-        val headers = mutableListOf(
+        val headers = listOf(
             Pair(viewBinding.clDietaryPreferenceCollapsable,viewBinding.ivDietaryPreferenceExpandCollapse),
             Pair(viewBinding.clCollapsableDietaryRestriction,viewBinding.ivDietaryRestrictionExpandCollapse),
             Pair(viewBinding.clAllergenCollapsable,viewBinding.ivAllergenExpandCollapse)
         )
         if (layout.isVisible()){
+            logger("$layout is visible hiding layout..")
             layout.hide()
             iconView.addImage(R.mipmap.arrow_down)
             return
         }
         for((header, imageView) in headers){
+            logger("checking $header is visible: ${header.isVisible()}")
             if (header == layout){
-                layout.show()
+                logger("$layout is gone expanding layout..")
+                header.show()
                 imageView.addImage(R.mipmap.arrow_up)
             }else{
-                layout.hide()
+                header.hide()
                 imageView.addImage(R.mipmap.arrow_down)
             }
         }

@@ -21,9 +21,10 @@
         android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:targetApi="32">
+        tools:targetApi="33">
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

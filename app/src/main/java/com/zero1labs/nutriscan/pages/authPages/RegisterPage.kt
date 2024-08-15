@@ -5,16 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
-import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.databinding.FragmentRegisterPageBinding
 import com.zero1labs.nutriscan.utils.AppResources.TAG
 import com.zero1labs.nutriscan.utils.getInput
@@ -43,17 +40,11 @@ class RegisterPage: Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        buildToolbar()
         handleRegisterButton()
         handleUiState(view)
         handleLoginTextView()
     }
 
-    private fun buildToolbar() {
-        val appCompatActivity = activity as AppCompatActivity
-        val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
-        materialToolbar.title = "Register Page"
-    }
 
     private fun handleLoginTextView() {
         viewBinding.tvSignIn.setOnClickListener {

@@ -16,6 +16,9 @@ fun View.hide(){
 fun View.show(){
     this.visibility = View.VISIBLE
 }
+fun View.invisible(){
+    this.visibility = View.INVISIBLE
+}
 
 fun View.showSnackBar(message: String, duration: Int = Snackbar.LENGTH_LONG){
     Snackbar.make(this, message, duration).show()
