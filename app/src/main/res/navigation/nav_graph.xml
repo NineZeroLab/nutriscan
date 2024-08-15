@@ -22,15 +22,15 @@
         tools:layout="@layout/fragment_sign_in_page">
         <action
             android:id="@+id/action_sign_in_page_to_homepage"
-            app:destination="@id/homePage"/>
-        <action
-            android:id="@+id/action_sign_in_page_to_error_page"/>
+            app:destination="@id/homePage"
+            app:enterAnim="@android:anim/fade_in" />
+
         <action
             android:id="@+id/action_sign_in_page_to_welcome_page"
-            app:destination="@id/welcome_page"/>
+            app:destination="@id/welcome_page" />
         <action
             android:id="@+id/action_sign_in_page_to_register_page"
-            app:destination="@+id/register_page"/>
+            app:destination="@+id/register_page" />
     </fragment>
     <fragment
         android:id="@+id/welcome_page"
@@ -39,7 +39,9 @@
         tools:layout="@layout/fragment_welcome_page">
         <action
             android:id="@+id/action_welcome_page_to_home_page"
-            app:destination="@+id/homePage"/>
+            app:destination="@+id/homePage"
+            app:enterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
 
     </fragment>
 
@@ -50,13 +52,18 @@
         tools:layout="@layout/fragment_home_page">
         <action
             android:id="@+id/action_home_page_to_product_details_page"
-            app:destination="@id/fr_product_details_main_layout" />
+            app:destination="@id/fr_product_details_main_layout"
+            app:enterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_home_page_to_sign_in_page"
-            app:destination="@id/sign_in_page"/>
+            app:destination="@id/sign_in_page"
+            app:enterAnim="@android:anim/fade_in"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_home_page_to_welcome_page"
-            app:destination="@id/welcome_page"/>
+            app:destination="@id/welcome_page"
+            app:enterAnim="@android:anim/fade_in" />
     </fragment>
 
     <fragment
