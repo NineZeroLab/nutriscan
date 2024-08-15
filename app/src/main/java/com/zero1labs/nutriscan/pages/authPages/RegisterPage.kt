@@ -43,17 +43,11 @@ class RegisterPage: Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        buildToolbar()
         handleRegisterButton()
         handleUiState(view)
         handleLoginTextView()
     }
 
-    private fun buildToolbar() {
-        val appCompatActivity = activity as AppCompatActivity
-        val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
-        materialToolbar.title = "Register Page"
-    }
 
     private fun handleLoginTextView() {
         viewBinding.tvSignIn.setOnClickListener {

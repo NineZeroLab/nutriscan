@@ -26,7 +26,6 @@ import com.zero1labs.nutriscan.utils.getInput
 import com.zero1labs.nutriscan.utils.isValidEmail
 import com.zero1labs.nutriscan.utils.logger
 import com.zero1labs.nutriscan.utils.removeError
-import com.zero1labs.nutriscan.viewModels.AppViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -46,9 +45,9 @@ class SignInPage : Fragment() {
         viewModel = ViewModelProvider(requireActivity())[AuthViewModel::class.java]
         return viewBinding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        buildToolbar()
         handleUiState(view)
         handleRegisterTextView()
         handleSignInButton()
@@ -65,7 +64,7 @@ class SignInPage : Fragment() {
 
             if (!email.isValidEmail().first) {
                 viewBinding.tilEmail.error = "Invalid Email"
-            }else {
+            } else {
                 viewModel.onEvent(AuthEvent.SignInWithEmailAndPassword(email, password))
             }
         }
@@ -79,44 +78,42 @@ class SignInPage : Fragment() {
 
     private fun handleUiState(view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.uiState.collect { state ->
-                    when (state.signInStatus) {
-                        SignInStatus.SIGNED_IN -> {
-                            ViewModelProvider(requireActivity())[HomePageViewModel::class.java].onEvent(
-                                HomePageEvent.UpdateUserDetails
-                            )
-                            Log.d(TAG, "${state.signInStatus}")
-                            Snackbar.make(view, "Signing In...", Snackbar.LENGTH_SHORT).show()
-                            //delaying navigation so that HomepageViewModel is initialized with loading state
-                            //and the user is appUser is not null when signed in
-                            delay(500)
-                            if (state.appUser?.profileUpdated == true) {
-                                logger("navigating to homepage")
-                                findNavController().navigate(R.id.homePage)
-                            }else {
-                                logger("navigating to profile page")
-                                findNavController().navigate(R.id.welcome_page)
-                            }
+            viewModel.uiState.collect { state ->
+                when (state.signInStatus) {
+                    SignInStatus.SIGNED_IN -> {
+                        ViewModelProvider(requireActivity())[HomePageViewModel::class.java].onEvent(
+                            HomePageEvent.UpdateUserDetails
+                        )
+                        Log.d(TAG, "${state.signInStatus}")
+                        Snackbar.make(view, "Signing In...", Snackbar.LENGTH_SHORT).show()
+                        //delaying navigation so that HomepageViewModel is initialized with loading state
+                        //and the user is appUser is not null when signed in
+                        delay(500)
+                        if (state.appUser?.profileUpdated == true) {
+                            logger("navigating to homepage")
+                            findNavController().navigate(R.id.homePage)
+                        } else {
+                            logger("navigating to profile page")
+                            findNavController().navigate(R.id.welcome_page)
                         }
-                        SignInStatus.SIGNED_OUT -> {
-                            Log.d(TAG, "${state.signInStatus}")
-                        }
-                        SignInStatus.ERROR -> {
-                            Log.d(TAG, "${state.signInStatus}")
-                            viewBinding.tilPassword.error = state.errorMsg
-                        }
-                        SignInStatus.NOT_STARTED -> {
-                            Log.d(TAG, "${state.signInStatus}")
-                        }
-                        SignInStatus.LOADING -> {}
+                    }
+
+                    SignInStatus.SIGNED_OUT -> {
+                        Log.d(TAG, "${state.signInStatus}")
+                    }
+
+                    SignInStatus.ERROR -> {
+                        Log.d(TAG, "${state.signInStatus}")
+                        viewBinding.tilPassword.error = state.errorMsg
+                    }
+
+                    SignInStatus.NOT_STARTED -> {
+                        Log.d(TAG, "${state.signInStatus}")
+                    }
+
+                    SignInStatus.LOADING -> {}
                 }
             }
         }
-    }
-
-    private fun buildToolbar() {
-        val appCompatActivity = activity as AppCompatActivity
-        val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
-        materialToolbar.title = "SignIn Page"
     }
 }

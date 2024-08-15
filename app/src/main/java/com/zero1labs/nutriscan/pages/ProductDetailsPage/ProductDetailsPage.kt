@@ -13,21 +13,20 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.data.models.Nutrient
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.data.models.NutrientGenerator
 import com.zero1labs.nutriscan.databinding.FragmentProductDetailsPageBinding
-import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
-import com.zero1labs.nutriscan.pages.homepage.HomePageEvent
 import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.pages.homepage.ProductScanState
@@ -35,6 +34,10 @@ import com.zero1labs.nutriscan.utils.Allergen
 import com.zero1labs.nutriscan.utils.HealthCategory
 import com.zero1labs.nutriscan.utils.NutrientType
 import com.zero1labs.nutriscan.utils.ProductType
+import com.zero1labs.nutriscan.utils.hide
+import com.zero1labs.nutriscan.utils.logger
+import com.zero1labs.nutriscan.utils.show
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
@@ -46,106 +49,117 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewBinding = FragmentProductDetailsPageBinding.inflate(inflater, container,false)
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return viewBinding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
-        val appCompatActivity: AppCompatActivity = activity as AppCompatActivity
-        val materialToolbar: MaterialToolbar = appCompatActivity.findViewById(R.id.mt_app_toolbar)
-        appCompatActivity.setSupportActionBar(materialToolbar)
-        val navController = findNavController()
-        materialToolbar.setupWithNavController(navController)
-        materialToolbar.title = "Product Details"
-        materialToolbar.setNavigationIcon(R.drawable.baseline_arrow_back_24)
-
-//        viewBinding.llProductDetailsLayout.
+        buildInitialToolbar()
         llProductDetailsLayout = view.findViewById(R.id.ll_product_details_layout)
-
         viewLifecycleOwner.lifecycleScope.launch {
-        viewModel.uiState.collect{state ->
-            when(state.productScanState){
-                ProductScanState.Success -> {
-                    Log.d("logger" , "scan status updated in viewModel")
-                    }
-                ProductScanState.Failure -> {
-                    Log.d("logger" , "product data fetching error in viewModel")
-                    findNavController().navigate(R.id.action_productDetailsPageLayout_to_ProductFetchErrorPage)
-                    }
-                ProductScanState.Loading -> {
-                    Log.d("logger" , "loading product details in viewModel")
-                    }
-                ProductScanState.NotStarted -> Log.d("logger", "product scan not started")
-                }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect{state ->
-                state.product?.let {product ->
-                    val userDietaryPreference = state.appUser?.dietaryPreferences
-                    val userDietaryRestrictions = state.appUser?.dietaryRestrictions
-                    val userAllergens = state.appUser?.allergens
-                    val nutrientGenerator = NutrientGenerator(product)
-                    val negativeNutrientsForView = nutrientGenerator.generateNutrientsForView(NutrientCategory.NEGATIVE)
-                    val positiveNutrientsForView = nutrientGenerator.generateNutrientsForView(NutrientCategory.POSITIVE)
-                    val allergensForView = AppResources.getAllergens(product.allergensHierarchy)
-
-
-                    val productDietaryPreferences =  nutrientGenerator.getNutrientPreference()
-                    val productDietaryRestrictions = AppResources.getDietaryRestrictions(product.ingredientsAnalysisTags)
-                    val dietaryPreferenceConclusion = AppResources.getDietaryPreferenceConclusion(productDietaryPreferences,userDietaryPreference)
-                    val dietaryRestrictionConclusion = AppResources.getDietaryRestrictionConclusion(productDietaryRestrictions,userDietaryRestrictions)
-                    val allergenConclusion = AppResources.getAllergenConclusion(allergensForView,userAllergens)
-
-                    buildMainHeader(
-                        mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
-                        dietaryPreferenceConclusion = dietaryPreferenceConclusion,
-                        dietaryRestrictionConclusion = dietaryRestrictionConclusion,
-                        allergenConclusion = allergenConclusion
-                    )
-                    if (dietaryRestrictionConclusion != "" || allergenConclusion != ""){
-                        buildFoodConsiderations(dietaryRestrictionConclusion,allergenConclusion)
-                    }
-                    if (negativeNutrientsForView.isNotEmpty()){
-                        buildNutrientsView(
-                            nutrientCategory = NutrientCategory.NEGATIVE,
-                            productType = AppResources.getProductType(product.categoriesHierarchy),
-                            nutrientsForView = negativeNutrientsForView
-                        )
-                    }
-                    if (positiveNutrientsForView.isNotEmpty()){
-                        buildNutrientsView(
-                            nutrientCategory = NutrientCategory.POSITIVE,
-                            productType = AppResources.getProductType(product.categoriesHierarchy),
-                            nutrientsForView = positiveNutrientsForView
-                        )
-                    }
-                    if (allergensForView.isNotEmpty()){
-//                        buildAllergensView(AppResources.getAllergens(product.allergensHierarchy))
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.uiState.collectLatest { state ->
+                    when(state.productScanState){
+                        ProductScanState.Success -> {
+                            updateToolbar()
+                            logger("Product Scan State ${state.productScanState.name}")
+                            hideProgressBar()
+                            buildUi()
+                        }
+                        ProductScanState.Failure -> {
+                            logger("Product Scan State ${state.productScanState.name}")
+                            hideProgressBar()
+                            findNavController().popBackStack()
+                        }
+                        ProductScanState.Loading -> {
+                            logger("Product Scan State ${state.productScanState.name}")
+                            showProgressBar()
+                        }
+                        ProductScanState.NotStarted -> {
+                            logger("Product Scan State ${state.productScanState.name}")
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun buildScanAgain() {
-        Log.d("logger", "starting gms barcode scanner")
+    private fun buildInitialToolbar() {
+        viewBinding.mtbDetailsPage.title = "Loading Details..."
 
-        val scanner = GmsBarcodeScanning.getClient(requireContext(), BarCodeScannerOptions.options)
-        scanner.startScan()
-            .addOnSuccessListener { barcode ->
-                Log.d("logger", "product scan successfully")
-                viewModel.onEvent(HomePageEvent.FetchProductDetails(barcode.rawValue.toString()))
+    }
+    private fun updateToolbar(){
+        viewBinding.mtbDetailsPage.apply {
+            if (viewModel.uiState.value.productScanState != ProductScanState.Loading){
+                setupWithNavController(findNavController())
+                setNavigationIcon(R.drawable.baseline_arrow_back_24)
+                setNavigationIconTint(ContextCompat.getColor(requireContext(),R.color.md_theme_onPrimary))
+                title = "Product Details"
             }
-            .addOnCanceledListener {
-                Log.d("logger", "action cancelled by user")
+        }
+    }
+
+    private fun buildUi() {
+        viewModel.uiState.value.let {  state ->
+            state.product?.let { product ->
+                val userDietaryPreference = state.appUser?.dietaryPreferences
+                val userDietaryRestrictions = state.appUser?.dietaryRestrictions
+                val userAllergens = state.appUser?.allergens
+                val nutrientGenerator = NutrientGenerator(product)
+                val negativeNutrientsForView =
+                    nutrientGenerator.generateNutrientsForView(NutrientCategory.NEGATIVE)
+                val positiveNutrientsForView =
+                    nutrientGenerator.generateNutrientsForView(NutrientCategory.POSITIVE)
+                val allergensForView = AppResources.getAllergens(product.allergensHierarchy)
+
+                val productDietaryPreferences = nutrientGenerator.getNutrientPreference()
+                val productDietaryRestrictions =
+                    AppResources.getDietaryRestrictions(product.ingredientsAnalysisTags)
+                val dietaryPreferenceConclusion =
+                    AppResources.getDietaryPreferenceConclusion(
+                        productDietaryPreferences,
+                        userDietaryPreference
+                    )
+                val dietaryRestrictionConclusion =
+                    AppResources.getDietaryRestrictionConclusion(
+                        productDietaryRestrictions,
+                        userDietaryRestrictions
+                    )
+                val allergenConclusion =
+                    AppResources.getAllergenConclusion(allergensForView, userAllergens)
+                buildMainHeader(
+                    mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
+                    dietaryPreferenceConclusion = dietaryPreferenceConclusion,
+                    dietaryRestrictionConclusion = dietaryRestrictionConclusion,
+                    allergenConclusion = allergenConclusion
+                )
+                if (dietaryRestrictionConclusion != "" || allergenConclusion != "") {
+                    buildFoodConsiderations(
+                        dietaryRestrictionConclusion,
+                        allergenConclusion
+                    )
+                }
+                if (negativeNutrientsForView.isNotEmpty()) {
+                    buildNutrientsView(
+                        nutrientCategory = NutrientCategory.NEGATIVE,
+                        productType = AppResources.getProductType(product.categoriesHierarchy),
+                        nutrientsForView = negativeNutrientsForView
+                    )
+                }
+                if (positiveNutrientsForView.isNotEmpty()) {
+                    buildNutrientsView(
+                        nutrientCategory = NutrientCategory.POSITIVE,
+                        productType = AppResources.getProductType(product.categoriesHierarchy),
+                        nutrientsForView = positiveNutrientsForView
+                    )
+                }
+//                        if (allergensForView.isNotEmpty()){
+//                        buildAllergensView(AppResources.getAllergens(product.allergensHierarchy))
+//                        }
             }
-            .addOnFailureListener {
-                Log.d("logger", it.message.toString())
-            }
+        }
     }
 
     private fun buildFoodConsiderations(dietaryRestrictionConclusion: String, allergenConclusion: String) {
@@ -293,5 +307,14 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
             NutrientType.SODIUM -> R.mipmap.salt
             NutrientType.FRUITS_VEGETABLES_AND_NUTS -> R.mipmap.fruits_veggies
         }
+    }
+
+    private fun showProgressBar(){
+        logger("showing progressbar in details page")
+        viewBinding.clPdpProgressbarLayout.visibility = View.VISIBLE
+    }
+    private fun hideProgressBar(){
+        logger("hiding progressbar in details page")
+        viewBinding.clPdpProgressbarLayout.hide()
     }
 }
