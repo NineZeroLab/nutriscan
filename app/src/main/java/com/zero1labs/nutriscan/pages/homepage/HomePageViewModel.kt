@@ -19,7 +19,6 @@ import com.zero1labs.nutriscan.utils.Resource
 import com.zero1labs.nutriscan.utils.logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
