@@ -1,7 +1,7 @@
 package com.zero1labs.nutriscan.utils
 
 import android.util.Log
-import com.zero1labs.nutriscan.models.data.NutrientPreference
+import com.zero1labs.nutriscan.domain.model.NutrientPreference
 import com.zero1labs.nutriscan.utils.DietaryRestriction.*
 import java.text.DecimalFormat
 

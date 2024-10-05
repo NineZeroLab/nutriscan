@@ -6,7 +6,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import com.google.gson.GsonBuilder
-import com.zero1labs.nutriscan.repository.AppRepository
+import com.zero1labs.nutriscan.data.remote.OpenFoodFactsApi
+import com.zero1labs.nutriscan.data.repository.ProductRepositoryImpl
 import com.zero1labs.nutriscan.utils.AppResources.BASE_URL
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -22,7 +23,7 @@ object AppModule{
 
     @Provides
     @Singleton
-    fun providesAppApi() : Retrofit{
+    fun providesAppApi() : OpenFoodFactsApi {
         val gson = GsonBuilder().setLenient().create()
         val connectTimeout : Long = 10
         val readTimeout : Long = 10
@@ -34,19 +35,20 @@ object AppModule{
             .writeTimeout(writeTimeout, TimeUnit.SECONDS)
             .build()
 
-        val retrofit : Retrofit = Retrofit.Builder()
+        val api : OpenFoodFactsApi = Retrofit.Builder()
              .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
-
-        return retrofit
+            .create(OpenFoodFactsApi::class.java)
+        return api
     }
 
     @Provides
     @Singleton
-    fun providesAppRepository(retrofit: Retrofit): AppRepository{
-        return AppRepository(retrofit)
+    fun providesAppRepository(openFoodFactsApi: OpenFoodFactsApi): ProductRepositoryImpl {
+
+        return ProductRepositoryImpl(openFoodFactsApi)
     }
 
 

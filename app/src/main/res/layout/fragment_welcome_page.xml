@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/md_theme_onPrimary"
     android:orientation="vertical"
-    tools:context=".pages.profilePage.ProfilePage">
+    tools:context=".presentation.profilePage.ProfilePage">
 
 
     <com.google.android.material.appbar.MaterialToolbar

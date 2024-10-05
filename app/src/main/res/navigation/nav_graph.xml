@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/register_page"
-        android:name="com.zero1labs.nutriscan.pages.authPages.RegisterPage"
+        android:name="com.zero1labs.nutriscan.presentation.authPages.RegisterPage"
         android:label="RegisterPage"
         tools:layout="@layout/fragment_register_page">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/sign_in_page"
-        android:name="com.zero1labs.nutriscan.pages.authPages.SignInPage"
+        android:name="com.zero1labs.nutriscan.presentation.authPages.SignInPage"
         android:label="SignInPage"
         tools:layout="@layout/fragment_sign_in_page">
         <action
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/welcome_page"
-        android:name="com.zero1labs.nutriscan.pages.profilePage.ProfilePage"
+        android:name="com.zero1labs.nutriscan.presentation.profilePage.ProfilePage"
         android:label="WelcomePage"
         tools:layout="@layout/fragment_welcome_page">
         <action
@@ -47,7 +47,7 @@
 
     <fragment
         android:id="@+id/homePage"
-        android:name="com.zero1labs.nutriscan.pages.homepage.HomePage"
+        android:name="com.zero1labs.nutriscan.presentation.homepage.HomePage"
         android:label="@string/home_page_label"
         tools:layout="@layout/fragment_home_page">
         <action
@@ -68,7 +68,7 @@
 
     <fragment
         android:id="@+id/fr_product_details_main_layout"
-        android:name="com.zero1labs.nutriscan.pages.ProductDetailsPage.ProductDetailsPage"
+        android:name="com.zero1labs.nutriscan.presentation.ProductDetailsPage.ProductDetailsPage"
         android:label="@string/product_details_label"
         tools:layout="@layout/fragment_product_details_page">
         <action

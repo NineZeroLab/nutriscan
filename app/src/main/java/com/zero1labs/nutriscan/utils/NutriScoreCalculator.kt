@@ -1,6 +1,6 @@
 package com.zero1labs.nutriscan.utils
 
-import com.zero1labs.nutriscan.data.models.remote.Nutrients
+import com.zero1labs.nutriscan.data.remote.dto.NutrientsDto
 
 class NutriScoreCalculator {
 
@@ -93,7 +93,7 @@ class NutriScoreCalculator {
             }
         }
 
-        fun getNutriScoreGrade(nutrients: Nutrients?) : String {
+        fun getNutriScoreGrade(nutrients: NutrientsDto?) : String {
 
 //        Total Negative Points=Energy Points+Sugars Points+Saturated Fat Points+Sodium Points
 //        Total Positive Points=Fruit/Vegetable Points+Fiber Points+Protein Points
