@@ -13,6 +13,7 @@ object ResponseFields {
         "categories_hierarchy",
         "allergens_hierarchy",
         "ingredients_analysis_tags",
+        "additives_original_tags"
     )
 
     fun getFields(): String{

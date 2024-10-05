@@ -10,7 +10,9 @@ import com.google.firebase.firestore.SetOptions
 import com.zero1labs.nutriscan.data.models.MainDetailsForView
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.data.models.remote.Product
+import com.zero1labs.nutriscan.models.data.Additive
 import com.zero1labs.nutriscan.models.data.AppUser
+import com.zero1labs.nutriscan.models.data.getAdditivesDataFromJson
 import com.zero1labs.nutriscan.repository.AppRepository
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.utils.AppResources.TAG
@@ -33,7 +35,9 @@ data class HomePageState(
     val searchHistory: List<SearchHistoryListItem> = mutableListOf(),
     val firebaseDataFetchState: FirebaseDataFetchState = FirebaseDataFetchState.Loading,
     val appUser: AppUser? = null,
-    val userDetailsUpdateState: UserDetailsUpdateState = UserDetailsUpdateState.NOT_STARTED
+    val userDetailsUpdateState: UserDetailsUpdateState = UserDetailsUpdateState.NOT_STARTED,
+    val additivesData : List<Additive>? = null,
+    val additivesForView: List<Additive>? = null,
 )
 enum class ProductScanState{
     Success,
@@ -124,6 +128,27 @@ class HomePageViewModel @Inject constructor(
                 updateUserPreferences(event.appUser)
                 updateUserDetails()
             }
+
+            is HomePageEvent.UpdateAdditivesData -> updateAdditivesData(event.additives)
+        }
+    }
+
+    private fun updateAdditivesData(additives: List<Additive>) {
+        updateState(additivesData = additives)
+        logger("additives data updates with ${additives.size} additives")
+    }
+
+    private fun updateAdditivesForProduct(){
+        logger("Additives Strings : ${_uiState.value.product?.additivesOriginalTags}")
+        _uiState.value.product?.let { product ->
+            val additives = product.additivesOriginalTags ?: mutableListOf()
+            val additivesForView = getAdditivesDataFromJson(
+                additives = additives,
+                additivesData = _uiState.value.additivesData ?: mutableListOf()
+            )
+            updateState(additivesForView = additivesForView)
+            logger("Showing Additives List")
+            additivesForView.forEach { logger(it.name) }
         }
     }
 
@@ -146,14 +171,12 @@ class HomePageViewModel @Inject constructor(
                         }
 
                         viewModelScope.launch{
-                            updateState(
-                                productScanState = ProductScanState.Success,
-                                product = response.data
-                            )
-                            updateProductScanState(ProductScanState.NotStarted)
-                            addItemToSearchHistory(item)
+                                updateState(product = response.data)
+                                updateAdditivesForProduct()
+                                addItemToSearchHistory(item)
+                                updateState(productScanState = ProductScanState.Success)
+                                updateProductScanState(ProductScanState.NotStarted)
                         }
-
                     }
                     is Resource.Error -> {
                         logger("Error in viewModel while fetching product details")
@@ -357,13 +380,15 @@ class HomePageViewModel @Inject constructor(
 //        val userDetailsUpdateState: UserDetailsUpdateState = UserDetailsUpdateState.NOT_STARTED
 //    )
     private fun updateState(
-       product: Product? = _uiState.value.product,
-       msg: String? = _uiState.value.msg,
-       productScanState: ProductScanState = _uiState.value.productScanState,
-       searchHistory: List<SearchHistoryListItem> = _uiState.value.searchHistory,
-       firebaseDataFetchState: FirebaseDataFetchState = _uiState.value.firebaseDataFetchState,
-       appUser: AppUser? = _uiState.value.appUser,
-       userDetailsUpdateState: UserDetailsUpdateState = _uiState.value.userDetailsUpdateState,
+    product: Product? = _uiState.value.product,
+    msg: String? = _uiState.value.msg,
+    productScanState: ProductScanState = _uiState.value.productScanState,
+    searchHistory: List<SearchHistoryListItem> = _uiState.value.searchHistory,
+    firebaseDataFetchState: FirebaseDataFetchState = _uiState.value.firebaseDataFetchState,
+    appUser: AppUser? = _uiState.value.appUser,
+    userDetailsUpdateState: UserDetailsUpdateState = _uiState.value.userDetailsUpdateState,
+    additivesData: List<Additive>? = _uiState.value.additivesData,
+    additivesForView: List<Additive>? = _uiState.value.additivesForView,
     ){
 
         _uiState.update {
@@ -375,6 +400,8 @@ class HomePageViewModel @Inject constructor(
                 firebaseDataFetchState = firebaseDataFetchState,
                 appUser = appUser,
                 userDetailsUpdateState = userDetailsUpdateState,
+                additivesData = additivesData,
+                additivesForView = additivesForView,
             )
         }
     }

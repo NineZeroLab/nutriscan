@@ -22,6 +22,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.data.models.SearchHistoryListItem
 import com.zero1labs.nutriscan.databinding.FragmentHomePageBinding
+import com.zero1labs.nutriscan.models.data.parseAdditivesFromJson
 import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.utils.AppResources.TAG
@@ -29,8 +30,11 @@ import com.zero1labs.nutriscan.utils.hide
 import com.zero1labs.nutriscan.utils.invisible
 import com.zero1labs.nutriscan.utils.logger
 import com.zero1labs.nutriscan.utils.show
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 class HomePage : Fragment() {
 
@@ -49,12 +53,28 @@ class HomePage : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.onEvent(HomePageEvent.UpdateUserDetails)
+        loadAdditivesData()
         buildToolbar()
         Log.d(TAG,"Products from firebase: ${viewModel.uiState.value.searchHistory}")
         handleScanButton()
         handleDemoItemButton()
         buildSearchHistoryRv()
         handleUiState(view)
+    }
+
+    private fun loadAdditivesData() {
+        logger(""" //// loading additives data/////""")
+        if (viewModel.uiState.value.additivesData.isNullOrEmpty()){
+            logger("Additives data is empty")
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
+                logger("Trying to add additives to list")
+                val additives = parseAdditivesFromJson(requireContext())
+                viewModel.onEvent(HomePageEvent.UpdateAdditivesData(additives))
+            }
+        }else{
+            logger("additives data is not null")
+            logger("Additives has ${viewModel.uiState.value.additivesData?.size} items")
+        }
     }
 
     private fun handleUiState(view: View) {

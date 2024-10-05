@@ -38,4 +38,7 @@ data class Product(
 
     @SerializedName("ingredients_analysis_tags")
     val ingredientsAnalysisTags: List<String>?,
+
+    @SerializedName("additives_original_tags")
+    val additivesOriginalTags: List<String>?,
 )

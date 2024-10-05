@@ -41,4 +41,8 @@ fun String.isValidUserName(): Boolean{
     return true
 }
 
+fun String.cleanUpLanguageIndicator(): String{
+    return this.split(":").getOrNull(1) ?: ""
+}
+
 

@@ -25,6 +25,7 @@ import com.zero1labs.nutriscan.data.models.Nutrient
 import com.zero1labs.nutriscan.utils.NutrientCategory
 import com.zero1labs.nutriscan.data.models.NutrientGenerator
 import com.zero1labs.nutriscan.databinding.FragmentProductDetailsPageBinding
+import com.zero1labs.nutriscan.models.data.Additive
 import com.zero1labs.nutriscan.pages.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.pages.homepage.ProductScanState
@@ -103,8 +104,10 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
     private fun buildUi() {
         viewModel.uiState.value.let {  state ->
             state.product?.let { product ->
+                logger("Inside Build UI of product Details Page Additives for View list has ${state.additivesForView?.size} items")
                 val userDietaryPreference = state.appUser?.dietaryPreferences
                 val userDietaryRestrictions = state.appUser?.dietaryRestrictions
+                val productAdditives = state.additivesForView ?: mutableListOf()
                 val userAllergens = state.appUser?.allergens
                 val nutrientGenerator = NutrientGenerator(product)
                 val negativeNutrientsForView =
@@ -132,8 +135,9 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                     mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
                     dietaryPreferenceConclusion = dietaryPreferenceConclusion,
                 )
-                if (dietaryRestrictionConclusion != "" || allergenConclusion != "") {
+                if (dietaryRestrictionConclusion != "" || allergenConclusion != "" || productAdditives.isNotEmpty()) {
                     buildFoodConsiderations(
+                        productAdditives,
                         dietaryRestrictionConclusion,
                         allergenConclusion
                     )
@@ -159,8 +163,10 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         }
     }
 
-    private fun buildFoodConsiderations(dietaryRestrictionConclusion: String, allergenConclusion: String) {
-        if (dietaryRestrictionConclusion == "" && allergenConclusion == "") return
+    private fun buildFoodConsiderations(additives: List<Additive>, dietaryRestrictionConclusion: String, allergenConclusion: String) {
+        logger("////////////////////////////////This Product Contains ${additives.size} additives//////////////////////////////////")
+        if (additives.isNotEmpty() && dietaryRestrictionConclusion == "" && allergenConclusion == "") return
+
         val headerView = LayoutInflater.from(requireContext()).inflate(R.layout.nutrients_header,llProductDetailsLayout, false)
         headerView.findViewById<TextView>(R.id.tv_nutrients_header).text = getString(R.string.food_considerations)
         headerView.findViewById<TextView>(R.id.serving_quantity).text = ""
@@ -176,6 +182,11 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
             allergenConclusionView.findViewById<TextView>(R.id.tv_conclusion).text = allergenConclusion
             llProductDetailsLayout.addView(allergenConclusionView)
         }
+//        if (additives.isNotEmpty()){
+            val additivesConclusionView = LayoutInflater.from(requireContext()).inflate(R.layout.food_considerations_text, llProductDetailsLayout, false)
+            additivesConclusionView.findViewById<TextView>(R.id.tv_conclusion).text = "This product contains ${additives.size} additives"
+            llProductDetailsLayout.addView(additivesConclusionView)
+//        }
     }
 
     private fun buildAllergensView(allergens: List<Allergen>) {
