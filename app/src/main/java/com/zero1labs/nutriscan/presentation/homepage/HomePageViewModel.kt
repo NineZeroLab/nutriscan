@@ -9,14 +9,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.zero1labs.nutriscan.domain.model.MainDetailsForView
 import com.zero1labs.nutriscan.domain.model.SearchHistoryListItem
-import com.zero1labs.nutriscan.data.remote.dto.ProductDto
 import com.zero1labs.nutriscan.domain.model.AppUser
-import com.zero1labs.nutriscan.data.repository.ProductRepositoryImpl
-import com.zero1labs.nutriscan.utils.AppResources
-import com.zero1labs.nutriscan.utils.AppResources.TAG
-import com.zero1labs.nutriscan.utils.FirebaseCollection
-import com.zero1labs.nutriscan.utils.Resource
-import com.zero1labs.nutriscan.utils.logger
+import com.mdev.openfoodfacts_client.data.repository.ProductRepositoryImpl
+import com.mdev.core.utils.AppResources.TAG
+import com.mdev.core.utils.Resource
+import com.mdev.core.utils.logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +24,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class HomePageState(
-    val product: ProductDto? = null,
+    val product: com.mdev.openfoodfacts_client.data.remote.dto.ProductDto? = null,
     val msg: String? = null,
     val productScanState: ProductScanState = ProductScanState.NotStarted,
     val searchHistory: List<SearchHistoryListItem> = mutableListOf(),
@@ -57,7 +54,7 @@ enum class UserDetailsUpdateState{
 class HomePageViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val appRepository: ProductRepositoryImpl,
+    private val openFoodFactsClient: ProductRepositoryImpl,
 ): ViewModel() {
     private val _uiState = MutableStateFlow(HomePageState())
     val uiState = _uiState.asStateFlow()
@@ -134,33 +131,28 @@ class HomePageViewModel @Inject constructor(
             )
         }
         viewModelScope.launch(Dispatchers.IO) {
-            appRepository.getProductDetailsById(productId){response ->
-                when (response) {
-                    is Resource.Success -> {
-
-                        val item = response.data?.let { product ->
-                            SearchHistoryListItem(
-                                mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
-                                timeStamp = Timestamp.now()
-                            )
-                        }
-
-                        viewModelScope.launch{
-                            updateState(
-                                productScanState = ProductScanState.Success,
-                                product = response.data
-                            )
-                            updateProductScanState(ProductScanState.NotStarted)
-                            addItemToSearchHistory(item)
-                        }
-
+            when (val response = openFoodFactsClient.getProductDetailsById(productId)) {
+                is Resource.Success -> {
+                    val item = response.data?.let { product ->
+                        SearchHistoryListItem(
+                            mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
+                            timeStamp = Timestamp.now()
+                        )
                     }
-                    is Resource.Error -> {
-                        logger("Error in viewModel while fetching product details")
-                        viewModelScope.launch {
-                            updateProductScanState(ProductScanState.Failure, response.message)
-                            updateProductScanState(ProductScanState.NotStarted)
-                        }
+                    viewModelScope.launch{
+                        updateState(
+                            productScanState = ProductScanState.Success,
+                            product = response.data
+                        )
+                        updateProductScanState(ProductScanState.NotStarted)
+                        addItemToSearchHistory(item)
+                    }
+                }
+                is Resource.Error -> {
+                    logger("Error in viewModel while fetching product details")
+                    viewModelScope.launch {
+                        updateProductScanState(ProductScanState.Failure, response.message)
+                        updateProductScanState(ProductScanState.NotStarted)
                     }
                 }
             }
@@ -177,7 +169,7 @@ class HomePageViewModel @Inject constructor(
             )
         }
         viewModelScope.launch(Dispatchers.IO) {
-            firestore.collection(FirebaseCollection.USERS)
+            firestore.collection(com.mdev.core.utils.FirebaseCollection.USERS)
                 .document(appUser.uid)
                 .set(appUser, SetOptions.merge())
                 .addOnSuccessListener {
@@ -185,7 +177,7 @@ class HomePageViewModel @Inject constructor(
                         it.copy(
                             userDetailsUpdateState = UserDetailsUpdateState.SUCCESS,
                             appUser = appUser,
-                            msg = AppResources.USER_DETAILS_UPDATED,
+                            msg = com.mdev.core.utils.AppResources.USER_DETAILS_UPDATED,
 
                         )
 
@@ -199,7 +191,7 @@ class HomePageViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             userDetailsUpdateState = UserDetailsUpdateState.FAILURE,
-                            msg = "${AppResources.USER_DETAILS_UPDATE_FAILURE} ${exception.message}"
+                            msg = "${com.mdev.core.utils.AppResources.USER_DETAILS_UPDATE_FAILURE} ${exception.message}"
                         )
                     }
                     _uiState.update {
@@ -217,9 +209,9 @@ class HomePageViewModel @Inject constructor(
         auth.uid?.let {uid ->
             item.mainDetailsForView.productId?.let {id ->
 
-                firestore.collection(FirebaseCollection.USERS)
+                firestore.collection(com.mdev.core.utils.FirebaseCollection.USERS)
                     .document(uid)
-                    .collection(FirebaseCollection.SEARCH)
+                    .collection(com.mdev.core.utils.FirebaseCollection.SEARCH)
                     .document(id)
                     .set(item).addOnCompleteListener { task ->
                         if (task.isSuccessful){
@@ -269,7 +261,7 @@ class HomePageViewModel @Inject constructor(
                     firebaseDataFetchState = FirebaseDataFetchState.Loading
                 )
             }
-            firestore.collection(FirebaseCollection.USERS)
+            firestore.collection(com.mdev.core.utils.FirebaseCollection.USERS)
                 .document(id)
                 .get()
                 .addOnSuccessListener { userSnapshot ->
@@ -314,9 +306,9 @@ class HomePageViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             auth.currentUser?.uid?.let {uid ->
-                firestore.collection(FirebaseCollection.USERS)
+                firestore.collection(com.mdev.core.utils.FirebaseCollection.USERS)
                     .document(uid)
-                    .collection(FirebaseCollection.SEARCH)
+                    .collection(com.mdev.core.utils.FirebaseCollection.SEARCH)
                     .get()
                     .addOnSuccessListener { documents ->
                         val searchHistoryListItems = mutableListOf<SearchHistoryListItem>()
@@ -357,7 +349,7 @@ class HomePageViewModel @Inject constructor(
 //        val userDetailsUpdateState: UserDetailsUpdateState = UserDetailsUpdateState.NOT_STARTED
 //    )
     private fun updateState(
-    product: ProductDto? = _uiState.value.product,
+    product: com.mdev.openfoodfacts_client.data.remote.dto.ProductDto? = _uiState.value.product,
     msg: String? = _uiState.value.msg,
     productScanState: ProductScanState = _uiState.value.productScanState,
     searchHistory: List<SearchHistoryListItem> = _uiState.value.searchHistory,

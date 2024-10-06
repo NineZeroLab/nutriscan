@@ -22,19 +22,23 @@ import com.bumptech.glide.Glide
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.domain.model.MainDetailsForView
 import com.zero1labs.nutriscan.domain.model.Nutrient
-import com.zero1labs.nutriscan.utils.NutrientCategory
+import com.mdev.core.domain.model.NutrientCategory
 import com.zero1labs.nutriscan.domain.model.NutrientGenerator
 import com.zero1labs.nutriscan.databinding.FragmentProductDetailsPageBinding
 import com.zero1labs.nutriscan.presentation.homepage.HomePageViewModel
-import com.zero1labs.nutriscan.utils.AppResources
 import com.zero1labs.nutriscan.presentation.homepage.ProductScanState
-import com.zero1labs.nutriscan.utils.Allergen
-import com.zero1labs.nutriscan.utils.HealthCategory
-import com.zero1labs.nutriscan.utils.NutrientType
-import com.zero1labs.nutriscan.utils.ProductType
-import com.zero1labs.nutriscan.utils.hide
-import com.zero1labs.nutriscan.utils.logger
-import com.zero1labs.nutriscan.utils.showSnackBar
+import com.mdev.core.domain.model.Allergen
+import com.mdev.core.domain.model.HealthCategory
+import com.mdev.core.domain.model.NutrientType
+import com.mdev.core.domain.model.ProductType
+import com.mdev.core.domain.model.getAllergenConclusion
+import com.mdev.core.domain.model.getAllergens
+import com.mdev.core.domain.model.getDietaryPreferenceConclusion
+import com.mdev.core.domain.model.getDietaryRestrictionConclusion
+import com.mdev.core.domain.model.getDietaryRestrictions
+import com.mdev.core.utils.hide
+import com.mdev.core.utils.logger
+import com.mdev.core.utils.showSnackBar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -111,23 +115,23 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                     nutrientGenerator.generateNutrientsForView(NutrientCategory.NEGATIVE)
                 val positiveNutrientsForView =
                     nutrientGenerator.generateNutrientsForView(NutrientCategory.POSITIVE)
-                val allergensForView = AppResources.getAllergens(product.allergensHierarchy)
+                val allergensForView = getAllergens(product.allergensHierarchy)
 
                 val productDietaryPreferences = nutrientGenerator.getNutrientPreference()
                 val productDietaryRestrictions =
-                    AppResources.getDietaryRestrictions(product.ingredientsAnalysisTags)
+                    getDietaryRestrictions(product.ingredientsAnalysisTags)
                 val dietaryPreferenceConclusion =
-                    AppResources.getDietaryPreferenceConclusion(
+                    getDietaryPreferenceConclusion(
                         productDietaryPreferences,
                         userDietaryPreference
                     )
                 val dietaryRestrictionConclusion =
-                    AppResources.getDietaryRestrictionConclusion(
+                    getDietaryRestrictionConclusion(
                         productDietaryRestrictions,
                         userDietaryRestrictions
                     )
                 val allergenConclusion =
-                    AppResources.getAllergenConclusion(allergensForView, userAllergens)
+                    getAllergenConclusion(allergensForView, userAllergens)
                 buildMainHeader(
                     mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
                     dietaryPreferenceConclusion = dietaryPreferenceConclusion,
@@ -141,14 +145,14 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
                 if (negativeNutrientsForView.isNotEmpty()) {
                     buildNutrientsView(
                         nutrientCategory = NutrientCategory.NEGATIVE,
-                        productType = AppResources.getProductType(product.categoriesHierarchy),
+                        productType = com.mdev.core.utils.AppResources.getProductType(product.categoriesHierarchy),
                         nutrientsForView = negativeNutrientsForView
                     )
                 }
                 if (positiveNutrientsForView.isNotEmpty()) {
                     buildNutrientsView(
                         nutrientCategory = NutrientCategory.POSITIVE,
-                        productType = AppResources.getProductType(product.categoriesHierarchy),
+                        productType = com.mdev.core.utils.AppResources.getProductType(product.categoriesHierarchy),
                         nutrientsForView = positiveNutrientsForView
                     )
                 }
@@ -241,7 +245,7 @@ class ProductDetailsPage : Fragment(R.layout.fragment_product_details_page) {
         val tvNutrientHeader: TextView = headerView.findViewById(R.id.tv_nutrients_header)
         val tvServingQuantity: TextView = headerView.findViewById(R.id.serving_quantity)
         tvNutrientHeader.text = nutrientCategory.header
-        tvServingQuantity.text = AppResources.getServingTextFromProductType(productType)
+        tvServingQuantity.text = com.mdev.core.utils.AppResources.getServingTextFromProductType(productType)
         llProductDetailsLayout.addView(headerView)
         for(nutrient in nutrientsForView){
             val (healthCategoryIcon, _) = getHealthCategoryIcon(

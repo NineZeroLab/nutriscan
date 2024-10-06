@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.zero1labs.nutriscan.R
-import com.zero1labs.nutriscan.domain.model.NutrientPreferenceType
+import com.mdev.core.domain.model.NutrientPreferenceType
 import com.zero1labs.nutriscan.domain.model.ProfileDetailsListItems
 
 class ProfileDetailsAdapter(private val profileDetailsListItems: MutableList<ProfileDetailsListItems>) : RecyclerView.Adapter<ViewHolder>() {

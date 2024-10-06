@@ -11,9 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zero1labs.nutriscan.R
-import com.zero1labs.nutriscan.utils.HealthCategory
+import com.mdev.core.domain.model.HealthCategory
 import com.zero1labs.nutriscan.domain.model.SearchHistoryListItem
-import com.zero1labs.nutriscan.utils.TimeCalculator
+import com.mdev.core.utils.TimeCalculator
 import java.time.LocalDateTime
 import java.time.ZoneId
 

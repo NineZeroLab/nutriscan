@@ -1,7 +1,8 @@
 package com.zero1labs.nutriscan.domain.model
 
-import com.zero1labs.nutriscan.utils.Allergen
-import com.zero1labs.nutriscan.utils.DietaryRestriction
+import com.mdev.core.domain.model.Allergen
+import com.mdev.core.domain.model.DietaryRestriction
+import com.mdev.core.domain.model.NutrientPreference
 
 
 data class AppUser(

@@ -9,9 +9,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.zero1labs.nutriscan.domain.model.AppUser
-import com.zero1labs.nutriscan.utils.AppResources
-import com.zero1labs.nutriscan.utils.AppResources.TAG
-import com.zero1labs.nutriscan.utils.FirebaseCollection
+import com.mdev.core.utils.AppResources
+import com.mdev.core.utils.AppResources.TAG
+import com.mdev.core.utils.FirebaseCollection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -73,7 +73,7 @@ class AuthViewModel @Inject constructor(
                             _uiState.update {
                                 it.copy(
                                     signInStatus = SignInStatus.ERROR,
-                                    errorMsg = AppResources.INVALID_USERNAME_PASSWORD
+                                    errorMsg = com.mdev.core.utils.AppResources.INVALID_USERNAME_PASSWORD
                                 )
                             }
                             _uiState.update {
@@ -93,7 +93,7 @@ class AuthViewModel @Inject constructor(
                             _uiState.update {
                                 it.copy(
                                     signInStatus = SignInStatus.ERROR,
-                                    errorMsg = AppResources.INVALID_USERNAME_PASSWORD
+                                    errorMsg = com.mdev.core.utils.AppResources.INVALID_USERNAME_PASSWORD
                                 )
                             }
                             _uiState.update {
@@ -160,7 +160,7 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun fetchUserDetails() {
-        firestore.collection(FirebaseCollection.USERS)
+        firestore.collection(com.mdev.core.utils.FirebaseCollection.USERS)
             .document(auth.currentUser?.uid.toString())
             .get()
             .addOnSuccessListener {userSnapshot ->
@@ -184,7 +184,7 @@ class AuthViewModel @Inject constructor(
             name = firebaseUser.email.toString(),
             uid = firebaseUser.uid
         )
-        firestore.collection(FirebaseCollection.USERS).document(firebaseUser.uid).set(
+        firestore.collection(com.mdev.core.utils.FirebaseCollection.USERS).document(firebaseUser.uid).set(
             appUser, SetOptions.merge()
         )
     }

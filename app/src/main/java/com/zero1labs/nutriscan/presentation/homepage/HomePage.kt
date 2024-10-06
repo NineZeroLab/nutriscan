@@ -23,12 +23,11 @@ import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.domain.model.SearchHistoryListItem
 import com.zero1labs.nutriscan.databinding.FragmentHomePageBinding
 import com.zero1labs.nutriscan.ocr.BarCodeScannerOptions
-import com.zero1labs.nutriscan.utils.AppResources
-import com.zero1labs.nutriscan.utils.AppResources.TAG
-import com.zero1labs.nutriscan.utils.hide
-import com.zero1labs.nutriscan.utils.invisible
-import com.zero1labs.nutriscan.utils.logger
-import com.zero1labs.nutriscan.utils.show
+import com.mdev.core.utils.AppResources.TAG
+import com.mdev.core.utils.hide
+import com.mdev.core.utils.invisible
+import com.mdev.core.utils.logger
+import com.mdev.core.utils.show
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -131,7 +130,7 @@ class HomePage : Fragment() {
     private fun handleDemoItemButton() {
         viewBinding.fabGetDemoItem.setOnClickListener {
             Log.d("logger", "Get Demo Item fab clicked")
-            viewModel.onEvent(HomePageEvent.FetchProductDetails(AppResources.getRandomItem()))
+            viewModel.onEvent(HomePageEvent.FetchProductDetails(com.mdev.core.utils.AppResources.getRandomItem()))
 
         }
     }

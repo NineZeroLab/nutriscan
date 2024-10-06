@@ -1,8 +1,7 @@
 package com.zero1labs.nutriscan.domain.model
 
 import android.util.Log
-import com.zero1labs.nutriscan.data.remote.dto.ProductDto
-import com.zero1labs.nutriscan.utils.HealthCategory
+import com.mdev.core.domain.model.HealthCategory
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
 
 class MainDetailsForView(
@@ -13,7 +12,7 @@ class MainDetailsForView(
     val healthCategory: HealthCategory = HealthCategory.UNKNOWN
 ){
     companion object{
-        fun getMainDetailsForView(product : ProductDto) : MainDetailsForView {
+        fun getMainDetailsForView(product : com.mdev.openfoodfacts_client.data.remote.dto.ProductDto) : MainDetailsForView {
 
             val nutriScoreGrade = if (product.nutriScoreGrade == "unknown") NutriScoreCalculator.getNutriScoreGrade(
                 product.nutrients

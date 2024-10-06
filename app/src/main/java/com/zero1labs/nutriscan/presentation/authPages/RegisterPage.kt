@@ -13,13 +13,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.zero1labs.nutriscan.databinding.FragmentRegisterPageBinding
-import com.zero1labs.nutriscan.utils.AppResources.TAG
-import com.zero1labs.nutriscan.utils.getInput
-import com.zero1labs.nutriscan.utils.isValidEmail
-import com.zero1labs.nutriscan.utils.isValidPassword
-import com.zero1labs.nutriscan.utils.logger
-import com.zero1labs.nutriscan.utils.removeError
-import com.zero1labs.nutriscan.utils.showSnackBar
+import com.mdev.core.utils.AppResources.TAG
+import com.mdev.core.utils.getInput
+import com.mdev.core.utils.isValidEmail
+import com.mdev.core.utils.isValidPassword
+import com.mdev.core.utils.logger
+import com.mdev.core.utils.removeError
+import com.mdev.core.utils.showSnackBar
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

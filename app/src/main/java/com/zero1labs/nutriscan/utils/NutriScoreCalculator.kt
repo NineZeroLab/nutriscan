@@ -1,6 +1,9 @@
 package com.zero1labs.nutriscan.utils
 
-import com.zero1labs.nutriscan.data.remote.dto.NutrientsDto
+import com.mdev.core.domain.model.NutrientCategory
+import com.mdev.core.domain.model.NutrientType
+import com.mdev.openfoodfacts_client.data.remote.dto.NutrientsDto
+
 
 class NutriScoreCalculator {
 

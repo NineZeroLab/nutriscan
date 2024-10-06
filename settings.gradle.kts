@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "nutriscan"
 include(":app")
- 
+include(":core")
+include(":client-openfoodfacts")

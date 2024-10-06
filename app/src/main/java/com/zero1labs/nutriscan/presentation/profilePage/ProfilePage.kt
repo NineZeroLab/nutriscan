@@ -20,26 +20,26 @@ import androidx.navigation.ui.setupWithNavController
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.databinding.FragmentWelcomePageBinding
 import com.zero1labs.nutriscan.domain.model.AppUser
-import com.zero1labs.nutriscan.domain.model.NutrientPreference
-import com.zero1labs.nutriscan.domain.model.NutrientPreferenceType
+import com.mdev.core.domain.model.NutrientPreference
+import com.mdev.core.domain.model.NutrientPreferenceType
 import com.zero1labs.nutriscan.presentation.homepage.HomePageEvent
 import com.zero1labs.nutriscan.presentation.homepage.HomePageViewModel
 import com.zero1labs.nutriscan.presentation.homepage.UserDetailsUpdateState
-import com.zero1labs.nutriscan.utils.Allergen
-import com.zero1labs.nutriscan.utils.AppResources.TAG
-import com.zero1labs.nutriscan.utils.DietaryRestriction
-import com.zero1labs.nutriscan.utils.NutrientType
+import com.mdev.core.domain.model.Allergen
+import com.mdev.core.utils.AppResources.TAG
+import com.mdev.core.domain.model.DietaryRestriction
+import com.mdev.core.domain.model.NutrientType
 import kotlinx.coroutines.launch
-import com.zero1labs.nutriscan.utils.DietaryRestriction.*
-import com.zero1labs.nutriscan.utils.addImage
-import com.zero1labs.nutriscan.utils.getInput
-import com.zero1labs.nutriscan.utils.hide
-import com.zero1labs.nutriscan.utils.hideKeyBoard
-import com.zero1labs.nutriscan.utils.isValidUserName
-import com.zero1labs.nutriscan.utils.isVisible
-import com.zero1labs.nutriscan.utils.logger
-import com.zero1labs.nutriscan.utils.show
-import com.zero1labs.nutriscan.utils.showSnackBar
+import com.mdev.core.domain.model.DietaryRestriction.*
+import com.mdev.core.utils.addImage
+import com.mdev.core.utils.getInput
+import com.mdev.core.utils.hide
+import com.mdev.core.utils.hideKeyBoard
+import com.mdev.core.utils.isValidUserName
+import com.mdev.core.utils.isVisible
+import com.mdev.core.utils.logger
+import com.mdev.core.utils.show
+import com.mdev.core.utils.showSnackBar
 
 class ProfilePage : Fragment(R.layout.fragment_welcome_page) {
     private lateinit var dietaryPreferences: MutableList<NutrientPreference>

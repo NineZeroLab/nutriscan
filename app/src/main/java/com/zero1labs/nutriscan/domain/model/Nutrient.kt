@@ -1,14 +1,15 @@
 package com.zero1labs.nutriscan.domain.model
 
-import com.zero1labs.nutriscan.data.remote.dto.ProductDto
-import com.zero1labs.nutriscan.utils.HealthCategory
+import com.mdev.core.domain.model.HealthCategory
+import com.mdev.core.domain.model.NutrientCategory
+import com.mdev.core.domain.model.NutrientPreference
+import com.mdev.core.domain.model.NutrientPreferenceType
+import com.mdev.core.domain.model.NutrientType
+import com.mdev.core.domain.model.PointsLevel
 import com.zero1labs.nutriscan.utils.NutriScoreCalculator
-import com.zero1labs.nutriscan.utils.NutrientCategory
-import com.zero1labs.nutriscan.utils.NutrientType
-import com.zero1labs.nutriscan.utils.PointsLevel
-import com.zero1labs.nutriscan.utils.round
+import com.mdev.core.utils.round
 
-class NutrientGenerator(product: ProductDto){
+class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.remote.dto.ProductDto){
     private var nutrients : MutableList<Nutrient>
         init {
             val productNutrients = product.nutrients
@@ -48,7 +49,7 @@ class NutrientGenerator(product: ProductDto){
                 contentPerHundredGrams = productNutrients?.fiber100g ?: 0,
                 servingUnit = productNutrients?.fiberUnit ?: ""
             )
-            val sodiumContentInMg = NutriScoreCalculator.getMgFromGram(productNutrients?.sodium100g)
+            val sodiumContentInMg = com.zero1labs.nutriscan.utils.NutriScoreCalculator.getMgFromGram(productNutrients?.sodium100g)
             val sodium = Nutrient.getNutrient(
                 nutrientType = NutrientType.SODIUM,
                 points = nutriScoreData?.sodiumPoints
