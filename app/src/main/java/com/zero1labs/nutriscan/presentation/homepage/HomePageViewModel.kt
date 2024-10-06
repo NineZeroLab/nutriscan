@@ -9,7 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.zero1labs.nutriscan.domain.model.MainDetailsForView
 import com.zero1labs.nutriscan.domain.model.SearchHistoryListItem
-import com.zero1labs.nutriscan.domain.model.AppUser
+import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.openfoodfacts_client.data.repository.ProductRepositoryImpl
 import com.mdev.core.utils.AppResources.TAG
 import com.mdev.core.utils.Resource

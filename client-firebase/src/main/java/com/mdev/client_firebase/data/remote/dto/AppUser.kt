@@ -1,4 +1,4 @@
-package com.zero1labs.nutriscan.domain.model
+package com.mdev.client_firebase.data.remote.dto
 
 import com.mdev.core.domain.model.Allergen
 import com.mdev.core.domain.model.DietaryRestriction

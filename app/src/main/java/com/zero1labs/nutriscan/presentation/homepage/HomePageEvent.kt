@@ -1,6 +1,6 @@
 package com.zero1labs.nutriscan.presentation.homepage
 
-import com.zero1labs.nutriscan.domain.model.AppUser
+import com.mdev.client_firebase.data.remote.dto.AppUser
 
 sealed class HomePageEvent {
     data object SignOut: HomePageEvent()

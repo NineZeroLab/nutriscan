@@ -23,3 +23,4 @@ rootProject.name = "nutriscan"
 include(":app")
 include(":core")
 include(":client-openfoodfacts")
+include(":client-firebase")

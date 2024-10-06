@@ -2,6 +2,7 @@ package com.mdev.core.utils
 
 import android.util.Log
 import com.mdev.core.utils.AppResources.TAG
+import java.text.DecimalFormat
 
 fun String.isValidEmail(): Pair<Boolean, String>{
     val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
@@ -41,4 +42,8 @@ fun String.isValidUserName(): Boolean{
     return true
 }
 
+fun Double.round(): Double{
+    val decimalFormat = DecimalFormat("#.00")
+    return decimalFormat.format(this).toDouble()
+}
 

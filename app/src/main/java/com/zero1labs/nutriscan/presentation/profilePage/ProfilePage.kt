@@ -19,7 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.zero1labs.nutriscan.R
 import com.zero1labs.nutriscan.databinding.FragmentWelcomePageBinding
-import com.zero1labs.nutriscan.domain.model.AppUser
+import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.core.domain.model.NutrientPreference
 import com.mdev.core.domain.model.NutrientPreferenceType
 import com.zero1labs.nutriscan.presentation.homepage.HomePageEvent

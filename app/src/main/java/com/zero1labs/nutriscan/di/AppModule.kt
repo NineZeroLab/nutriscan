@@ -3,6 +3,8 @@ package com.zero1labs.nutriscan.di
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.mdev.client_firebase.FirebaseClient
+import com.mdev.client_firebase.data.repository.FirebaseRepositoryImpl
 import com.mdev.openfoodfacts_client.OpenFoodFactsClient
 import com.mdev.openfoodfacts_client.data.repository.ProductRepositoryImpl
 import dagger.Module
@@ -27,6 +29,13 @@ object AppModule{
     @Singleton
     fun providesFirebase(): Firebase{
         return Firebase
+    }
+
+    @Provides
+    @Singleton
+    fun providesFirebaseClient(): FirebaseRepositoryImpl{
+        val client = FirebaseClient()
+        return client()
     }
 
     @Provides
