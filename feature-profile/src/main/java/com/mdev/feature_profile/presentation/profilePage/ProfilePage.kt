@@ -36,6 +36,8 @@ import com.mdev.core.utils.showSnackBar
 import com.mdev.feature_profile.R
 import com.mdev.common.R as CommonRes
 import com.mdev.feature_profile.databinding.FragmentProfilePageBinding
+import com.mdev.feature_profile.navigation.ProfileNavigator
+import javax.inject.Inject
 
 class ProfilePage : Fragment() {
     private lateinit var dietaryPreferences: MutableList<NutrientPreference>
@@ -43,6 +45,8 @@ class ProfilePage : Fragment() {
     private lateinit var allergens: MutableList<Allergen>
     private lateinit var viewBinding: FragmentProfilePageBinding
     private lateinit var viewModel: ProfilePageViewModel
+    @Inject
+    private lateinit var navigator: ProfileNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,6 +74,17 @@ class ProfilePage : Fragment() {
     private fun handleUiState(view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
+                when(state.profileUpdateStatus){
+                    Status.LOADING -> {}
+                    Status.SUCCESS -> {
+                        view.showSnackBar("Updated Profile Details Successfully")
+                        navigator.navigateToHomeScreen()
+                    }
+                    Status.FAILURE -> {
+                        view.showSnackBar(state.errorMessage.toString())
+                    }
+                    Status.IDLE -> {}
+                }
 //                when (state.userDetailsUpdateState) {
 //                    com.mdev.feature_homepage.presentation.homepage.UserDetailsUpdateState.LOADING -> {}
 //                    com.mdev.feature_homepage.presentation.homepage.UserDetailsUpdateState.SUCCESS -> {
@@ -100,7 +115,7 @@ class ProfilePage : Fragment() {
                     dietaryRestrictions = dietaryRestrictions,
                     allergens = allergens
                 )
-//                viewModel.onEvent(com.mdev.feature_homepage.presentation.homepage.HomePageEvent.UpdateUserPreferences(appUser))
+                viewModel.onEvent(ProfilePageEvent.UpdateProfileDetails(appUser))
             }else {
                 view.showSnackBar("Invalid UserName")
             }
