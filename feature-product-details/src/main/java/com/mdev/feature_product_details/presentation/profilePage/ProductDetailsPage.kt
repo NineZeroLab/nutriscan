@@ -16,7 +16,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
+import com.mdev.common.utils.domain.model.Status
 import com.mdev.common.R as CommonRes
 import com.mdev.feature_product_details.R
 import com.mdev.openfoodfacts_client.domain.model.NutrientCategory
@@ -26,17 +29,23 @@ import com.mdev.openfoodfacts_client.domain.model.NutrientType
 import com.mdev.openfoodfacts_client.domain.model.ProductType
 import com.mdev.core.utils.hide
 import com.mdev.core.utils.logger
+import com.mdev.core.utils.showSnackBar
 import com.mdev.feature_product_details.databinding.FragmentProductDetailsPageBinding
 import com.mdev.feature_product_details.domain.model.MainDetailsForView
 import com.mdev.feature_product_details.domain.model.Nutrient
+import com.mdev.feature_product_details.navigation.ProductDetailsNavigator
 import com.mdev.openfoodfacts_client.utils.ClientResources
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class ProductDetailsPage : Fragment() {
 
     private lateinit var llProductDetailsLayout: LinearLayout
     private lateinit var viewBinding: FragmentProductDetailsPageBinding
     private lateinit var viewModel: ProductDetailsViewModel
+    @Inject
+    private lateinit var navigator: ProductDetailsNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,29 +61,19 @@ class ProductDetailsPage : Fragment() {
         llProductDetailsLayout = view.findViewById(R.id.ll_product_details_layout)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-//                viewModel.uiState.collectLatest { state ->
-//                    when(state.productScanState){
-//                        com.mdev.feature_homepage.presentation.homepage.ProductScanState.Success -> {
-//                            updateToolbar()
-//                            logger("Product Scan State ${state.productScanState.name}")
-//                            hideProgressBar()
-//                            buildUi()
-//                        }
-//                        com.mdev.feature_homepage.presentation.homepage.ProductScanState.Failure -> {
-//                            logger("Product Scan State ${state.productScanState.name}")
-//                            hideProgressBar()
-//                            view.showSnackBar(state.msg.toString())
-//                            findNavController().popBackStack()
-//                        }
-//                        com.mdev.feature_homepage.presentation.homepage.ProductScanState.Loading -> {
-//                            logger("Product Scan State ${state.productScanState.name}")
-//                            showProgressBar()
-//                        }
-//                        com.mdev.feature_homepage.presentation.homepage.ProductScanState.NotStarted -> {
-//                            logger("Product Scan State ${state.productScanState.name}")
-//                        }
-//                    }
-//                }
+                viewModel.uiState.collect{ state ->
+                    when(state.productDetailsFetchState){
+                        Status.LOADING -> {}
+                        Status.SUCCESS -> {
+                            updateToolbar()
+                            buildUi()
+                        }
+                        Status.FAILURE -> {
+                            view.showSnackBar(state.errorMessage.toString())
+                        }
+                        Status.IDLE -> {}
+                    }
+                }
             }
         }
     }
@@ -85,72 +84,33 @@ class ProductDetailsPage : Fragment() {
     }
     private fun updateToolbar(){
         viewBinding.mtbDetailsPage.apply {
-//            if (viewModel.uiState.value.productScanState != com.mdev.feature_homepage.presentation.homepage.ProductScanState.Loading){
-//                setupWithNavController(findNavController())
-//                setNavigationIcon(CommonRes.drawable.baseline_arrow_back_24)
-//                setNavigationIconTint(ContextCompat.getColor(requireContext(),CommonRes.color.md_theme_onPrimary))
-//                title = "Product Details"
-//            }
+            setupWithNavController(this.findNavController())
+            setNavigationIcon(CommonRes.drawable.baseline_arrow_back_24)
+            setNavigationIconTint(ContextCompat.getColor(requireContext(),CommonRes.color.md_theme_onPrimary))
+            title = "Product Details"
         }
     }
 
     private fun buildUi() {
-//        viewModel.uiState.value.let {  state ->
-//            state.product?.let { product ->
-//                val userDietaryPreference = state.appUser?.dietaryPreferences
-//                val userDietaryRestrictions = state.appUser?.dietaryRestrictions
-//                val userAllergens = state.appUser?.allergens
-//                val nutrientGenerator = NutrientGenerator(product)
-//                val negativeNutrientsForView =
-//                    nutrientGenerator.generateNutrientsForView(NutrientCategory.NEGATIVE)
-//                val positiveNutrientsForView =
-//                    nutrientGenerator.generateNutrientsForView(NutrientCategory.POSITIVE)
-//                val allergensForView = getAllergens(product.allergensHierarchy)
-//
-//                val productDietaryPreferences = nutrientGenerator.getNutrientPreference()
-//                val productDietaryRestrictions =
-//                    getDietaryRestrictions(product.ingredientsAnalysisTags)
-//                val dietaryPreferenceConclusion =
-//                    getDietaryPreferenceConclusion(
-//                        productDietaryPreferences,
-//                        userDietaryPreference
-//                    )
-//                val dietaryRestrictionConclusion =
-//                    getDietaryRestrictionConclusion(
-//                        productDietaryRestrictions,
-//                        userDietaryRestrictions
-//                    )
-//                val allergenConclusion =
-//                    getAllergenConclusion(allergensForView, userAllergens)
-//                buildMainHeader(
-//                    mainDetailsForView = MainDetailsForView.getMainDetailsForView(product),
-//                    dietaryPreferenceConclusion = dietaryPreferenceConclusion,
-//                )
-//                if (dietaryRestrictionConclusion != "" || allergenConclusion != "") {
-//                    buildFoodConsiderations(
-//                        dietaryRestrictionConclusion,
-//                        allergenConclusion
-//                    )
-//                }
-//                if (negativeNutrientsForView.isNotEmpty()) {
-//                    buildNutrientsView(
-//                        nutrientCategory = NutrientCategory.NEGATIVE,
-//                        productType = ClientResources.getProductType(product.categoriesHierarchy),
-//                        nutrientsForView = negativeNutrientsForView
-//                    )
-//                }
-//                if (positiveNutrientsForView.isNotEmpty()) {
-//                    buildNutrientsView(
-//                        nutrientCategory = NutrientCategory.POSITIVE,
-//                        productType = ClientResources.getProductType(product.categoriesHierarchy),
-//                        nutrientsForView = positiveNutrientsForView
-//                    )
-//                }
-////                        if (allergensForView.isNotEmpty()){
-////                        buildAllergensView(AppResources.getAllergens(product.allergensHierarchy))
-////                        }
-//            }
-//        }
+        viewModel.uiState.value.let { state ->
+            state.productDetails?.let { productDetails ->
+
+                buildMainHeader( productDetails.mainDetailsForView, state.userConclusion?.dietaryPreferenceConclusion ?: "")
+            }
+            state.userConclusion?.let { userConclusion ->
+                if (userConclusion.dietaryRestrictionConclusion != "" || userConclusion.allergenConclusion != ""){
+                    buildFoodConsiderations(userConclusion.dietaryRestrictionConclusion,userConclusion.allergenConclusion)
+                }
+            }
+            state.productDetails?.let {
+                if(it.negativeNutrients.isNotEmpty()){
+                    buildNutrientsView(NutrientCategory.NEGATIVE, it.productType, it.negativeNutrients)
+                }
+                if (it.positiveNutrients.isNotEmpty()){
+                    buildNutrientsView(NutrientCategory.POSITIVE, it.productType, it.positiveNutrients)
+                }
+            }
+        }
     }
 
     private fun buildFoodConsiderations(dietaryRestrictionConclusion: String, allergenConclusion: String) {
@@ -160,7 +120,6 @@ class ProductDetailsPage : Fragment() {
         headerView.findViewById<TextView>(R.id.serving_quantity).text = ""
         llProductDetailsLayout.addView(headerView)
         if (dietaryRestrictionConclusion != ""){
-
             val restrictionConclusionView = LayoutInflater.from(requireContext()).inflate(R.layout.food_considerations_text, llProductDetailsLayout, false)
             restrictionConclusionView.findViewById<TextView>(R.id.tv_conclusion).text = dietaryRestrictionConclusion
             llProductDetailsLayout.addView(restrictionConclusionView)
@@ -261,8 +220,10 @@ class ProductDetailsPage : Fragment() {
                 .into(ivNutrientCategoryIcon)
             llProductDetailsLayout.addView(nutrientView)
         }
-
     }
+    /**
+     * To be moved to utils/KotlinExtensions
+     */
     private fun getHealthCategoryIcon(context : Context, healthCategory: HealthCategory) : Pair<Int, Int> {
         return when(healthCategory){
             HealthCategory.HEALTHY,
@@ -286,6 +247,9 @@ class ProductDetailsPage : Fragment() {
         }
     }
 
+    /**
+     * To be moved to utils/KotlinExtensions
+     */
     private fun getNutrientIcon(nutrientType: NutrientType) : Int {
         return  when(nutrientType){
             NutrientType.ENERGY -> CommonRes.mipmap.calories

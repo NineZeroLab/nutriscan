@@ -6,7 +6,7 @@ import com.mdev.openfoodfacts_client.domain.repository.ProductRepository
 import com.mdev.openfoodfacts_client.utils.ResponseFields
 
 
-class ProductRepositoryImpl (
+internal class ProductRepositoryImpl (
     private val openFoodFactsApi: OpenFoodFactsApi
 ): ProductRepository {
     override suspend fun getProductDetailsById(productId: String): ProductDto? {

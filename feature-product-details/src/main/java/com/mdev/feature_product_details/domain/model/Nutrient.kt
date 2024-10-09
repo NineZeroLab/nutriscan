@@ -9,7 +9,7 @@ import com.mdev.openfoodfacts_client.domain.model.PointsLevel
 import com.mdev.core.utils.round
 import com.mdev.openfoodfacts_client.utils.NutriScoreCalculator
 
-class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.remote.dto.ProductDto){
+internal class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.remote.dto.ProductDto){
     private var nutrients : MutableList<Nutrient>
         init {
             val productNutrients = product.nutrients

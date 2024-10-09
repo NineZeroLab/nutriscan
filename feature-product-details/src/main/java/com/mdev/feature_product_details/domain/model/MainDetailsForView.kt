@@ -5,7 +5,7 @@ import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
 import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 import com.mdev.openfoodfacts_client.utils.NutriScoreCalculator
 
-class MainDetailsForView(
+internal class MainDetailsForView(
     val productId: String? = "",
     val imageUrl: String? = "",
     val productName: String = "",

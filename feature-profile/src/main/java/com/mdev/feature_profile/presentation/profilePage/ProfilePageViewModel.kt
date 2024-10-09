@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.common.utils.Resource
+import com.mdev.common.utils.domain.model.Status
 import com.mdev.feature_profile.domain.usecases.GetProfileDetailsUseCase
 import com.mdev.feature_profile.domain.usecases.UpdateProfileDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,12 +21,7 @@ data class ProfilePageState(
     val errorMessage: String? = null,
     val appUser: AppUser? = null,
 )
-enum class Status{
-    LOADING,
-    SUCCESS,
-    FAILURE,
-    IDLE
-}
+
 
 @HiltViewModel
 class ProfilePageViewModel @Inject constructor(
