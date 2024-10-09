@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_graph">
+    <fragment
+        android:id="@+id/loginPage"
+        tools:layout=""
+        android:label="RegisterPage"
+        android:name="com.mdev.feature_login.presentation.loginPage.LoginPage">
+    </fragment>
+</navigation>

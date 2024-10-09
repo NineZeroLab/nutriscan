@@ -1,8 +1,8 @@
 package com.mdev.client_firebase.data.remote.dto
 
-import com.mdev.core.domain.model.Allergen
-import com.mdev.core.domain.model.DietaryRestriction
-import com.mdev.core.domain.model.NutrientPreference
+import com.mdev.openfoodfacts_client.domain.model.Allergen
+import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction
+import com.mdev.openfoodfacts_client.domain.model.NutrientPreference
 
 
 data class AppUser(

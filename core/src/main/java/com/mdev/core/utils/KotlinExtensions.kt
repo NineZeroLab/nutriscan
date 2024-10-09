@@ -1,7 +1,7 @@
 package com.mdev.core.utils
 
 import android.util.Log
-import com.mdev.core.utils.AppResources.TAG
+import com.mdev.openfoodfacts_client.utils.ClientResources.TAG
 import java.text.DecimalFormat
 
 fun String.isValidEmail(): Pair<Boolean, String>{
