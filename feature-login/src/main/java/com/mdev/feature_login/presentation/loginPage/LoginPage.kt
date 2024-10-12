@@ -5,24 +5,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.mdev.core.utils.getInput
 import com.mdev.core.utils.isValidEmail
+import com.mdev.core.utils.logger
 import com.mdev.core.utils.removeError
 import com.mdev.core.utils.showSnackBar
 import com.mdev.feature_login.databinding.FragmentLoginPageBinding
 import com.mdev.feature_login.navigation.LoginNavigator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginPage : Fragment() {
 
     private lateinit var viewModel: LoginViewModel
     private lateinit var viewBinding: FragmentLoginPageBinding
     @Inject
-    private lateinit var navigator : LoginNavigator
+    lateinit var navigator : LoginNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -64,7 +68,7 @@ class LoginPage : Fragment() {
 
     private fun handleRegisterTextView() {
         viewBinding.tvRegister.setOnClickListener {
-            navigator.navigateToRegisterPage()
+            navigator.navigateToRegisterPage(this)
 //            findNavController().navigate(R.id.action_sign_in_page_to_register_page)
         }
     }
@@ -75,9 +79,10 @@ class LoginPage : Fragment() {
                 when(state.loginStatus){
                     LoginStatus.LOADING -> {}
                     LoginStatus.SUCCESS -> {
-                        navigator.navigateToHomePage()
+                        navigator.navigateToHomePage(view.findFragment())
                     }
                     LoginStatus.FAILURE -> {
+                        logger(state.errorMessage.toString())
                         view.showSnackBar(state.errorMessage.toString())
                     }
                     LoginStatus.IDLE -> {}

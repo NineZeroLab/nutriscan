@@ -42,20 +42,23 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":client-firebase"))
     implementation(project(":client-openfoodfacts"))
-    implementation(project(":feature-register"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.play.services.code.scanner)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    implementation(libs.barcode.scanning)
 
     implementation (libs.glide)
 

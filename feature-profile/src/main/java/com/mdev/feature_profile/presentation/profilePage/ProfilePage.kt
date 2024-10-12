@@ -13,9 +13,11 @@ import android.widget.ToggleButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.mdev.client_firebase.data.remote.dto.AppUser
+import com.mdev.common.utils.domain.model.Status
 import com.mdev.openfoodfacts_client.domain.model.NutrientPreference
 import com.mdev.openfoodfacts_client.domain.model.NutrientPreferenceType
 import com.mdev.openfoodfacts_client.domain.model.Allergen
@@ -37,8 +39,10 @@ import com.mdev.feature_profile.R
 import com.mdev.common.R as CommonRes
 import com.mdev.feature_profile.databinding.FragmentProfilePageBinding
 import com.mdev.feature_profile.navigation.ProfileNavigator
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProfilePage : Fragment() {
     private lateinit var dietaryPreferences: MutableList<NutrientPreference>
     private lateinit var dietaryRestrictions: MutableList<DietaryRestriction>
@@ -46,7 +50,7 @@ class ProfilePage : Fragment() {
     private lateinit var viewBinding: FragmentProfilePageBinding
     private lateinit var viewModel: ProfilePageViewModel
     @Inject
-    private lateinit var navigator: ProfileNavigator
+    lateinit var navigator: ProfileNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -78,7 +82,7 @@ class ProfilePage : Fragment() {
                     Status.LOADING -> {}
                     Status.SUCCESS -> {
                         view.showSnackBar("Updated Profile Details Successfully")
-                        navigator.navigateToHomeScreen()
+                        navigator.navigateToHomePage(view.findFragment())
                     }
                     Status.FAILURE -> {
                         view.showSnackBar(state.errorMessage.toString())

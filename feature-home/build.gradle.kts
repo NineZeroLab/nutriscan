@@ -53,6 +53,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation(libs.glide)
 
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
     implementation ("com.google.android.gms:play-services-code-scanner:16.1.0")

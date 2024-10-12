@@ -2,13 +2,28 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/product_details_graph">
+    android:id="@+id/product_details_graph"
+    app:startDestination="@id/product_details_page"
+    >
+
+    <fragment
+        android:id="@+id/scan_page"
+        android:label="ScanPage"
+        tools:layout="@layout/fragment_scan_page"
+        android:name="com.mdev.feature_product_details.ScanPage">
+        <action
+            android:id="@+id/action_scan_page_to_product_details_page"
+            app:destination="@id/product_details_page"/>
+    </fragment>
 
     <fragment
         android:id="@+id/product_details_page"
         tools:layout="@layout/fragment_product_details_page"
         android:name="com.mdev.feature_product_details.presentation.profilePage.ProductDetailsPage"
         android:label="ProductDetailsPage">
+        <argument
+            android:name="productId"
+            app:argType="string"/>
     </fragment>
 
 </navigation>

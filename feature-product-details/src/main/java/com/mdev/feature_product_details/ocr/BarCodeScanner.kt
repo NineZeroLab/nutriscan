@@ -1,8 +1,6 @@
-package com.mdev.feature_homepage.ocr
+package com.mdev.feature_product_details.ocr
 
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.barcode.common.Barcode.BarcodeFormat
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 
 class BarCodeScannerOptions{

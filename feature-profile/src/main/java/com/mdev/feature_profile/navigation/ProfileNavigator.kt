@@ -1,5 +1,7 @@
 package com.mdev.feature_profile.navigation
 
+import androidx.fragment.app.Fragment
+
 interface ProfileNavigator {
-    fun navigateToHomeScreen()
+    fun navigateToHomePage(fromFragment: Fragment)
 }

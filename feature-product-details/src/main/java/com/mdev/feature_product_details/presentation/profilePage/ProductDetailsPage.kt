@@ -35,17 +35,19 @@ import com.mdev.feature_product_details.domain.model.MainDetailsForView
 import com.mdev.feature_product_details.domain.model.Nutrient
 import com.mdev.feature_product_details.navigation.ProductDetailsNavigator
 import com.mdev.openfoodfacts_client.utils.ClientResources
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProductDetailsPage : Fragment() {
 
     private lateinit var llProductDetailsLayout: LinearLayout
     private lateinit var viewBinding: FragmentProductDetailsPageBinding
     private lateinit var viewModel: ProductDetailsViewModel
     @Inject
-    private lateinit var navigator: ProductDetailsNavigator
+    lateinit var navigator: ProductDetailsNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,19 +58,26 @@ class ProductDetailsPage : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity())[ProductDetailsViewModel::class]
+        viewModel = ViewModelProvider(requireActivity())[ProductDetailsViewModel::class.java]
+        handleArguments()
         buildInitialToolbar()
         llProductDetailsLayout = view.findViewById(R.id.ll_product_details_layout)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.uiState.collect{ state ->
                     when(state.productDetailsFetchState){
-                        Status.LOADING -> {}
+                        Status.LOADING -> {
+                            logger("Loading product details...")
+                        }
                         Status.SUCCESS -> {
+                            logger("Loading product success...")
+                            hideProgressBar()
                             updateToolbar()
                             buildUi()
                         }
                         Status.FAILURE -> {
+                            logger("Loading product failure...")
+                            hideProgressBar()
                             view.showSnackBar(state.errorMessage.toString())
                         }
                         Status.IDLE -> {}
@@ -76,6 +85,17 @@ class ProductDetailsPage : Fragment() {
                 }
             }
         }
+    }
+
+    private fun handleArguments() {
+        val args = arguments
+        val productId = args?.getString("productId")
+        if (productId.isNullOrEmpty()){
+            viewModel.onEvent(ProductDetailsPageEvent.GetProductDetails(ClientResources.getRandomItem()))
+        }else{
+            viewModel.onEvent(ProductDetailsPageEvent.GetProductDetails(productId.toString()))
+        }
+        logger("Fetching details for product $productId")
     }
 
     private fun buildInitialToolbar() {

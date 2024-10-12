@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@navigation/home_graph"
+    app:startDestination="@id/login_graph"
     >
     <include app:graph="@navigation/register_graph" />
     <include app:graph="@navigation/login_graph" />
@@ -13,6 +12,20 @@
 
     <action
         android:id="@+id/action_navigate_to_login_page"
-        app:destination="@id/loginPage"/>
+        app:destination="@id/login_graph"/>
 
+    <action
+        android:id="@+id/action_navigate_to_product_details_page"
+        app:destination="@id/product_details_graph"/>
+
+    <action
+        android:id="@+id/action_navigate_to_home_page"
+        app:destination="@id/home_graph"/>
+
+    <action
+        android:id="@+id/action_navigate_to_register_page"
+        app:destination="@id/register_graph"/>
+    <action
+        android:id="@+id/action_navigate_to_profile_graph"
+        app:destination="@id/profile_graph"/>
 </navigation>

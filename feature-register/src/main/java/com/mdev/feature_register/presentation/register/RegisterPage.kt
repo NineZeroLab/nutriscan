@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -17,15 +18,17 @@ import com.mdev.core.utils.logger
 import com.mdev.core.utils.showSnackBar
 import com.mdev.feature_register.databinding.FragmentRegisterPageBinding
 import com.mdev.feature_register.navigation.RegisterNavigator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class RegisterPage: Fragment(){
     private lateinit var viewModel: RegisterViewModel
     private lateinit var viewBinding: FragmentRegisterPageBinding
     @Inject
-    private lateinit var navigator: RegisterNavigator
+    lateinit var navigator: RegisterNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,7 +50,7 @@ class RegisterPage: Fragment(){
 
     private fun handleLoginTextView() {
         viewBinding.tvSignIn.setOnClickListener {
-            navigator.navigateToLoginPage()
+            navigator.popBackStack(this)
         }
     }
 
@@ -65,7 +68,7 @@ class RegisterPage: Fragment(){
                             logger(state.registerStatus.name)
                             Log.d(TAG, state.registerStatus.name)
                             view.showSnackBar("Registration Success", Snackbar.LENGTH_SHORT)
-                            navigator.navigateToLoginPage()
+                            navigator.popBackStack(this@RegisterPage)
                         }
 
                         RegisterStatus.FAILURE -> {

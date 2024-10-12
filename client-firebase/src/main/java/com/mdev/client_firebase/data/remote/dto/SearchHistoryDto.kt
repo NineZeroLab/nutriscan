@@ -4,8 +4,8 @@ import com.google.firebase.Timestamp
 import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 
 data class ProductDetailsDto(
-    val mainDetailsForView: MainDetailsForView,
-    val timestamp: Timestamp,
+    val mainDetailsForView: MainDetailsForView = MainDetailsForView(),
+    val timestamp: Timestamp = Timestamp.now(),
 )
 
 data class MainDetailsForView(

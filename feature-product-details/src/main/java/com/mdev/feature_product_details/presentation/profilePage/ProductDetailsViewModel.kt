@@ -1,14 +1,17 @@
 package com.mdev.feature_product_details.presentation.profilePage
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.mdev.common.utils.Resource
 import com.mdev.common.utils.domain.model.Status
+import com.mdev.core.utils.logger
 import com.mdev.feature_product_details.domain.model.ProductDetails
 import com.mdev.feature_product_details.domain.model.UserConclusion
 import com.mdev.feature_product_details.domain.usecases.GetProductDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -35,6 +38,7 @@ internal class ProductDetailsViewModel @Inject constructor(
     }
 
     private fun getProductDetails(productId: String) {
+        logger("fetching product details from viewModel...")
         getProductDetailsUseCase(productId).onEach { result ->
             when(result){
                 is Resource.Error -> {
@@ -62,6 +66,6 @@ internal class ProductDetailsViewModel @Inject constructor(
                     }
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 }

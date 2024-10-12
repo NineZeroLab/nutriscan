@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home_graph"
+        android:icon="@drawable/round_home_24"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_history"
+        android:icon="@drawable/baseline_history_24"
+        android:title="History" />
+    <item
+        android:id="@+id/product_details_graph"
+        android:icon="@drawable/baseline_qr_code_scanner_24"
+        android:title="Scan" />
+    <item
+        android:id="@+id/analytics_graph"
+        android:icon="@drawable/baseline_insert_chart_24"
+        android:title="Analytics" />
+    <item
+        android:id="@+id/profile_graph"
+        android:icon="@drawable/baseline_person_24"
+        android:title="Profile" />
+</menu>

@@ -20,7 +20,6 @@
             <option value="$PROJECT_DIR$/feature-product-details" />
             <option value="$PROJECT_DIR$/feature-profile" />
             <option value="$PROJECT_DIR$/feature-register" />
-            <option value="$PROJECT_DIR$/feature-scan" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

@@ -52,7 +52,6 @@ dependencies {
     implementation(project(":feature-product-details"))
     implementation(project(":feature-profile"))
     implementation(project(":feature-register"))
-    implementation(project(":feature-scan"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
