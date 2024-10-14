@@ -99,6 +99,7 @@ class HomePage : Fragment() {
                 return when(menuItem.itemId){
                     R.id.mi_sign_out -> {
                         viewModel.onEvent(HomePageEvent.LogOut)
+                        navigator.navigateFromHomePageToLoginPage(this@HomePage)
                         true
                     }
                     R.id.mi_edit_profile -> {

@@ -4,5 +4,5 @@ import androidx.fragment.app.Fragment
 
 interface LoginNavigator {
     fun navigateToRegisterPage(fromFragment: Fragment)
-    fun navigateToHomePage(fromFragment: Fragment)
+    fun navigateFromLoginPageToHomePage(fromFragment: Fragment)
 }

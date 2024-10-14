@@ -24,18 +24,25 @@ class AppNavigator @Inject constructor(): HomeNavigator, LoginNavigator, Product
         fromFragment.findNavController().navigate(R.id.action_navigate_to_product_details_page,bundle)
     }
 
+    override fun navigateFromHomePageToLoginPage(fromFragment: Fragment) {
+        fromFragment.findNavController().navigate(R.id.action_home_page_to_login_page)
+    }
+
     override fun navigateToRegisterPage(fromFragment: Fragment) {
         fromFragment.findNavController().navigate(R.id.action_navigate_to_register_page)
 
     }
 
-    override fun navigateToHomePage(fromFragment: Fragment) {
+    override fun navigateFromLoginPageToHomePage(fromFragment: Fragment) {
         logger("Navigating to HomePage")
-        fromFragment.findNavController().navigate(R.id.action_navigate_to_home_page)
+        fromFragment.findNavController().navigate(R.id.action_login_page_to_home_page)
     }
 
     override fun popBackStack(fromFragment: Fragment){
         fromFragment.findNavController().popBackStack()
+    }
+
+    override fun navigateToHomePage(fromFragment: Fragment) {
     }
 
 }

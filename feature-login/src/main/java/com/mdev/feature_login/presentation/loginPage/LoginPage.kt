@@ -8,11 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.findFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.Snackbar
 import com.mdev.core.utils.getInput
-import com.mdev.core.utils.isValidEmail
 import com.mdev.core.utils.logger
-import com.mdev.core.utils.removeError
 import com.mdev.core.utils.showSnackBar
 import com.mdev.feature_login.databinding.FragmentLoginPageBinding
 import com.mdev.feature_login.navigation.LoginNavigator
@@ -77,9 +74,13 @@ class LoginPage : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
                 when(state.loginStatus){
-                    LoginStatus.LOADING -> {}
+                    LoginStatus.LOADING -> {
+                        logger(state.loginStatus.name)
+                    }
                     LoginStatus.SUCCESS -> {
-                        navigator.navigateToHomePage(view.findFragment())
+                        logger("Login Success")
+                        view.showSnackBar("Logging in ...")
+                        navigator.navigateFromLoginPageToHomePage(view.findFragment())
                     }
                     LoginStatus.FAILURE -> {
                         logger(state.errorMessage.toString())

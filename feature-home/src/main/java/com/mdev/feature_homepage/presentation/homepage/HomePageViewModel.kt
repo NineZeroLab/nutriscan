@@ -3,6 +3,7 @@ package com.mdev.feature_homepage.presentation.homepage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mdev.client_firebase.data.remote.dto.AppUser
+import com.mdev.common.utils.Resource
 import com.mdev.common.utils.domain.model.Status
 import com.mdev.feature_homepage.domain.model.SearchHistoryListItem
 import com.mdev.feature_homepage.domain.usecases.FetchSearchHistoryUseCase
@@ -11,6 +12,8 @@ import com.mdev.feature_homepage.domain.usecases.LogOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -53,12 +56,31 @@ internal class HomePageViewModel @Inject constructor(
         }
     }
     private fun updateUserDetails(){
-        viewModelScope.launch {
-            val appUser = fetchUserDetailsUseCase()
-            _uiState.update {
-                it.copy(appUser = appUser)
+        fetchUserDetailsUseCase().onEach { result ->
+            when(result){
+                is Resource.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            errorMessage = result.message
+                        )
+                    }
+                }
+                is Resource.Loading -> {
+                    _uiState.update {
+                        it.copy(
+                            searchHistoryFetchStatus = Status.LOADING
+                        )
+                    }
+                }
+                is Resource.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            appUser = result.data
+                        )
+                    }
+                }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     private fun logOut() {

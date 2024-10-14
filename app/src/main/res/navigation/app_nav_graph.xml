@@ -22,8 +22,16 @@
         app:destination="@id/product_details_graph"/>
 
     <action
-        android:id="@+id/action_navigate_to_home_page"
+        android:id="@+id/action_login_page_to_home_page"
+        app:popUpTo="@layout/fragment_login_page"
+        app:popUpToInclusive="true"
         app:destination="@id/home_graph"/>
+    <action
+        android:id="@+id/action_home_page_to_login_page"
+        app:popUpTo="@layout/fragment_home_page"
+        app:popUpToInclusive="true"
+        app:destination="@id/login_graph"/>
+
 
     <action
         android:id="@+id/action_navigate_to_register_page"
