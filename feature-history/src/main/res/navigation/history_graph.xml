@@ -9,6 +9,6 @@
     <fragment
         android:id="@+id/history_page"
         android:label="HistoryPage"
-        android:name="com.mdev.feature_history.HistoryPage"
+        android:name="com.mdev.feature_history.presentation.history_page.HistoryPage"
         tools:layout="@layout/fragment_history_page"/>
 </navigation>

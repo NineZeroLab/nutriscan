@@ -1,4 +1,4 @@
-package com.mdev.feature_history
+package com.mdev.feature_history.presentation.history_page
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
