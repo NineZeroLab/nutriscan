@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation(project(":client-firebase"))
+    implementation(project(":client-openfoodfacts"))
     implementation(project(":common"))
     implementation(project(":core"))
 
@@ -50,6 +51,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation("com.google.firebase:firebase-firestore")
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
