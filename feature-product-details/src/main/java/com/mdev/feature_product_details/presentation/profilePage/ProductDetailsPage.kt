@@ -46,8 +46,6 @@ class ProductDetailsPage : Fragment() {
     private lateinit var llProductDetailsLayout: LinearLayout
     private lateinit var viewBinding: FragmentProductDetailsPageBinding
     private lateinit var viewModel: ProductDetailsViewModel
-    @Inject
-    lateinit var navigator: ProductDetailsNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -100,7 +98,6 @@ class ProductDetailsPage : Fragment() {
 
     private fun buildInitialToolbar() {
         viewBinding.mtbDetailsPage.title = "Loading Details..."
-
     }
     private fun updateToolbar(){
         viewBinding.mtbDetailsPage.apply {
@@ -112,6 +109,7 @@ class ProductDetailsPage : Fragment() {
     }
 
     private fun buildUi() {
+        llProductDetailsLayout.removeAllViews()
         viewModel.uiState.value.let { state ->
             state.productDetails?.let { productDetails ->
 

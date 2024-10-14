@@ -33,7 +33,10 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener{ _, destination, _ ->
             when(destination.id) {
-                com.mdev.feature_register.R.id.register_page , com.mdev.feature_login.R.id.login_page ->{
+                com.mdev.feature_register.R.id.register_page ,
+                com.mdev.feature_login.R.id.login_page ,
+                com.mdev.feature_product_details.R.id.product_details_page
+                ->{
                     bottomNavigationView.visibility = View.GONE
                 }
                 else ->{

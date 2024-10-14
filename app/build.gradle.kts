@@ -52,6 +52,8 @@ dependencies {
     implementation(project(":feature-product-details"))
     implementation(project(":feature-profile"))
     implementation(project(":feature-register"))
+    implementation(project(":feature-scan"))
+    implementation(project(":feature-history"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -67,7 +69,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
+//    implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation ("com.google.android.material:material:1.4.0")
 
     implementation(libs.androidx.core.splashscreen)

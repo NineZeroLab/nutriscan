@@ -49,8 +49,6 @@ class ProfilePage : Fragment() {
     private lateinit var allergens: MutableList<Allergen>
     private lateinit var viewBinding: FragmentProfilePageBinding
     private lateinit var viewModel: ProfilePageViewModel
-    @Inject
-    lateinit var navigator: ProfileNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,7 +80,7 @@ class ProfilePage : Fragment() {
                     Status.LOADING -> {}
                     Status.SUCCESS -> {
                         view.showSnackBar("Updated Profile Details Successfully")
-                        navigator.navigateToHomePage(view.findFragment())
+//                        navigator.navigateToHomePage(view.findFragment())
                     }
                     Status.FAILURE -> {
                         view.showSnackBar(state.errorMessage.toString())

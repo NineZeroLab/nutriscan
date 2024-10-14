@@ -24,10 +24,6 @@ class AppNavigator @Inject constructor(): HomeNavigator, LoginNavigator, Product
         fromFragment.findNavController().navigate(R.id.action_navigate_to_product_details_page,bundle)
     }
 
-    override fun navigateToProfilePage(fromFragment: Fragment) {
-        fromFragment.findNavController().navigate(R.id.action_navigate_to_profile_graph)
-    }
-
     override fun navigateToRegisterPage(fromFragment: Fragment) {
         fromFragment.findNavController().navigate(R.id.action_navigate_to_register_page)
 

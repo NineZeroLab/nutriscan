@@ -31,7 +31,7 @@ internal class HomePageViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomePageState())
     val uiState = _uiState.asStateFlow()
     /**
-     * Think of efficiently collecting values and stop collecting when the view is not started
+     * Think of ways to efficiently collect values
      */
     private val searchHistoryCollectionJob = viewModelScope.launch {
         fetchSearchHistoryUseCase().collect{ searchHistoryList ->
@@ -44,8 +44,8 @@ internal class HomePageViewModel @Inject constructor(
     }
 
     init {
-        searchHistoryCollectionJob.start()
         updateUserDetails()
+        searchHistoryCollectionJob.start()
     }
     fun onEvent(event: HomePageEvent){
         when(event){

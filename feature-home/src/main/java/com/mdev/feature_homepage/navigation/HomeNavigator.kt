@@ -4,5 +4,4 @@ import androidx.fragment.app.Fragment
 
 interface HomeNavigator {
     fun navigateToProductDetailsPage(fromFragment: Fragment, productId: String)
-    fun navigateToProfilePage(fromFragment: Fragment)
 }

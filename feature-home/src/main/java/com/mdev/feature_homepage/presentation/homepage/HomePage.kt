@@ -102,7 +102,7 @@ class HomePage : Fragment() {
                         true
                     }
                     R.id.mi_edit_profile -> {
-                        navigator.navigateToProfilePage(this@HomePage)
+//                        navigator.navigateToProfilePage(this@HomePage)
                         true
                     }
                     else -> {false}
