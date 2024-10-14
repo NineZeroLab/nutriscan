@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/register_graph"
+    app:startDestination="@id/register_page"
+    >
+    <fragment
+        android:id="@+id/register_page"
+        tools:layout="@layout/fragment_register_page"
+        android:label="RegisterPage"
+        android:name="com.mdev.feature_register.presentation.register.RegisterPage">
+    </fragment>
+
+</navigation>

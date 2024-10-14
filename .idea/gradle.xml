@@ -10,6 +10,18 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/client-firebase" />
+            <option value="$PROJECT_DIR$/client-openfoodfacts" />
+            <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/feature-analytics" />
+            <option value="$PROJECT_DIR$/feature-history" />
+            <option value="$PROJECT_DIR$/feature-home" />
+            <option value="$PROJECT_DIR$/feature-login" />
+            <option value="$PROJECT_DIR$/feature-product-details" />
+            <option value="$PROJECT_DIR$/feature-profile" />
+            <option value="$PROJECT_DIR$/feature-register" />
+            <option value="$PROJECT_DIR$/feature-scan" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

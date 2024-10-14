@@ -21,4 +21,15 @@ dependencyResolutionManagement {
 
 rootProject.name = "nutriscan"
 include(":app")
- 
+include(":core")
+include(":client-openfoodfacts")
+include(":client-firebase")
+include(":feature-register")
+include(":common")
+include(":feature-login")
+include(":feature-home")
+include(":feature-profile")
+include(":feature-product-details")
+include(":feature-analytics")
+include(":feature-scan")
+include(":feature-history")

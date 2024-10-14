@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/login_graph"
+    >
+    <include app:graph="@navigation/register_graph" />
+    <include app:graph="@navigation/login_graph" />
+    <include app:graph="@navigation/home_graph" />
+    <include app:graph="@navigation/product_details_graph" />
+    <include app:graph="@navigation/analytics_graph" />
+    <include app:graph="@navigation/profile_graph" />
+    <include app:graph="@navigation/scan_graph" />
+    <include app:graph="@navigation/history_graph" />
+
+    <action
+        android:id="@+id/action_navigate_to_login_page"
+        app:destination="@id/login_graph"/>
+
+    <action
+        android:id="@+id/action_navigate_to_product_details_page"
+        app:destination="@id/product_details_graph"/>
+
+    <action
+        android:id="@+id/action_login_page_to_home_page"
+        app:popUpTo="@layout/fragment_login_page"
+        app:popUpToInclusive="true"
+        app:destination="@id/home_graph"/>
+    <action
+        android:id="@+id/action_home_page_to_login_page"
+        app:popUpTo="@layout/fragment_home_page"
+        app:popUpToInclusive="true"
+        app:destination="@id/login_graph"/>
+
+
+    <action
+        android:id="@+id/action_navigate_to_register_page"
+        app:destination="@id/register_graph"/>
+</navigation>
