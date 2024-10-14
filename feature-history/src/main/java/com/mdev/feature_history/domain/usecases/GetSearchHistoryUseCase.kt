@@ -3,18 +3,21 @@ package com.mdev.feature_history.domain.usecases
 import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.common.utils.Resource
+import com.mdev.feature_history.domain.model.SearchHistoryItem
+import com.mdev.feature_history.domain.model.toSearchHistoryItem
+import com.mdev.feature_history.domain.repository.HistoryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class GetSearchHistoryUseCase @Inject constructor(
-    private val firebaseRepository: FirebaseRepository
+internal class GetSearchHistoryUseCase @Inject constructor(
+    private val historyRepository: HistoryRepository
 ) {
-    operator fun invoke(): Flow<Resource<List<ProductDetailsDto>>> = flow{
+    operator fun invoke(): Flow<Resource<List<SearchHistoryItem>>> = flow{
         emit(Resource.Loading())
         try {
-            firebaseRepository.getSearchHistory().collect{ searchHistory ->
-                emit(Resource.Success(searchHistory))
+            historyRepository.getSearchHistory().collect{ searchHistoryDto ->
+                emit(Resource.Success(searchHistoryDto.map { it.toSearchHistoryItem() }))
             }
         }catch (e: Exception){
             emit(Resource.Error(e.message.toString()))
