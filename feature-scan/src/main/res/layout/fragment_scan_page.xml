@@ -5,10 +5,15 @@
     android:layout_height="match_parent"
     tools:context=".ScanPage">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Scan Page" />
+        android:orientation="vertical">
 
+        <androidx.camera.view.PreviewView
+            android:id="@+id/pv_camera"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+    </LinearLayout>
 </FrameLayout>
