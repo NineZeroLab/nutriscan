@@ -21,4 +21,9 @@ class LoginRepositoryImpl @Inject constructor(
             return Resource.Error(e.message.toString())
         }
     }
+
+    override suspend fun isUserLoggedIn(): Boolean {
+        return firebaseRepository.isUserLoggedIn()
+    }
+
 }
