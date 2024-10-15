@@ -1,17 +1,17 @@
 package com.mdev.openfoodfacts_client.data.repository
 
 import android.content.Context
-import androidx.core.content.ContextCompat
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.mdev.openfoodfacts_client.R
 import com.mdev.openfoodfacts_client.data.remote.OpenFoodFactsApi
 import com.mdev.openfoodfacts_client.data.remote.dto.AdditiveDto
 import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
+import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
+import com.mdev.openfoodfacts_client.domain.model.Allergen
+import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction
 import com.mdev.openfoodfacts_client.domain.repository.ProductRepository
 import com.mdev.openfoodfacts_client.utils.ResponseFields
-import java.io.File
 import javax.inject.Inject
 
 
@@ -26,7 +26,7 @@ internal class ProductRepositoryImpl @Inject constructor (
     override suspend fun getProductDetailsById(productId: String): ProductDto? {
         val searchResponse = openFoodFactsApi.getProductDetails(
             productId = productId,
-            fields = ResponseFields.getFields()
+            fields = ResponseFields.getProductDetailsFields()
         )
         return searchResponse.products.getOrNull(0)
     }
@@ -47,5 +47,24 @@ internal class ProductRepositoryImpl @Inject constructor (
         return _additives.filter {
             it.eNumber == eNumber
         }.getOrNull(0)
+    }
+
+    override suspend fun getRecommendedProducts(
+        dietaryRestrictions: List<DietaryRestriction>,
+        allergens: List<Allergen>
+    ): List<RecommendedProductDto>? {
+        val allergensTags = allergens.joinToString(",") { allergen ->
+            allergen.allergenStrings.joinToString(prefix = "-", separator = ",")
+        }
+        val ingredientAnalysisTags = dietaryRestrictions.joinToString(",") {
+            it.response
+        }
+        val searchResponse = openFoodFactsApi.getRecommendedProducts(
+           fields = ResponseFields.getRecommendedProductFields(),
+            sortBy = "nutriscore_score",
+            allergenTags = allergensTags,
+            ingredientAnalysisTags = ingredientAnalysisTags
+        )
+        return searchResponse.recommendedProductDtos
     }
 }
