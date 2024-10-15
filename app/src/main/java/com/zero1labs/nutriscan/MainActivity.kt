@@ -31,6 +31,9 @@ class MainActivity : AppCompatActivity() {
 
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
 
+        /**
+         * hide  nav bar for auth and product details page
+         */
         navController.addOnDestinationChangedListener{ _, destination, _ ->
             when(destination.id) {
                 com.mdev.feature_register.R.id.register_page ,
