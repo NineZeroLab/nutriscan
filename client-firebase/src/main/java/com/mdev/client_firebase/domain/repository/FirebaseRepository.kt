@@ -13,4 +13,5 @@ interface FirebaseRepository {
     suspend fun signOutUser()
     suspend fun getSearchHistory(): StateFlow<List<ProductDetailsDto>>
     suspend fun addItemToSearchHistory(product: ProductDetailsDto)
+    suspend fun isUserLoggedIn(): Boolean
 }
