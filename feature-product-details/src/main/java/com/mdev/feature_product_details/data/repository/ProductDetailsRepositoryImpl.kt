@@ -4,6 +4,9 @@ import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.feature_product_details.domain.repository.ProductDetailsRepository
 import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
+import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
+import com.mdev.openfoodfacts_client.domain.model.Allergen
+import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction
 import com.mdev.openfoodfacts_client.domain.repository.ProductRepository
 import javax.inject.Inject
 
@@ -17,5 +20,15 @@ internal class ProductDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getUserPreference(): AppUser? {
         return firebaseRepository.getCurrentUserDetails()
+    }
+
+    override suspend fun getRecommendedProducts(
+        dietaryRestrictions: List<DietaryRestriction>,
+        allergens: List<Allergen>
+    ): List<RecommendedProductDto>? {
+        return productRepository.getRecommendedProducts(
+            dietaryRestrictions = dietaryRestrictions,
+            allergens = allergens
+        )
     }
 }
