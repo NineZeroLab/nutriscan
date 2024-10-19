@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.mdev.client_firebase.data.remote.dto.AppUser
+import com.mdev.client_firebase.data.remote.dto.ProductDetails
 import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.client_firebase.utils.FirebaseCollection
@@ -20,8 +21,9 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ): FirebaseRepository {
 
-    private val _searchHistory : MutableStateFlow<List<ProductDetailsDto>> = MutableStateFlow<List<ProductDetailsDto>>(
-        emptyList())
+    private val _searchHistory : MutableStateFlow<List<ProductDetailsDto>> = MutableStateFlow(emptyList())
+
+    private val _searchHistoryWithDetails: MutableStateFlow<List<ProductDetails>> = MutableStateFlow(emptyList())
 
     /**
      * fetches the current user details from firestore
@@ -71,6 +73,10 @@ internal class FirebaseRepositoryImpl @Inject constructor(
         return _searchHistory.asStateFlow()
     }
 
+    suspend fun getSearchHistoryWithDetails(): StateFlow<List<ProductDetails>>{
+        return _searchHistoryWithDetails.asStateFlow()
+    }
+
     /**
      * Add the given product to firebase search history
      */
@@ -95,6 +101,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     override suspend fun isUserLoggedIn(): Boolean {
         if (auth.currentUser != null){
             updateSearchHistory()
+            updateSearchHistoryWithDetails()
             return true
         }
         return false
@@ -112,4 +119,33 @@ internal class FirebaseRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    private suspend fun updateSearchHistoryWithDetails(){
+        auth.currentUser?.uid?.let { uid ->
+            val documentSnapshots = firestore.collection(FirebaseCollection.USERS)
+                .document(uid).collection(FirebaseCollection.SEARCH)
+                .get()
+                .await()
+                .documents
+            _searchHistoryWithDetails.value = documentSnapshots.mapNotNull { doc: DocumentSnapshot ->
+                doc.toObject(ProductDetails::class.java)
+            }
+        }
+    }
+
+
+    suspend fun addProductToSearchHistory(productDetails: ProductDetails){
+        auth.currentUser?.uid?.let { uid ->
+            firestore.collection(FirebaseCollection.USERS)
+                .document(uid)
+                .collection(FirebaseCollection.SEARCH)
+                .document(productDetails.id)
+                .set(productDetails)
+                .await()
+            _searchHistoryWithDetails.value = _searchHistoryWithDetails.value.toMutableList().apply {
+                add(productDetails)
+            }
+        }
+    }
+
 }
