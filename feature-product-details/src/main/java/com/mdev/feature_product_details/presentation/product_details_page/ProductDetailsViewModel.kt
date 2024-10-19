@@ -1,4 +1,4 @@
-package com.mdev.feature_product_details.presentation.profilePage
+package com.mdev.feature_product_details.presentation.product_details_page
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,13 +20,15 @@ internal data class ProductDetailsPageState(
     val productDetailsFetchState: Status = Status.IDLE,
     val productDetails: ProductDetails? = null,
     val errorMessage: String? = null,
-    val userConclusion: UserConclusion? = null
+    val userConclusion: UserConclusion? = null,
+    val recommendedProductsFetchState: Status = Status.IDLE
 )
 
 
 @HiltViewModel
 internal class ProductDetailsViewModel @Inject constructor(
-    private val getProductDetailsUseCase: GetProductDetailsUseCase
+    private val getProductDetailsUseCase: GetProductDetailsUseCase,
+    private val getRecommendedProductsUseCase: GetRecommendedProductsUseCase
 ): ViewModel() {
     private val _uiState = MutableStateFlow(ProductDetailsPageState())
     val uiState = _uiState.asStateFlow()
@@ -57,11 +59,54 @@ internal class ProductDetailsViewModel @Inject constructor(
                     }
                 }
                 is Resource.Success -> {
+                    getRecommendedProducts()
                     _uiState.update {
                         ProductDetailsPageState(
                             productDetailsFetchState = Status.SUCCESS,
                             productDetails = result.data?.productDetails,
                             userConclusion = result.data?.userConclusion
+                        )
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getRecommendedProducts(){
+        getRecommendedProductsUseCase().onEach {result ->
+            when(result){
+                is Resource.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            recommendedProductsFetchState = Status.FAILURE,
+                            errorMessage = result.message
+                        )
+                    }
+                    _uiState.update {
+                        it.copy(
+                            recommendedProductsFetchState = Status.IDLE
+                        )
+                    }
+                }
+                is Resource.Loading -> {
+                    _uiState.update {
+                        it.copy(
+                            recommendedProductsFetchState = Status.LOADING
+                        )
+                    }
+                }
+                is Resource.Success -> {
+                    logger(result.data?.map {
+                        it.productName
+                    }.toString())
+                    _uiState.update {
+                        it.copy(
+                            recommendedProductsFetchState = Status.SUCCESS
+                        )
+                    }
+                    _uiState.update {
+                        it.copy(
+                            recommendedProductsFetchState = Status.IDLE
                         )
                     }
                 }

@@ -1,7 +1,6 @@
 package com.mdev.feature_product_details.domain.usecases
 
 import com.mdev.common.utils.Resource
-import com.mdev.feature_product_details.domain.model.ProductDetails
 import com.mdev.feature_product_details.domain.model.ProductDetailsForView
 import com.mdev.feature_product_details.domain.model.getProductConsiderations
 import com.mdev.feature_product_details.domain.model.toProductDetails
@@ -12,7 +11,7 @@ import javax.inject.Inject
 
 internal class GetProductDetailsUseCase @Inject constructor(
     private val productDetailsRepository: ProductDetailsRepository,
-    private val calculateProductConclusionUseCase: CalculateProductConclusionUseCase
+    private val calculateProductConclusionUseCase: CalculateProductConclusionUseCase,
 ) {
     operator fun invoke(productId: String): Flow<Resource<ProductDetailsForView>> = flow {
         emit(Resource.Loading())

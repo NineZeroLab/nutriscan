@@ -17,7 +17,7 @@ interface OpenFoodFactsApi {
     suspend fun getRecommendedProducts(
         @Query("fields") fields: String,
         @Query("sort_by") sortBy: String,
-        @Query("allergen_tags") allergenTags: String,
-        @Query("ingredient_analysis_tags") ingredientAnalysisTags: String
+        @Query("allergens_tags") allergenTags: String,
+        @Query("ingredients_analysis_tags") ingredientAnalysisTags: String
     ): RecommendedProductsSearchResponseDto
 }

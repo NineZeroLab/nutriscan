@@ -1,4 +1,4 @@
-package com.mdev.feature_product_details.presentation.profilePage
+package com.mdev.feature_product_details.presentation.product_details_page
 
 import android.content.Context
 import android.os.Bundle
@@ -33,12 +33,9 @@ import com.mdev.core.utils.showSnackBar
 import com.mdev.feature_product_details.databinding.FragmentProductDetailsPageBinding
 import com.mdev.feature_product_details.domain.model.MainDetailsForView
 import com.mdev.feature_product_details.domain.model.Nutrient
-import com.mdev.feature_product_details.navigation.ProductDetailsNavigator
 import com.mdev.openfoodfacts_client.utils.ClientResources
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDetailsPage : Fragment() {
@@ -70,7 +67,7 @@ class ProductDetailsPage : Fragment() {
                         Status.SUCCESS -> {
                             logger("Loading product success...")
                             hideProgressBar()
-                            updateToolbar()
+//                            updateToolbar()
                             buildUi()
                         }
                         Status.FAILURE -> {

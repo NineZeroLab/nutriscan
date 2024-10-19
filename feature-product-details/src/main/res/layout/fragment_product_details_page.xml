@@ -8,7 +8,7 @@
     android:background="@color/md_theme_background"
     android:backgroundTint="@color/md_theme_background"
     android:orientation="vertical"
-    tools:context="com.mdev.feature_product_details.presentation.profilePage.ProductDetailsPage">
+    tools:context="com.mdev.feature_product_details.presentation.product_details_page.ProductDetailsPage">
 
     <ScrollView
         android:id="@+id/sv_product_details"

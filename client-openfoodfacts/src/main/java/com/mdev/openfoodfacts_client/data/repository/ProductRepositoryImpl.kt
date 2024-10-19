@@ -1,6 +1,7 @@
 package com.mdev.openfoodfacts_client.data.repository
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mdev.openfoodfacts_client.R
@@ -54,11 +55,13 @@ internal class ProductRepositoryImpl @Inject constructor (
         allergens: List<Allergen>
     ): List<RecommendedProductDto>? {
         val allergensTags = allergens.joinToString(",") { allergen ->
-            allergen.allergenStrings.joinToString(prefix = "-", separator = ",")
+            allergen.allergenStrings.joinToString(prefix = "-", separator = ",-")
         }
         val ingredientAnalysisTags = dietaryRestrictions.joinToString(",") {
             it.response
         }
+        Log.d("feature-openfoodfacts", "Fetching recommended products with allergens_tags: $allergensTags")
+        Log.d("feature-openfoodfacts", "Fetching recommended products with ingredients_analysis_tags: $ingredientAnalysisTags")
         val searchResponse = openFoodFactsApi.getRecommendedProducts(
            fields = ResponseFields.getRecommendedProductFields(),
             sortBy = "nutriscore_score",
