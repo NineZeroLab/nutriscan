@@ -1,6 +1,7 @@
 package com.mdev.feature_product_details.data.repository
 
 import com.mdev.client_firebase.data.remote.dto.AppUser
+import com.mdev.client_firebase.data.remote.dto.ProductDetails
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.feature_product_details.domain.repository.ProductDetailsRepository
 import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
@@ -20,6 +21,10 @@ internal class ProductDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getUserPreference(): AppUser? {
         return firebaseRepository.getCurrentUserDetails()
+    }
+
+    override suspend fun addProductToFirebase(productDetails: ProductDetails) {
+        firebaseRepository.
     }
 
     override suspend fun getRecommendedProducts(
