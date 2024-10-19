@@ -2,18 +2,15 @@ package com.mdev.feature_login.presentation.loginPage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.common.utils.Resource
-import com.mdev.feature_login.domain.usecase.GetCurrentUserUseCase
+import com.mdev.feature_login.domain.usecase.IsUserLoggedInUseCase
 import com.mdev.feature_login.domain.usecase.LoginWithEmailAndPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class LoginPageState(
@@ -31,7 +28,7 @@ enum class LoginStatus{
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginWithEmailAndPasswordUseCase: LoginWithEmailAndPasswordUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val isUserLoggedInUseCase: IsUserLoggedInUseCase
 ): ViewModel() {
     private val _uiState = MutableStateFlow(LoginPageState())
     val uiState = _uiState.asStateFlow()
@@ -45,7 +42,7 @@ class LoginViewModel @Inject constructor(
             }
         }
     private fun getCurrentUser(){
-        getCurrentUserUseCase().onEach { result ->
+        isUserLoggedInUseCase().onEach { result ->
             when(result){
                 is Resource.Error -> {
                     _uiState.update {
@@ -68,15 +65,23 @@ class LoginViewModel @Inject constructor(
                     }
                 }
                 is Resource.Success -> {
-                    _uiState.update {
-                        LoginPageState(
-                            loginStatus = LoginStatus.SUCCESS
-                        )
-                    }
-                    _uiState.update {
-                        LoginPageState(
+                    if (result.data == true){
+                        _uiState.update {
+                            LoginPageState(
+                                loginStatus = LoginStatus.SUCCESS
+                            )
+                        }
+                        _uiState.update {
+                            LoginPageState(
+                                loginStatus = LoginStatus.IDLE
+                            )
+                        }
+                    }else{
+                        _uiState.update {
+                            LoginPageState(
                             loginStatus = LoginStatus.IDLE
-                        )
+                            )
+                        }
                     }
                 }
             }

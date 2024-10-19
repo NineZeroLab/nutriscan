@@ -1,7 +1,7 @@
 package com.mdev.openfoodfacts_client.utils
 
 object ResponseFields {
-    private val fields = mutableListOf<String>(
+    private val productDetailsFields = mutableListOf<String>(
         "code",
         "product_name",
         "image_url",
@@ -15,8 +15,19 @@ object ResponseFields {
         "ingredients_analysis_tags",
         "additives_original_tags"
     )
+    private val recommendProductFields = mutableListOf(
+        "code",
+        "product_name",
+        "image_url",
+        "nutriscore_grade",
+    )
 
-    fun getFields(): String{
-        return fields.joinToString(",")
+    fun getProductDetailsFields(): String{
+        return productDetailsFields.joinToString(",")
     }
+
+    fun getRecommendedProductFields(): String{
+        return recommendProductFields.joinToString(",")
+    }
+
 }
