@@ -73,7 +73,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
         return _searchHistory.asStateFlow()
     }
 
-    suspend fun getSearchHistoryWithDetails(): StateFlow<List<ProductDetails>>{
+    override suspend fun getSearchHistoryWithDetails(): StateFlow<List<ProductDetails>>{
         return _searchHistoryWithDetails.asStateFlow()
     }
 
@@ -134,7 +134,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     }
 
 
-    suspend fun addProductToSearchHistory(productDetails: ProductDetails){
+    override suspend fun addProductToSearchHistory(productDetails: ProductDetails){
         auth.currentUser?.uid?.let { uid ->
             firestore.collection(FirebaseCollection.USERS)
                 .document(uid)
