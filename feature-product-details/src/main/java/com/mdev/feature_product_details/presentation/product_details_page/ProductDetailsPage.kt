@@ -1,7 +1,9 @@
 package com.mdev.feature_product_details.presentation.product_details_page
 
 import android.content.Context
+import android.media.Image
 import android.os.Bundle
+import android.util.LayoutDirection
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
@@ -18,8 +20,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Visibility
 import com.bumptech.glide.Glide
 import com.mdev.common.utils.domain.model.Status
+import com.mdev.core.utils.addImage
 import com.mdev.common.R as CommonRes
 import com.mdev.feature_product_details.R
 import com.mdev.openfoodfacts_client.domain.model.NutrientCategory
@@ -31,8 +37,10 @@ import com.mdev.core.utils.hide
 import com.mdev.core.utils.logger
 import com.mdev.core.utils.showSnackBar
 import com.mdev.feature_product_details.databinding.FragmentProductDetailsPageBinding
+import com.mdev.feature_product_details.domain.model.AdditivesShortView
 import com.mdev.feature_product_details.domain.model.MainDetailsForView
 import com.mdev.feature_product_details.domain.model.Nutrient
+import com.mdev.feature_product_details.domain.model.RecommendedProduct
 import com.mdev.openfoodfacts_client.utils.ClientResources
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -56,7 +64,7 @@ class ProductDetailsPage : Fragment() {
         viewModel = ViewModelProvider(requireActivity())[ProductDetailsViewModel::class.java]
         handleArguments()
         buildInitialToolbar()
-        llProductDetailsLayout = view.findViewById(R.id.ll_product_details_layout)
+        llProductDetailsLayout = viewBinding.llProductDetailsLayout
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.uiState.collect{ state ->
@@ -76,6 +84,19 @@ class ProductDetailsPage : Fragment() {
                             view.showSnackBar(state.errorMessage.toString())
                         }
                         Status.IDLE -> {}
+                    }
+                    when(state.recommendedProductsFetchState){
+                        Status.LOADING -> {}
+                        Status.SUCCESS -> {
+                            logger(state.recommendedProducts.toString())
+                            buildRecommendedProducts(state.recommendedProducts)
+                        }
+                        Status.FAILURE -> {
+                            view.showSnackBar("Unable to fetch recommended products!")
+                        }
+                        Status.IDLE -> {
+
+                        }
                     }
                 }
             }
@@ -124,7 +145,11 @@ class ProductDetailsPage : Fragment() {
                 if (it.positiveNutrients.isNotEmpty()){
                     buildNutrientsView(NutrientCategory.POSITIVE, it.productType, it.positiveNutrients)
                 }
+                if (it.additives.isNotEmpty()){
+                    buildAdditives(it.additives)
+                }
             }
+
         }
     }
 
@@ -262,6 +287,42 @@ class ProductDetailsPage : Fragment() {
         }
     }
 
+    private fun buildAdditives(additives: List<AdditivesShortView>){
+        val additivesHeaderView = LayoutInflater.from(requireContext()).inflate(R.layout.component_additives_header,llProductDetailsLayout, false)
+        additivesHeaderView.findViewById<TextView>(R.id.tv_additives_nos).text = additives.size.toString()
+        val additivesLevelContent = additivesHeaderView.findViewById<LinearLayout>(R.id.ll_additives_level_content)
+        val dropDownImage = additivesHeaderView.findViewById<ImageView>(R.id.iv_drop_down_arrow)
+        dropDownImage.setOnClickListener {
+            if (additivesLevelContent.visibility == View.VISIBLE){
+                additivesLevelContent.visibility = View.GONE
+                dropDownImage.addImage(R.mipmap.arrow_down)
+            }else{
+                additivesLevelContent.visibility = View.VISIBLE
+                dropDownImage.addImage(R.mipmap.arrow_up)
+            }
+        }
+
+        additives.forEach { additive ->
+            val additivesContentView = LayoutInflater.from(requireContext()).inflate(R.layout.component_additives_content_level, additivesLevelContent, false)
+            additivesContentView.apply {
+                findViewById<TextView>(R.id.tv_risk_level).text = additive.additiveRiskLevel.displayText
+                findViewById<ImageView>(R.id.iv_risk_level).addImage(additive.additiveRiskLevel.icon)
+                findViewById<TextView>(R.id.tv_risk_level_nos).text = additive.count.toString()
+                findViewById<TextView>(R.id.tv_risk_level_nos).text = additive.count.toString()
+            }
+            additivesLevelContent.addView(additivesContentView)
+        }
+        llProductDetailsLayout.addView(additivesHeaderView)
+    }
+
+    private fun buildRecommendedProducts(recommendedProducts: List<RecommendedProduct>){
+        recommendedProducts.forEach {
+            logger("adding ${it.name} to recommended product list")
+        }
+        viewBinding.rvRecommendedProducts.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        viewBinding.rvRecommendedProducts.adapter = RecommendedProductsAdapter(recommendedProducts)
+    }
+
     /**
      * To be moved to utils/KotlinExtensions
      */
@@ -285,4 +346,5 @@ class ProductDetailsPage : Fragment() {
         logger("hiding progressbar in details page")
         viewBinding.clPdpProgressbarLayout.hide()
     }
+
 }

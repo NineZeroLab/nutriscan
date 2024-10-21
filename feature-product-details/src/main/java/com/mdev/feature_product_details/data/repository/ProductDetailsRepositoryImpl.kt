@@ -24,7 +24,7 @@ internal class ProductDetailsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addProductToFirebase(productDetails: ProductDetails) {
-        firebaseRepository.
+        firebaseRepository.addProductToSearchHistory(productDetails)
     }
 
     override suspend fun getRecommendedProducts(

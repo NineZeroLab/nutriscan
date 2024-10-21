@@ -6,6 +6,7 @@ import com.mdev.common.utils.Resource
 import com.mdev.common.utils.domain.model.Status
 import com.mdev.core.utils.logger
 import com.mdev.feature_product_details.domain.model.ProductDetails
+import com.mdev.feature_product_details.domain.model.RecommendedProduct
 import com.mdev.feature_product_details.domain.model.UserConclusion
 import com.mdev.feature_product_details.domain.usecases.GetProductDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ internal data class ProductDetailsPageState(
     val productDetails: ProductDetails? = null,
     val errorMessage: String? = null,
     val userConclusion: UserConclusion? = null,
-    val recommendedProductsFetchState: Status = Status.IDLE
+    val recommendedProductsFetchState: Status = Status.IDLE,
+    val recommendedProducts: List<RecommendedProduct> = mutableListOf()
 )
 
 
@@ -97,18 +99,22 @@ internal class ProductDetailsViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     logger(result.data?.map {
-                        it.productName
+                        it.name
                     }.toString())
-                    _uiState.update {
-                        it.copy(
-                            recommendedProductsFetchState = Status.SUCCESS
-                        )
+                    result.data?.let { product ->
+                        _uiState.update {
+                            it.copy(
+                                recommendedProductsFetchState = Status.SUCCESS,
+                                recommendedProducts = product
+                            )
+                        }
+                        _uiState.update {
+                            it.copy(
+                                recommendedProductsFetchState = Status.IDLE
+                            )
+                        }
                     }
-                    _uiState.update {
-                        it.copy(
-                            recommendedProductsFetchState = Status.IDLE
-                        )
-                    }
+
                 }
             }
         }.launchIn(viewModelScope)
