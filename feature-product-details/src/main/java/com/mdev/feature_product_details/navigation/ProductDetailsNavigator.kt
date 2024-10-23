@@ -4,4 +4,5 @@ import androidx.fragment.app.Fragment
 
 interface ProductDetailsNavigator {
     fun navigateToHomePage(fromFragment: Fragment)
+    fun reloadWithNewProduct(fromFragment: Fragment, productId: String)
 }

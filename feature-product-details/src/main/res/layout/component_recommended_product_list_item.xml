@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/iv_rp_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <LinearLayout

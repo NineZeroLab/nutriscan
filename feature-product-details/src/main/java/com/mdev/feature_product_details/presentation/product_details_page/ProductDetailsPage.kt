@@ -12,7 +12,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.helper.widget.Flow
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -21,8 +24,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Visibility
 import com.bumptech.glide.Glide
 import com.mdev.common.utils.domain.model.Status
 import com.mdev.core.utils.addImage
@@ -41,9 +42,11 @@ import com.mdev.feature_product_details.domain.model.AdditivesShortView
 import com.mdev.feature_product_details.domain.model.MainDetailsForView
 import com.mdev.feature_product_details.domain.model.Nutrient
 import com.mdev.feature_product_details.domain.model.RecommendedProduct
+import com.mdev.feature_product_details.navigation.ProductDetailsNavigator
 import com.mdev.openfoodfacts_client.utils.ClientResources
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDetailsPage : Fragment() {
@@ -51,17 +54,19 @@ class ProductDetailsPage : Fragment() {
     private lateinit var llProductDetailsLayout: LinearLayout
     private lateinit var viewBinding: FragmentProductDetailsPageBinding
     private lateinit var viewModel: ProductDetailsViewModel
+    @Inject
+    private lateinit var navigator: ProductDetailsNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel = ViewModelProvider(requireActivity())[ProductDetailsViewModel::class.java]
         viewBinding = FragmentProductDetailsPageBinding.inflate(inflater, container,false)
         return viewBinding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity())[ProductDetailsViewModel::class.java]
         handleArguments()
         buildInitialToolbar()
         llProductDetailsLayout = viewBinding.llProductDetailsLayout
@@ -133,6 +138,12 @@ class ProductDetailsPage : Fragment() {
 
                 buildMainHeader( productDetails.mainDetailsForView, state.userConclusion?.dietaryPreferenceConclusion ?: "")
             }
+            if (state.productConsiderations != null && state.userConsiderations != null){
+                buildAllergensView(
+                    productAllergen = state.productConsiderations.allergens,
+                    userAllergens = state.userConsiderations.allergens
+                )
+            }
             state.userConclusion?.let { userConclusion ->
                 if (userConclusion.dietaryRestrictionConclusion != "" || userConclusion.allergenConclusion != ""){
                     buildFoodConsiderations(userConclusion.dietaryRestrictionConclusion,userConclusion.allergenConclusion)
@@ -149,6 +160,7 @@ class ProductDetailsPage : Fragment() {
                     buildAdditives(it.additives)
                 }
             }
+
 
         }
     }
@@ -171,25 +183,41 @@ class ProductDetailsPage : Fragment() {
         }
     }
 
-    private fun buildAllergensView(allergens: List<Allergen>) {
-        val headerView = LayoutInflater.from(requireContext()).inflate(R.layout.nutrients_header, llProductDetailsLayout,false)
-        val tvAllergenHeader: TextView = headerView.findViewById(R.id.tv_nutrients_header)
-        headerView.findViewById<TextView>(R.id.serving_quantity).text = allergens.size.toString()
-        tvAllergenHeader.text = getString(CommonRes.string.allergens)
-        llProductDetailsLayout.addView(headerView)
-
-        allergens.forEach { allergen ->
-            val itemView = LayoutInflater.from(requireContext()).inflate(R.layout.fragment_ingredient_item, llProductDetailsLayout, false)
-            val tvAllergenName: TextView = itemView.findViewById(R.id.tv_nutrient_name)
-            itemView.findViewById<TextView>(R.id.tv_nutrient_description).text = ""
-            itemView.findViewById<TextView>(R.id.tv_per_hundred_gram).text = ""
-            itemView.findViewById<ImageView>(R.id.nutrient_category_icon).setImageIcon(null)
-            itemView.findViewById<TextView>(R.id.tv_nutrient_description).text = ""
-            tvAllergenName.text = allergen.heading
-
-            llProductDetailsLayout.addView(itemView)
+    private fun buildAllergensView(productAllergen: List<Allergen>, userAllergens: List<Allergen>) {
+        if (productAllergen.isEmpty()){
+            return
         }
-    }
+        logger("Product allergens : ${productAllergen.toString()}")
+        val allergensView = LayoutInflater.from(requireContext()).inflate(R.layout.component_food_considerations, llProductDetailsLayout, false)
+        val clAllergensLayout = allergensView.findViewById<ConstraintLayout>(R.id.cl_allergens_layout)
+        val flAllergensLayout = allergensView.findViewById<Flow>(R.id.fl_allergens_layout)
+        productAllergen.forEach { allergen ->
+            val button = ToggleButton(requireContext())
+            button.apply {
+                background = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.allergen_selector
+                )
+                isAllCaps = false
+                textOn = allergen.heading
+                textOff = allergen.heading
+                text = allergen.heading
+                isChecked = allergen in userAllergens
+                isClickable = false
+                id = View.generateViewId()
+                }
+            button.setTextColor(
+                resources.getColor(
+                    if (button.isChecked) CommonRes.color.md_theme_onPrimary else CommonRes.color.md_theme_onBackground
+                )
+            )
+            val buttonIds = flAllergensLayout.referencedIds.toMutableList()
+            buttonIds.add(button.id)
+            flAllergensLayout.referencedIds = buttonIds.toIntArray()
+            clAllergensLayout.addView(button)
+            }
+        llProductDetailsLayout.addView(allergensView)
+        }
 
     private fun buildMainHeader(
         mainDetailsForView: MainDetailsForView,
@@ -202,7 +230,6 @@ class ProductDetailsPage : Fragment() {
         val tvProductBrand: TextView = itemView.findViewById(R.id.tv_product_brand)
         val ivProductHealthIcon: ImageView = itemView.findViewById(R.id.iv_product_health_icon)
         val tvProductHealthGrade: TextView = itemView.findViewById(R.id.tv_product_health_grade)
-        val tvDietaryPreferenceConclusion: TextView = itemView.findViewById(R.id.tv_dietary_preference_conclusion)
 
         val (healthCategoryIcon, healthCategoryBg) = getHealthCategoryIcon(
             requireContext(),mainDetailsForView.healthCategory
@@ -210,7 +237,6 @@ class ProductDetailsPage : Fragment() {
         tvProductName.text = mainDetailsForView.productName
         tvProductBrand.text = mainDetailsForView.productBrand
         tvProductHealthGrade.text = mainDetailsForView.healthCategory.description
-        tvDietaryPreferenceConclusion.text = dietaryPreferenceConclusion
         Log.d("logger", mainDetailsForView.imageUrl ?: "null")
         val imageUrl = if (mainDetailsForView.imageUrl == "") null else mainDetailsForView.imageUrl
 
@@ -283,7 +309,8 @@ class ProductDetailsPage : Fragment() {
             HealthCategory.UNKNOWN -> Pair(
                 CommonRes.drawable.circle_unknown, ContextCompat.getColor(context,
                     CommonRes.color.md_theme_background
-                ))
+                )
+            )
         }
     }
 
@@ -319,8 +346,11 @@ class ProductDetailsPage : Fragment() {
         recommendedProducts.forEach {
             logger("adding ${it.name} to recommended product list")
         }
+        viewBinding.llRecommendedProducts.visibility = View.VISIBLE
         viewBinding.rvRecommendedProducts.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        viewBinding.rvRecommendedProducts.adapter = RecommendedProductsAdapter(recommendedProducts)
+        viewBinding.rvRecommendedProducts.adapter = RecommendedProductsAdapter(recommendedProducts){ productId ->
+            navigator.reloadWithNewProduct(this@ProductDetailsPage, productId)
+        }
     }
 
     /**

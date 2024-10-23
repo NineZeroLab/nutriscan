@@ -13,7 +13,10 @@ import com.mdev.feature_product_details.domain.model.RecommendedProduct
 import com.mdev.common.R as CommonRes
 import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
 
-internal class RecommendedProductsAdapter(private val recommendedProducts: List<RecommendedProduct>):
+internal class RecommendedProductsAdapter(
+    private val recommendedProducts: List<RecommendedProduct>,
+    private val callback: (productId: String) -> Unit,
+):
     RecyclerView.Adapter<RecommendedProductsAdapter.RecommendedProductViewHolder>() {
 
     inner class RecommendedProductViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -39,6 +42,12 @@ internal class RecommendedProductsAdapter(private val recommendedProducts: List<
         holder.ivProductImage.addImageFromUrl(product.imageUrl.toString(), errorImage = CommonRes.mipmap.app_icon_small)
         holder.tvProductName.text = product.name
         holder.tvProductBrand.text = product.nutriScoreGrade
+        //change the onClickListener to the parent view
+        holder.ivProductImage.setOnClickListener {
+            product.id?.let {
+                callback(it)
+            }
+        }
     }
 
 }

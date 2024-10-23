@@ -7,7 +7,8 @@ import com.mdev.openfoodfacts_client.utils.ClientResources
 
 internal data class ProductDetailsForView(
     val productDetails: ProductDetails,
-    val userConclusion: UserConclusion?
+    val productConsiderations: Considerations,
+    val userConsiderations: Considerations,
 )
 
 internal data class ProductDetails(

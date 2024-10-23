@@ -8,7 +8,9 @@ import com.mdev.core.utils.logger
 import com.mdev.feature_product_details.domain.model.ProductDetails
 import com.mdev.feature_product_details.domain.model.RecommendedProduct
 import com.mdev.feature_product_details.domain.model.UserConclusion
+import com.mdev.feature_product_details.domain.model.Considerations
 import com.mdev.feature_product_details.domain.usecases.GetProductDetailsUseCase
+import com.mdev.feature_product_details.domain.usecases.GetRecommendedProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +24,8 @@ internal data class ProductDetailsPageState(
     val productDetails: ProductDetails? = null,
     val errorMessage: String? = null,
     val userConclusion: UserConclusion? = null,
+    val userConsiderations: Considerations? = null,
+    val productConsiderations: Considerations? = null,
     val recommendedProductsFetchState: Status = Status.IDLE,
     val recommendedProducts: List<RecommendedProduct> = mutableListOf()
 )
@@ -66,7 +70,8 @@ internal class ProductDetailsViewModel @Inject constructor(
                         ProductDetailsPageState(
                             productDetailsFetchState = Status.SUCCESS,
                             productDetails = result.data?.productDetails,
-                            userConclusion = result.data?.userConclusion
+                            userConsiderations = result.data?.userConsiderations,
+                            productConsiderations = result.data?.productConsiderations
                         )
                     }
                 }

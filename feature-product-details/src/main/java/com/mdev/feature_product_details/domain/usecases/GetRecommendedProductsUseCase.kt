@@ -1,4 +1,4 @@
-package com.mdev.feature_product_details.presentation.product_details_page
+package com.mdev.feature_product_details.domain.usecases
 
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.common.utils.Resource
@@ -6,7 +6,6 @@ import com.mdev.core.utils.logger
 import com.mdev.feature_product_details.domain.model.RecommendedProduct
 import com.mdev.feature_product_details.domain.model.toRecommendedProducts
 import com.mdev.feature_product_details.domain.repository.ProductDetailsRepository
-import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

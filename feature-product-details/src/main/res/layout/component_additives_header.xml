@@ -4,22 +4,25 @@
     android:id="@+id/ll_addtiives_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:layout_marginBottom="20dp"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_additives_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:fontFamily="@font/inter_bold"
+            android:fontFamily="@font/inter_semi_bold"
             android:text="Additives"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tv_additives_nos"
@@ -28,13 +31,15 @@
             android:gravity="center_vertical"
             android:text="5"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/iv_drop_down_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:srcCompat="@mipmap/arrow_down" />
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="10dp"
+            app:srcCompat="@mipmap/arrow_up" />
     </LinearLayout>
 
     <LinearLayout

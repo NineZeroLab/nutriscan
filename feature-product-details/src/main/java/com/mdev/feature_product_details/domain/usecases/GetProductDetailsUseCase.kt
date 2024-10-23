@@ -2,6 +2,7 @@ package com.mdev.feature_product_details.domain.usecases
 
 import com.mdev.common.utils.Resource
 import com.mdev.feature_product_details.domain.model.ProductDetailsForView
+import com.mdev.feature_product_details.domain.model.Considerations
 import com.mdev.feature_product_details.domain.model.getProductConsiderations
 import com.mdev.feature_product_details.domain.model.toProductDetails
 import com.mdev.feature_product_details.domain.repository.ProductDetailsRepository
@@ -11,7 +12,7 @@ import javax.inject.Inject
 
 internal class GetProductDetailsUseCase @Inject constructor(
     private val productDetailsRepository: ProductDetailsRepository,
-    private val calculateProductConclusionUseCase: CalculateProductConclusionUseCase,
+    private val getUserConsiderationsUseCase: GetUserConsiderationsUseCase
 ) {
     operator fun invoke(productId: String): Flow<Resource<ProductDetailsForView>> = flow {
         emit(Resource.Loading())
@@ -21,11 +22,12 @@ internal class GetProductDetailsUseCase @Inject constructor(
                 emit(Resource.Error("Product Not Found"))
             }else{
                 val productDetails = product.toProductDetails()
-                val productConsiderations = product.getProductConsiderations()
-                val userConclusion = calculateProductConclusionUseCase(productConsiderations)
+                val productConsiderations = product.getProductConsiderations() ?: Considerations()
+                val userConsiderations = getUserConsiderationsUseCase() ?: Considerations()
                 val productDetailsForView = ProductDetailsForView(
                     productDetails = productDetails,
-                    userConclusion = userConclusion
+                    productConsiderations = productConsiderations,
+                    userConsiderations = userConsiderations
                 )
                 emit(Resource.Success(productDetailsForView))
             }
