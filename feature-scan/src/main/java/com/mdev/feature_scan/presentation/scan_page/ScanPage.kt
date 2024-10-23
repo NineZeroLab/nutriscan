@@ -1,0 +1,131 @@
+package com.mdev.feature_scan.presentation.scan_page
+
+import android.os.Bundle
+import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
+import com.mdev.common.utils.domain.model.Status
+import com.mdev.core.utils.addImageFromUrl
+import com.mdev.feature_scan.databinding.FragmentScanPageBinding
+import com.mdev.feature_scan.domain.model.ProductDetailsForView
+import com.mdev.common.R as commonRes
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
+
+class ScanPage : Fragment() {
+    private lateinit var viewBinding: FragmentScanPageBinding
+    private lateinit var viewModel : ScanPageViewModel
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        viewModel = ViewModelProvider(requireActivity())[ScanPageViewModel::class.java]
+        viewBinding = FragmentScanPageBinding.inflate(inflater,container,false)
+        return viewBinding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        startCamera()
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.uiState.collect{ state ->
+                    when(state.scanState){
+                        Status.LOADING -> {}
+                        Status.SUCCESS -> {
+                            updateProductDetails(state.scannedProducts[state.scannedProducts.size - 1])
+                        }
+                        Status.FAILURE -> {}
+                        Status.IDLE -> {}
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateProductDetails(productDetailsForView: ProductDetailsForView) {
+
+        viewBinding.apply {
+            tvScanProductName.text = productDetailsForView.name
+            tvScanProductBrand.text = productDetailsForView.brand
+            ivScanProductImage.addImageFromUrl(productDetailsForView.imageUrl, errorImage = commonRes.mipmap.app_icon_small)
+            tvScanProductGrade.text = productDetailsForView.healthCategory.name
+        }
+    }
+
+    private fun startCamera() {
+        val options = BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(
+                Barcode.FORMAT_UPC_A,
+                Barcode.FORMAT_EAN_13
+            )
+            .build()
+
+        val products = mutableSetOf<String>()
+
+        val barcodeScanner = BarcodeScanning.getClient(options)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewBinding.pvCamera.surfaceProvider)
+            }
+            val imageAnalysis = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+            imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor()){ imageProxy ->
+                val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+                val inputImage = imageProxy.image?.let {
+                    InputImage.fromMediaImage(it, rotationDegrees)
+                }
+                inputImage?.let {
+                    barcodeScanner.process(it)
+                        .addOnSuccessListener { barcodes ->
+                            barcodes.getOrNull(0)?.rawValue?.let { code ->
+                                if (!products.contains(code)){
+                                    products.add(code)
+                                    viewModel.onEvent(ScanPageEvent.GetProductDetails(productId = code))
+                                    Log.d("logger",products.toString())
+                                }
+                            }
+                        }
+                        .addOnCompleteListener{
+                         imageProxy.close()
+                        }
+                } ?: imageProxy.close()
+            }
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview, imageAnalysis
+                )
+            }catch (e: Exception){
+                Log.d("logger", "camera x usecase binding failed")
+            }
+
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+}

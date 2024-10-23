@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp") version "1.9.10-1.0.13"
 }
 
 android {
@@ -36,17 +38,26 @@ android {
 }
 
 dependencies {
+    implementation(project(":client-openfoodfacts"))
+    implementation(project(":client-firebase"))
+    implementation(project(":common"))
+    implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+    implementation(libs.play.services.mlkit.barcode.scanning)
+    implementation(libs.play.services.code.scanner)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.barcode.scanning)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.9.0")
 
     // CameraX core library
     implementation("androidx.camera:camera-core:1.3.4")
