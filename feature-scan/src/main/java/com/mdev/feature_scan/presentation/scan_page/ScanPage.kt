@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -15,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -43,6 +46,7 @@ class ScanPage : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         startCamera()
+        buildScanList()
         observeViewModel()
     }
 
@@ -53,7 +57,7 @@ class ScanPage : Fragment() {
                     when(state.scanState){
                         Status.LOADING -> {}
                         Status.SUCCESS -> {
-                            updateProductDetails(state.scannedProducts[state.scannedProducts.size - 1])
+                            updateScanList(state.scannedProducts.last())
                         }
                         Status.FAILURE -> {}
                         Status.IDLE -> {}
@@ -62,17 +66,18 @@ class ScanPage : Fragment() {
             }
         }
     }
-
-    private fun updateProductDetails(productDetailsForView: ProductDetailsForView) {
-
-        viewBinding.apply {
-            tvScanProductName.text = productDetailsForView.name
-            tvScanProductBrand.text = productDetailsForView.brand
-            ivScanProductImage.addImageFromUrl(productDetailsForView.imageUrl, errorImage = commonRes.mipmap.app_icon_small)
-            tvScanProductGrade.text = productDetailsForView.healthCategory.name
+    private fun buildScanList(){
+        viewBinding.rvScanList.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = ScanListAdapter(emptyList())
         }
     }
+    private fun updateScanList(item: ProductDetailsForView){
+        val adapter = viewBinding.rvScanList.adapter as ScanListAdapter
+        adapter.addItemToList(item)
+    }
 
+    @OptIn(ExperimentalGetImage::class)
     private fun startCamera() {
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(
