@@ -2,6 +2,7 @@ package com.mdev.client_firebase.domain.repository
 
 import com.google.firebase.auth.AuthResult
 import com.mdev.client_firebase.data.remote.dto.AppUser
+import com.mdev.client_firebase.data.remote.dto.ProductDetails
 import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
 import kotlinx.coroutines.flow.StateFlow
 
@@ -14,4 +15,6 @@ interface FirebaseRepository {
     suspend fun getSearchHistory(): StateFlow<List<ProductDetailsDto>>
     suspend fun addItemToSearchHistory(product: ProductDetailsDto)
     suspend fun isUserLoggedIn(): Boolean
+    suspend fun addProductToSearchHistory(productDetails: ProductDetails)
+    suspend fun getSearchHistoryWithDetails(): StateFlow<List<ProductDetails>>
 }
