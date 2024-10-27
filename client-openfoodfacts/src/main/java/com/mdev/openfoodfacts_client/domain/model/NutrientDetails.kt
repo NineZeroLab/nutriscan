@@ -11,8 +11,8 @@ data class NutrientDetails(
     val description: String = "",
     val pointsLevel: PointsLevel = PointsLevel.UNKNOWN,
     val nutrientCategory: NutrientCategory = NutrientCategory.UNKNOWN,
-    val healthCategory: HealthCategory,
-    val servingUnit: String,
+    val healthCategory: HealthCategory = HealthCategory.UNKNOWN,
+    val servingUnit: String = "",
 ){
     companion object{
         fun fromDtoAttributes(
