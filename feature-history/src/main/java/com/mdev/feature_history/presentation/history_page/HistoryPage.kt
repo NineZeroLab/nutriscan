@@ -12,12 +12,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdev.feature_history.databinding.FragmentHistoryPageBinding
+import com.mdev.feature_history.navigation.HistoryNavigator
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class HistoryPage : Fragment() {
 
     private lateinit var viewModel: HistoryPageViewModel
     private lateinit var viewBinding: FragmentHistoryPageBinding
+    @Inject
+    lateinit var navigator: HistoryNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,8 +34,8 @@ class HistoryPage : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = SearchHistoryAdapter(searchHistoryItems = mutableListOf()){
-
+        val adapter = SearchHistoryAdapter(searchHistoryItems = mutableListOf()){ productId ->
+            navigator.navigateToProductDetailsPage(this@HistoryPage, productId)
         }
         viewBinding.rvHistoryList.layoutManager = LinearLayoutManager(requireContext())
         viewBinding.rvHistoryList.adapter = adapter
