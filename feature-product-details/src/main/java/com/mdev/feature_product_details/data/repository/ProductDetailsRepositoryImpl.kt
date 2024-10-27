@@ -12,7 +12,7 @@ internal class ProductDetailsRepositoryImpl @Inject constructor(
     private val firebaseRepository: FirebaseRepository
 ): ProductDetailsRepository {
     override suspend fun getProductDetails(productId: String): ProductDto? {
-        return productRepository.getProductDetailsById(productId)
+        return productRepository.getProductDetailsDtoById(productId)
     }
 
     override suspend fun getUserPreference(): AppUser? {
