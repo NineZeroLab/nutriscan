@@ -6,10 +6,10 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.mdev.client_firebase.data.remote.dto.AppUser
-import com.mdev.client_firebase.data.remote.dto.ProductDetails
 import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.client_firebase.utils.FirebaseCollection
+import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

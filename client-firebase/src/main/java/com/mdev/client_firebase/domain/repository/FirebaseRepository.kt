@@ -2,8 +2,8 @@ package com.mdev.client_firebase.domain.repository
 
 import com.google.firebase.auth.AuthResult
 import com.mdev.client_firebase.data.remote.dto.AppUser
-import com.mdev.client_firebase.data.remote.dto.ProductDetails
 import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
+import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import kotlinx.coroutines.flow.StateFlow
 
 interface FirebaseRepository {
