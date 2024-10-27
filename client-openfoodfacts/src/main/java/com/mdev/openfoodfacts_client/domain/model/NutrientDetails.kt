@@ -7,7 +7,7 @@ import com.mdev.openfoodfacts_client.utils.NutriScoreCalculator
 
 data class NutrientDetails(
     val nutrientType: NutrientType? = null,
-    val contentPerHundredGram: Number = 0,
+    val contentPerHundredGram: Double = 0.0,
     val description: String = "",
     val pointsLevel: PointsLevel = PointsLevel.UNKNOWN,
     val nutrientCategory: NutrientCategory = NutrientCategory.UNKNOWN,
@@ -18,7 +18,7 @@ data class NutrientDetails(
         fun fromDtoAttributes(
             nutrientType: NutrientType,
             points: Int,
-            contentPerHundredGram: Number,
+            contentPerHundredGram: Double,
             servingUnit: String
         ): NutrientDetails{
             val (pointsLevel, healthCategory) = nutrientType.getNutriScoreAndPointsCategory(points)
@@ -51,7 +51,7 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 NutrientType.ENERGY,
                 this.energyKcal100g
             ),
-            contentPerHundredGram = this.energyKcal100g ?: 0,
+            contentPerHundredGram = this.energyKcal100g ?: 0.0,
             servingUnit = this.energyUnit ?: NutrientType.ENERGY.getDefaultServingUnit()
         )
     )
@@ -64,7 +64,7 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 NutrientType.SATURATES,
                 this.saturatedFat100g
             ),
-            contentPerHundredGram = this.saturatedFat100g ?: 0,
+            contentPerHundredGram = this.saturatedFat100g ?: 0.0,
             servingUnit = this.saturatedFatUnit ?: NutrientType.SATURATES.getDefaultServingUnit()
         )
     )
@@ -78,7 +78,7 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 NutrientType.SATURATES,
                 this.saturatedFat100g
             ),
-            contentPerHundredGram = this.saturatedFat100g ?: 0,
+            contentPerHundredGram = this.saturatedFat100g ?: 0.0,
             servingUnit = this.saturatedFatUnit ?: NutrientType.SATURATES.getDefaultServingUnit()
         )
     )
@@ -91,7 +91,7 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 NutrientType.SUGAR,
                 this.sugars100g
             ),
-            contentPerHundredGram = this.sugars100g ?: 0 ,
+            contentPerHundredGram = this.sugars100g ?: 0.0,
             servingUnit = this.sugarsUnit ?: NutrientType.SUGAR.getDefaultServingUnit()
         )
     )
@@ -104,7 +104,7 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 NutrientType.FIBRE,
                 this.fiber100g
             ),
-            contentPerHundredGram = this.fiber100g ?: 0,
+            contentPerHundredGram = this.fiber100g ?: 0.0,
             servingUnit = this.fiberUnit ?: NutrientType.FIBRE.getDefaultServingUnit()
         )
     )
@@ -117,7 +117,7 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 NutrientType.SODIUM,
                 this.sodium100g
             ),
-            contentPerHundredGram = this.sodium100g ?: 0,
+            contentPerHundredGram = this.sodium100g ?: 0.0,
             servingUnit = this.sodiumUnit ?: NutrientType.SODIUM.getDefaultServingUnit()
         )
     )
@@ -130,7 +130,7 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 this.fruitsVegetablesNutsEstimateFromIngredients100g
             ),
             //TODO: Round content values to 2 decimals
-            contentPerHundredGram = this.fruitsVegetablesNutsEstimateFromIngredients100g ?: 0,
+            contentPerHundredGram = this.fruitsVegetablesNutsEstimateFromIngredients100g ?: 0.0,
             servingUnit = NutrientType.FRUITS_VEGETABLES_AND_NUTS.getDefaultServingUnit()
         )
     )
