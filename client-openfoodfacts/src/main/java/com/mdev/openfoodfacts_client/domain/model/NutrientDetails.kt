@@ -129,7 +129,7 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 NutrientType.FRUITS_VEGETABLES_AND_NUTS,
                 this.fruitsVegetablesNutsEstimateFromIngredients100g
             ),
-            //TODO: round the content values to 2 decimals
+            //TODO: Round content values to 2 decimals
             contentPerHundredGram = this.fruitsVegetablesNutsEstimateFromIngredients100g ?: 0,
             servingUnit = NutrientType.FRUITS_VEGETABLES_AND_NUTS.getDefaultServingUnit()
         )
