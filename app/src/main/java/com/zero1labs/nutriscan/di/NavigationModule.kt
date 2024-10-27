@@ -1,6 +1,7 @@
 package com.zero1labs.nutriscan.di
 
 import androidx.fragment.app.FragmentActivity
+import com.mdev.feature_history.navigation.HistoryNavigator
 import com.mdev.feature_homepage.navigation.HomeNavigator
 import com.mdev.feature_login.navigation.LoginNavigator
 import com.mdev.feature_product_details.navigation.ProductDetailsNavigator
@@ -34,6 +35,8 @@ abstract class NavigationModule{
     @Binds
     abstract fun bindProfileNavigator(appNavigator: AppNavigator): ProfileNavigator
 
+    @Binds
+    abstract fun bindHistoryNavigator(appNavigator: AppNavigator): HistoryNavigator
 }
 
 
