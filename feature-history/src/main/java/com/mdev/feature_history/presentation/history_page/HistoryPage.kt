@@ -13,9 +13,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdev.feature_history.databinding.FragmentHistoryPageBinding
 import com.mdev.feature_history.navigation.HistoryNavigator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class HistoryPage : Fragment() {
 
     private lateinit var viewModel: HistoryPageViewModel
