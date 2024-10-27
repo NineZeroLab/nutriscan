@@ -23,10 +23,9 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.mdev.common.utils.domain.model.Status
-import com.mdev.core.utils.addImageFromUrl
+import com.mdev.core.utils.logger
 import com.mdev.feature_scan.databinding.FragmentScanPageBinding
 import com.mdev.feature_scan.domain.model.ProductDetailsForView
-import com.mdev.common.R as commonRes
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
@@ -86,7 +85,11 @@ class ScanPage : Fragment() {
             )
             .build()
 
-        val products = mutableSetOf<String>()
+
+        //mutable map to keep track of barcode and the number of frames they show up
+        val products = mutableMapOf<String,Int>()
+        //adjust this value optimal for accuracy and speed
+        val framesCount = 60
 
         val barcodeScanner = BarcodeScanning.getClient(options)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
@@ -107,10 +110,15 @@ class ScanPage : Fragment() {
                     barcodeScanner.process(it)
                         .addOnSuccessListener { barcodes ->
                             barcodes.getOrNull(0)?.rawValue?.let { code ->
-                                if (!products.contains(code)){
-                                    products.add(code)
+                                if (products.containsKey(code)){
+                                    products[code] = products.getValue(code) + 1
+                                    logger("$code : $${products[code]}")
+                                }else{
+                                    products[code] = 1
+                                    logger("$code : $${products[code]}")
+                                }
+                                if (products.getValue(code) == framesCount){
                                     viewModel.onEvent(ScanPageEvent.GetProductDetails(productId = code))
-                                    Log.d("logger",products.toString())
                                 }
                             }
                         }
