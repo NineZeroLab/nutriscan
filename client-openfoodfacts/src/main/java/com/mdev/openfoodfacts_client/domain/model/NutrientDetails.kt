@@ -1,6 +1,5 @@
 package com.mdev.openfoodfacts_client.domain.model
 
-import com.mdev.core.utils.round
 import com.mdev.openfoodfacts_client.data.remote.dto.NutriScoreDataDto
 import com.mdev.openfoodfacts_client.data.remote.dto.NutrientsDto
 import com.mdev.openfoodfacts_client.utils.NutriScoreCalculator
@@ -130,7 +129,8 @@ fun NutrientsDto.toNutrientDetailsList(nutriScoreDataDto: NutriScoreDataDto? = n
                 NutrientType.FRUITS_VEGETABLES_AND_NUTS,
                 this.fruitsVegetablesNutsEstimateFromIngredients100g
             ),
-            contentPerHundredGram = this.fruitsVegetablesNutsEstimateFromIngredients100g?.round() ?: 0,
+            //TODO: round the content values to 2 decimals
+            contentPerHundredGram = this.fruitsVegetablesNutsEstimateFromIngredients100g ?: 0,
             servingUnit = NutrientType.FRUITS_VEGETABLES_AND_NUTS.getDefaultServingUnit()
         )
     )
