@@ -2,6 +2,7 @@ package com.mdev.feature_history.domain.model
 
 import com.mdev.feature_history.data.model.SearchHistoryItemDto
 import com.mdev.openfoodfacts_client.domain.model.HealthCategory
+import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -25,4 +26,29 @@ internal fun SearchHistoryItemDto.toSearchHistoryItem(): SearchHistoryItem{
         healthCategory = this.mainDetailsForView.healthCategory,
         timeStamp = LocalDateTime.ofInstant(this.timestamp.toInstant(), ZoneId.systemDefault())
     )
+}
+
+
+internal fun ProductDetails.toSearchHistoryItem(): SearchHistoryItem{
+    return SearchHistoryItem(
+        productId = this.id,
+        productBrand = this.brand,
+        productName = this.name,
+        imageUrl = this.imageUrl,
+        healthCategory = getHealthCategory(this.nutriScoreGrade),
+        timeStamp = LocalDateTime.now()
+    )
+}
+
+
+//Move to Utils
+private fun getHealthCategory(nutriScoreGrade: String?) : HealthCategory {
+    return when(nutriScoreGrade){
+        "a" -> HealthCategory.HEALTHY
+        "b" -> HealthCategory.GOOD
+        "c" -> HealthCategory.FAIR
+        "d" -> HealthCategory.POOR
+        "e" -> HealthCategory.BAD
+        else -> HealthCategory.UNKNOWN
+    }
 }

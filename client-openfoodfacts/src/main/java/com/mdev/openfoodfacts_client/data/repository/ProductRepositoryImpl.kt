@@ -11,6 +11,8 @@ import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
 import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
 import com.mdev.openfoodfacts_client.domain.model.Allergen
 import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction
+import com.mdev.openfoodfacts_client.domain.model.ProductDetails
+import com.mdev.openfoodfacts_client.domain.model.toProductDetails
 import com.mdev.openfoodfacts_client.domain.repository.ProductRepository
 import com.mdev.openfoodfacts_client.utils.ResponseFields
 import javax.inject.Inject
@@ -24,12 +26,22 @@ internal class ProductRepositoryImpl @Inject constructor (
     init {
         fetchAdditives()
     }
-    override suspend fun getProductDetailsById(productId: String): ProductDto? {
+    override suspend fun getProductDetailsDtoById(productId: String): ProductDto? {
         val searchResponse = openFoodFactsApi.getProductDetails(
             productId = productId,
             fields = ResponseFields.getProductDetailsFields()
         )
         return searchResponse.products.getOrNull(0)
+    }
+
+    override suspend fun getProductDetailsById(productId: String): ProductDetails? {
+        val searchResponse = openFoodFactsApi.getProductDetails(
+            productId = productId,
+            fields = ResponseFields.getProductDetailsFields()
+        )
+        val productDto = searchResponse.products.getOrNull(0)
+        val additives = getAdditivesByENumber(productDto?.additivesOriginalTags ?: emptyList())
+        return productDto?.toProductDetails(additives)
     }
 
     private fun fetchAdditives(){
@@ -44,10 +56,10 @@ internal class ProductRepositoryImpl @Inject constructor (
         _additives = additives
     }
 
-    override fun getAdditiveByENumber(eNumber: String): AdditiveDto?{
+    override fun getAdditivesByENumber(eNumber: List<String>): List<AdditiveDto>{
         return _additives.filter {
-            it.eNumber == eNumber
-        }.getOrNull(0)
+            it.eNumber in eNumber
+        }
     }
 
     override suspend fun getRecommendedProducts(

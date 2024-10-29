@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ScanPage">
+    tools:context=".presentation.scan_page.ScanPage">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Scan Page" />
+        android:orientation="vertical">
 
+        <androidx.camera.view.PreviewView
+            android:id="@+id/pv_camera"
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+
+        </androidx.camera.view.PreviewView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_scan_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
 </FrameLayout>

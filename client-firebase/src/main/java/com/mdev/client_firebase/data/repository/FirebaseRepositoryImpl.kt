@@ -1,15 +1,18 @@
 package com.mdev.client_firebase.data.repository
 
+import android.util.Log
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.mdev.client_firebase.data.remote.dto.AnalyticsData
 import com.mdev.client_firebase.data.remote.dto.AppUser
-import com.mdev.client_firebase.data.remote.dto.ProductDetails
 import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
+import com.mdev.client_firebase.data.remote.dto.calculateAnalytics
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.client_firebase.utils.FirebaseCollection
+import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +27,8 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     private val _searchHistory : MutableStateFlow<List<ProductDetailsDto>> = MutableStateFlow(emptyList())
 
     private val _searchHistoryWithDetails: MutableStateFlow<List<ProductDetails>> = MutableStateFlow(emptyList())
+
+    private val _analyticsData: MutableStateFlow<AnalyticsData> = MutableStateFlow(AnalyticsData())
 
     /**
      * fetches the current user details from firestore
@@ -47,6 +52,8 @@ internal class FirebaseRepositoryImpl @Inject constructor(
         val result =  auth.signInWithEmailAndPassword(email, password)
             .await()
         updateSearchHistory()
+        updateSearchHistoryWithDetails()
+        updateAnalytics()
         return result
     }
 
@@ -80,6 +87,10 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     /**
      * Add the given product to firebase search history
      */
+    @Deprecated(
+        message = "sends only the basic details to firestore",
+        replaceWith = ReplaceWith("addProductToSearchHistory()")
+    )
     override suspend fun addItemToSearchHistory(product: ProductDetailsDto) {
         auth.currentUser?.uid?.let { uid ->
             firestore.collection(FirebaseCollection.USERS)
@@ -102,6 +113,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
         if (auth.currentUser != null){
             updateSearchHistory()
             updateSearchHistoryWithDetails()
+            updateAnalytics()
             return true
         }
         return false
@@ -130,6 +142,8 @@ internal class FirebaseRepositoryImpl @Inject constructor(
             _searchHistoryWithDetails.value = documentSnapshots.mapNotNull { doc: DocumentSnapshot ->
                 doc.toObject(ProductDetails::class.java)
             }
+            Log.d("logger", _searchHistoryWithDetails.value.toString())
+            updateAnalytics()
         }
     }
 
@@ -145,7 +159,13 @@ internal class FirebaseRepositoryImpl @Inject constructor(
             _searchHistoryWithDetails.value = _searchHistoryWithDetails.value.toMutableList().apply {
                 add(productDetails)
             }
+            updateAnalytics()
         }
+    }
+
+    private fun updateAnalytics() {
+        _analyticsData.value = _searchHistoryWithDetails.value.calculateAnalytics()
+        Log.d("logger", _analyticsData.value.toString())
     }
 
 }

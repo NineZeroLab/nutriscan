@@ -8,6 +8,6 @@
     <fragment
         android:id="@+id/scan_page"
         android:label="ScanPage"
-        android:name="com.mdev.feature_scan.ScanPage"
+        android:name="com.mdev.feature_scan.presentation.scan_page.ScanPage"
         tools:layout="@layout/fragment_scan_page"/>
 </navigation>

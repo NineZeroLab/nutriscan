@@ -17,7 +17,7 @@ internal class GetSearchHistoryUseCase @Inject constructor(
         emit(Resource.Loading())
         try {
             historyRepository.getSearchHistory().collect{ searchHistoryDto ->
-                emit(Resource.Success(searchHistoryDto.map { it.toSearchHistoryItem() }))
+                emit(Resource.Success(searchHistoryDto))
             }
         }catch (e: Exception){
             emit(Resource.Error(e.message.toString()))
