@@ -13,6 +13,7 @@ internal data class ProductDetailsForView(
 
 internal data class ProductDetails(
     val mainDetailsForView: MainDetailsForView,
+    val categories: List<String>,
     val positiveNutrients: List<Nutrient>,
     val negativeNutrients: List<Nutrient>,
     val additives: List<AdditivesShortView>,
@@ -25,12 +26,14 @@ internal fun ProductDto.toProductDetails(): ProductDetails{
     val negativeNutrients = NutrientGenerator(this).generateNutrientsForView(NutrientCategory.NEGATIVE)
     val positiveNutrients = NutrientGenerator(this).generateNutrientsForView(NutrientCategory.POSITIVE)
     val productType = ClientResources.getProductType(this.categoriesHierarchy)
+    val categories = this.categoriesHierarchy ?: emptyList()
 
     return ProductDetails(
-       mainDetailsForView = mainDetailsForView,
-       positiveNutrients =  positiveNutrients,
-       negativeNutrients =  negativeNutrients,
-       additives = getDemoAdditivesShortView(),
-       productType =  productType
+        mainDetailsForView = mainDetailsForView,
+        positiveNutrients =  positiveNutrients,
+        negativeNutrients =  negativeNutrients,
+        additives = getDemoAdditivesShortView(),
+        productType =  productType,
+        categories = categories,
     )
 }

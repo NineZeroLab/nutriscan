@@ -5,12 +5,12 @@ import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
 import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
 import com.mdev.openfoodfacts_client.domain.model.Allergen
 import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction
-import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 
 internal interface ProductDetailsRepository {
     suspend fun getProductDetails(productId: String): ProductDto?
     suspend fun getUserPreference(): AppUser?
     suspend fun getRecommendedProducts(
+        categories: List<String>,
         dietaryRestrictions: List<DietaryRestriction>,
         allergens: List<Allergen>
     ): List<RecommendedProductDto>?

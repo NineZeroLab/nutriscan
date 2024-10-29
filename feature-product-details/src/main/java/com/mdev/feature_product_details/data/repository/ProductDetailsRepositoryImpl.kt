@@ -23,10 +23,12 @@ internal class ProductDetailsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getRecommendedProducts(
+        categories: List<String>,
         dietaryRestrictions: List<DietaryRestriction>,
         allergens: List<Allergen>
     ): List<RecommendedProductDto>? {
         return productRepository.getRecommendedProducts(
+            categories = categories,
             dietaryRestrictions = dietaryRestrictions,
             allergens = allergens
         )

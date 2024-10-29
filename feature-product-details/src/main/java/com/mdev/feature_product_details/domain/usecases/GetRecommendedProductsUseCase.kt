@@ -1,6 +1,5 @@
 package com.mdev.feature_product_details.domain.usecases
 
-import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.common.utils.Resource
 import com.mdev.core.utils.logger
 import com.mdev.feature_product_details.domain.model.RecommendedProduct
@@ -12,16 +11,19 @@ import javax.inject.Inject
 
 internal class GetRecommendedProductsUseCase @Inject constructor(
     private val productDetailsRepository: ProductDetailsRepository,
-    private val firebaseRepository: FirebaseRepository
 ) {
-    operator fun invoke(): Flow<Resource<List<RecommendedProduct>>>  = flow{
+    operator fun invoke(categories: List<String>): Flow<Resource<List<RecommendedProduct>>>  = flow{
         emit(Resource.Loading())
-        val appUser = firebaseRepository.getCurrentUserDetails()
+        val appUser = productDetailsRepository.getUserPreference()
         if (appUser == null){
             emit(Resource.Error("Unable to fetch current user details"))
         }else{
             try {
-                val recommendedProducts = productDetailsRepository.getRecommendedProducts(appUser.dietaryRestrictions,appUser.allergens)
+                val recommendedProducts = productDetailsRepository.getRecommendedProducts(
+                    categories = categories,
+                    dietaryRestrictions =  appUser.dietaryRestrictions,
+                    allergens =  appUser.allergens
+                )
                 recommendedProducts?.let {
                     logger("recommended product fetch success")
                     logger(recommendedProducts.map { it.productName }.toString())

@@ -65,7 +65,9 @@ internal class ProductDetailsViewModel @Inject constructor(
                     }
                 }
                 is Resource.Success -> {
-                    getRecommendedProducts()
+                    result.data?.productDetails?.let {productDetails ->
+                        getRecommendedProducts(productDetails.categories)
+                    }
                     _uiState.update {
                         ProductDetailsPageState(
                             productDetailsFetchState = Status.SUCCESS,
@@ -79,10 +81,12 @@ internal class ProductDetailsViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun getRecommendedProducts(){
-        getRecommendedProductsUseCase().onEach {result ->
+    private fun getRecommendedProducts(categories: List<String>){
+        logger("categories ${categories.toString()}")
+        getRecommendedProductsUseCase(categories).onEach {result ->
             when(result){
                 is Resource.Error -> {
+                    logger("Error fetching product details: ${result.message.toString()}")
                     _uiState.update {
                         it.copy(
                             recommendedProductsFetchState = Status.FAILURE,
