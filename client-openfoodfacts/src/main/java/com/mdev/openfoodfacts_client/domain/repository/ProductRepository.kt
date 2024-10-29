@@ -12,6 +12,7 @@ interface ProductRepository{
     suspend fun getProductDetailsById(productId: String): ProductDetails?
     fun getAdditivesByENumber(eNumber: List<String>): List<AdditiveDto>
     suspend fun getRecommendedProducts(
+        categories: List<String>,
         dietaryRestrictions: List<DietaryRestriction>,
         allergens: List<Allergen>,
         ): List<RecommendedProductDto>?

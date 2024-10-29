@@ -62,6 +62,7 @@ internal class ProductRepositoryImpl @Inject constructor (
     }
 
     override suspend fun getRecommendedProducts(
+        categories: List<String>,
         dietaryRestrictions: List<DietaryRestriction>,
         allergens: List<Allergen>
     ): List<RecommendedProductDto>? {
@@ -71,10 +72,12 @@ internal class ProductRepositoryImpl @Inject constructor (
         val ingredientAnalysisTags = dietaryRestrictions.joinToString(",") {
             it.response
         }
+        val categoriesTags = categories.filter { it.contains("en:") }.joinToString { "|" }
         val searchResponse = openFoodFactsApi.getRecommendedProducts(
            fields = ResponseFields.getRecommendedProductFields(),
             sortBy = "nutriscore_score",
             allergenTags = allergensTags,
+            categories = categoriesTags,
             ingredientAnalysisTags = ingredientAnalysisTags
         )
         return searchResponse.recommendedProductDtos
