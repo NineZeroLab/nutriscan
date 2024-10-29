@@ -55,7 +55,7 @@ class ProductDetailsPage : Fragment() {
     private lateinit var viewBinding: FragmentProductDetailsPageBinding
     private lateinit var viewModel: ProductDetailsViewModel
     @Inject
-    private lateinit var navigator: ProductDetailsNavigator
+    lateinit var navigator: ProductDetailsNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
