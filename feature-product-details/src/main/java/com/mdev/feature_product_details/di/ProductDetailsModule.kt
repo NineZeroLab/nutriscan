@@ -15,7 +15,7 @@ import javax.inject.Singleton
 object ProductDetailsModule {
     @Provides
     @Singleton
-    fun providesProductDetailsRepository(
+    internal fun providesProductDetailsRepository(
         firebaseRepository: FirebaseRepository,
         productRepository: ProductRepository
     ): ProductDetailsRepository{

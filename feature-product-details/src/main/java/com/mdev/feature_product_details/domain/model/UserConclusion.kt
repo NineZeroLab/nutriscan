@@ -3,7 +3,6 @@ package com.mdev.feature_product_details.domain.model
 import com.mdev.openfoodfacts_client.domain.model.getAllergenConclusion
 import com.mdev.openfoodfacts_client.domain.model.getDietaryPreferenceConclusion
 import com.mdev.openfoodfacts_client.domain.model.getDietaryRestrictionConclusion
-import com.mdev.openfoodfacts_client.domain.model.getDietaryRestrictions
 
 
 //Needs to be renamed!!!
@@ -13,7 +12,7 @@ internal data class UserConclusion(
     val allergenConclusion: String
 )
 
-internal fun UserConsideration.getConclusion(productConsiderations: ProductConsiderations): UserConclusion{
+internal fun Considerations.getConclusion(productConsiderations: Considerations): UserConclusion{
     val dietaryPreferenceConclusion = getDietaryPreferenceConclusion(
         productPreferences = productConsiderations.dietaryPreferences,
         userPreferences = this.dietaryPreferences

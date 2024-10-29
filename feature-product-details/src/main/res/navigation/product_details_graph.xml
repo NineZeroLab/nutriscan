@@ -7,19 +7,9 @@
     >
 
     <fragment
-        android:id="@+id/scan_page"
-        android:label="ScanPage"
-        tools:layout="@layout/fragment_scan_page"
-        android:name="com.mdev.feature_product_details.ScanPage">
-        <action
-            android:id="@+id/action_scan_page_to_product_details_page"
-            app:destination="@id/product_details_page"/>
-    </fragment>
-
-    <fragment
         android:id="@+id/product_details_page"
         tools:layout="@layout/fragment_product_details_page"
-        android:name="com.mdev.feature_product_details.presentation.profilePage.ProductDetailsPage"
+        android:name="com.mdev.feature_product_details.presentation.product_details_page.ProductDetailsPage"
         android:label="ProductDetailsPage">
         <argument
             android:name="productId"

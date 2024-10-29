@@ -8,7 +8,7 @@
     android:background="@color/md_theme_background"
     android:backgroundTint="@color/md_theme_background"
     android:orientation="vertical"
-    tools:context="com.mdev.feature_product_details.presentation.profilePage.ProductDetailsPage">
+    tools:context="com.mdev.feature_product_details.presentation.product_details_page.ProductDetailsPage">
 
     <ScrollView
         android:id="@+id/sv_product_details"
@@ -16,20 +16,55 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/ll_product_details_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/mtb_details_page"
+            <LinearLayout
+                android:id="@+id/ll_product_details_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
-                android:minHeight="?attr/actionBarSize"
-                android:theme="@style/AppTheme"
-                app:titleTextAppearance="@style/AppToolBarTextAppearance"
-                app:titleTextColor="@color/md_theme_onPrimary" />
+                android:orientation="vertical">
+
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/mtb_details_page"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorPrimary"
+                    android:minHeight="?attr/actionBarSize"
+                    android:theme="@style/AppTheme"
+                    app:titleTextAppearance="@style/AppToolBarTextAppearance"
+                    app:titleTextColor="@color/md_theme_onPrimary" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_recommended_products"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10sp"
+                    android:fontFamily="@font/inter_semi_bold"
+                    android:text="Recommended"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_recommended_products"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="24dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="10dp" />
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
