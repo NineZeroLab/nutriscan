@@ -2,6 +2,7 @@ package com.zero1labs.nutriscan.navigation
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.mdev.core.utils.logger
 import com.mdev.feature_history.navigation.HistoryNavigator
@@ -44,6 +45,16 @@ class AppNavigator @Inject constructor(): HomeNavigator, LoginNavigator, Product
     }
 
     override fun navigateToHomePage(fromFragment: Fragment) {
+    }
+
+    override fun reloadWithNewProduct(fromFragment: Fragment, productId: String) {
+        val bundle = Bundle().apply {
+            putString("productId", productId)
+        }
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(com.mdev.feature_product_details.R.id.product_details_page,true)
+            .build()
+        fromFragment.findNavController().navigate(com.mdev.feature_product_details.R.id.product_details_page, bundle, navOptions)
     }
 
 }
