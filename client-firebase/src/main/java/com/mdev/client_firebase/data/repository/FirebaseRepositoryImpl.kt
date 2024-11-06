@@ -156,8 +156,12 @@ internal class FirebaseRepositoryImpl @Inject constructor(
                 .document(productDetails.id)
                 .set(productDetails)
                 .await()
-            _searchHistoryWithDetails.value = _searchHistoryWithDetails.value.toMutableList().apply {
-                add(productDetails)
+            _searchHistoryWithDetails.value.let { searchHistory ->
+                if (searchHistory.none(){ it.id == productDetails.id}){
+                    _searchHistoryWithDetails.value = searchHistory.toMutableList().apply {
+                        add(productDetails)
+                    }
+                }
             }
             updateAnalytics()
         }
