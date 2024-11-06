@@ -50,6 +50,8 @@ dependencies {
     implementation(libs.navigation.ui.ktx)
     implementation(libs.play.services.mlkit.barcode.scanning)
     implementation(libs.play.services.code.scanner)
+    implementation(project(":client-openfoodfacts"))
+    implementation(project(":client-openfoodfacts"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -7,16 +7,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-internal class FetchUserDetailsUseCase @Inject constructor(
+class GetUserDetailsUseCase @Inject constructor(
     private val homePageRepository: HomePageRepository
 ) {
-    internal operator fun invoke(): Flow<Resource<AppUser>> = flow{
+    operator fun invoke(): Flow<Resource<AppUser>> = flow {
         emit(Resource.Loading())
         try {
-            val appUser = homePageRepository.getUserDetails()
-            emit(Resource.Success(appUser))
+            val user = homePageRepository.getUserDetails()
+            if (user == null){
+                emit(Resource.Error("Unable to fetch user details"))
+            }else{
+                emit(Resource.Success(user))
+            }
         }catch (e: Exception){
             emit(Resource.Error(e.message.toString()))
         }
+
     }
 }

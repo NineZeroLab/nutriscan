@@ -11,11 +11,13 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.findFragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mdev.openfoodfacts_client.utils.ClientResources.TAG
+import com.mdev.common.utils.domain.model.Status
 import com.mdev.core.utils.hide
 import com.mdev.core.utils.invisible
 import com.mdev.core.utils.logger
@@ -23,17 +25,21 @@ import com.mdev.core.utils.show
 import com.mdev.feature_homepage.R
 import com.mdev.common.R as CommonRes
 import com.mdev.feature_homepage.databinding.FragmentHomePageBinding
-import com.mdev.feature_homepage.domain.model.SearchHistoryListItem
+import com.mdev.feature_homepage.domain.model.RecommendedProduct
+import com.mdev.feature_homepage.domain.model.SearchHistoryItem
+import com.mdev.feature_homepage.domain.model.getDummyHistoryitem
+import com.mdev.feature_homepage.domain.model.getDummyRecommendedProducts
 import com.mdev.feature_homepage.navigation.HomeNavigator
 import com.mdev.openfoodfacts_client.utils.ClientResources
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomePage : Fragment() {
-    private lateinit var viewModel: HomePageViewModel
     private lateinit var viewBinding: FragmentHomePageBinding
+    private lateinit var viewModel: HomePageViewModel
     @Inject
     lateinit var navigator: HomeNavigator
     override fun onCreateView(
@@ -41,78 +47,105 @@ class HomePage : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View{
-        viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
         viewBinding = FragmentHomePageBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(requireActivity())[HomePageViewModel::class.java]
         return  viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        buildToolbar(view)
-        Log.d(TAG,"Products from firebase: ${viewModel.uiState.value.searchHistory}")
-//        handleScanButton()
-        handleDemoItemButton()
-        buildSearchHistoryRv()
-        handleUiState(view)
-    }
+        buildSearchHistoryRecyclerView()
+        buildRecommendedProductsRecyclerView()
 
-    private fun handleUiState(view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect(){
-                buildSearchHistoryRv()
-            }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.uiState.collect{ state ->
+                    when(state.recommendedProductFetchState){
+                        Status.LOADING -> {
+                            logger("loading recommended products")
+                        }
+                        Status.SUCCESS -> {
+                            logger("success fetching recommended products")
+                            updateRecommendedProducts()
+                        }
+                        Status.FAILURE -> {
+                            logger("failure fetching recommended products")
 
-        }
-    }
+                        }
+                        Status.IDLE -> {
 
-    private fun buildSearchHistoryRv() {
-        val searchHistoryItems : List<SearchHistoryListItem> = viewModel.uiState.value.searchHistory
-        val searchHistoryAdapter = SearchHistoryAdapter(searchHistoryItems){ productId ->
-            val bundle = Bundle().apply {
-                putString("productId", productId)
-            }
-            navigator.navigateToProductDetailsPage(this, productId)
-        }
-        viewBinding.rvSearchHistory.layoutManager = LinearLayoutManager(requireContext())
-        viewBinding.rvSearchHistory.adapter = searchHistoryAdapter
-    }
-
-    private fun handleDemoItemButton() {
-        viewBinding.fabGetDemoItem.setOnClickListener {
-            Log.d("logger", "Get Demo Item fab clicked")
-            navigator.navigateToProductDetailsPage(this,productId = ClientResources.getRandomItem())
-        }
-    }
-
-    private fun buildToolbar(view: View) {
-        viewBinding.mtbHomepage.overflowIcon?.setTint(ContextCompat.getColor(requireContext(),CommonRes.color.md_theme_onPrimary))
-        viewModel.uiState.value.appUser?.let { user ->
-            viewBinding.mtbHomepage.apply {
-                title = "Hi ${user.name}"
-            }
-        }
-        viewBinding.mtbHomepage.addMenuProvider(object: MenuProvider{
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.homepage_menu,menu)
-            }
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when(menuItem.itemId){
-                    R.id.mi_sign_out -> {
-                        viewModel.onEvent(HomePageEvent.LogOut)
-                        navigator.navigateFromHomePageToLoginPage(this@HomePage)
-                        true
+                        }
                     }
-                    R.id.mi_edit_profile -> {
-//                        navigator.navigateToProfilePage(this@HomePage)
-                        true
+                    when(state.appUserDataFetchState){
+                        Status.LOADING -> {
+                            logger("Loading user details...")
+                        }
+                        Status.SUCCESS -> {
+                            logger("got user details!!!")
+                            viewBinding.tvHomepageUsername.text = "Hello, ${state.appUser?.name}"
+                        }
+                        Status.FAILURE -> {
+                            logger("error fetching user details!!!")
+                        }
+                        Status.IDLE -> {
+
+                        }
                     }
-                    else -> {false}
+
+
+                    when(state.searchHistoryFetchState){
+                        Status.LOADING -> {
+                            logger("Loading Search History ....")
+                        }
+                        Status.SUCCESS -> {
+                            updateSearchHistory()
+                        }
+                        Status.FAILURE -> {
+                            //TODO: Fix this
+                        }
+                        Status.IDLE -> {
+
+                        }
+                    }
                 }
             }
-        },viewLifecycleOwner)
+        }
     }
 
-    private fun showProgressBar(){
+    private fun buildSearchHistoryRecyclerView () {
+        val searchHistory = viewModel.uiState.value.searchHistory
+        viewBinding.rvHomepageSearchHistory.apply{
+            layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+            adapter = SearchHistoryAdapter(searchHistoryItems =  searchHistory){ productId ->
+                navigator.navigateToProductDetailsPage(this@HomePage, productId)
+            }
+        }
+    }
+
+    private fun updateSearchHistory(){
+        val searchHistory = viewModel.uiState.value.searchHistory
+        val adapter = viewBinding.rvHomepageSearchHistory.adapter as SearchHistoryAdapter
+        adapter.updateList(searchHistory)
+    }
+
+    private fun updateRecommendedProducts(){
+        val recommendedProducts = viewModel.uiState.value.recommendedProducts
+        val adapter = viewBinding.rvHomepageRecommendedProducts.adapter as RecommendedProductsAdapter
+        adapter.updateList(recommendedProducts)
+    }
+
+    private fun buildRecommendedProductsRecyclerView () {
+        val recommendedProducts = viewModel.uiState.value.recommendedProducts
+        viewBinding.rvHomepageRecommendedProducts.apply {
+            layoutManager = GridLayoutManager(requireContext(), 2)
+            adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts)
+        }
+    }
+
+
+
+
+  /*  private fun showProgressBar(){
         logger("trying to show progress bar")
         viewBinding.homepageMainLayout.invisible()
         viewBinding.progressbarLayout.show()
@@ -124,5 +157,5 @@ class HomePage : Fragment() {
         viewBinding.progressbarLayout.hide()
     }
 
-
+*/
 }

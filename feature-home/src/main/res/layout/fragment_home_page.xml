@@ -1,95 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frame_home_page"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_onPrimary"
-    tools:context="com.mdev.feature_homepage.presentation.homepage.HomePage">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fillViewport="true">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/homepage_main_layout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/mtb_homepage"
+        <!-- Section 1: Banner -->
+        <RelativeLayout
+            android:id="@+id/rl_homepage_banner_section"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/AppTheme"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/rv_search_history"
-            app:titleTextAppearance="@style/AppToolBarTextAppearance"
-            app:titleTextColor="@color/md_theme_onPrimary" />
+            android:layout_height="200dp"
+            android:background="@drawable/common_full_open_on_phone">
 
+            <TextView
+                android:id="@+id/tv_homepage_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome, User!"
+                android:textSize="24sp"
+                android:textColor="@android:color/black"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
+
+        <!-- Section 2: Horizontal Recycler View -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_search_history"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mtb_homepage"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="0dp"
-            android:layout_height="0dp" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_scan_product"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:clickable="true"
-            android:src="@mipmap/barcode"
-            app:layout_anchorGravity="bottom|end" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_get_demo_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/fab_scan_product"
-            android:layout_marginBottom="20dp"
-            android:layout_marginEnd="20dp"
-            android:clickable="true"
-            android:src="@mipmap/calories"
-            app:layout_anchorGravity="bottom|end" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/progressbar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:visibility="gone">
-
-        <View
-            android:id="@+id/blurBg"
+            android:id="@+id/rv_homepage_search_history"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#33EFC8C8" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminateOnly="true"
-            android:maxWidth="64dp"
-            android:maxHeight="64dp"
-            android:minWidth="64dp"
-            android:minHeight="64dp"
-            android:mirrorForRtl="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/blurBg" />
+            android:padding="16dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:scrollbars="none" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Section 3: Vertical RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_homepage_recommended_products"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:layout_marginTop="8dp"
+            android:scrollbars="none" />
 
-</FrameLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
+
