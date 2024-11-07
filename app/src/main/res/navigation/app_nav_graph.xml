@@ -32,6 +32,9 @@
         app:popUpToInclusive="true"
         app:destination="@id/login_graph"/>
 
+    <action
+        android:id="@+id/action_navigate_to_home_page"
+        app:destination="@id/home_graph"/>
 
     <action
         android:id="@+id/action_navigate_to_register_page"

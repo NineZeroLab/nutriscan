@@ -14,8 +14,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.findFragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.common.utils.domain.model.Status
 import com.mdev.openfoodfacts_client.domain.model.NutrientPreference
@@ -49,6 +51,8 @@ class ProfilePage : Fragment() {
     private lateinit var allergens: MutableList<Allergen>
     private lateinit var viewBinding: FragmentProfilePageBinding
     private lateinit var viewModel: ProfilePageViewModel
+    @Inject
+    lateinit var navigator: ProfileNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,6 +64,17 @@ class ProfilePage : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        handleUiState(view)
+        if (viewModel.uiState.value.appUser == null){
+            logger("app user is empty fetching user details from firebase")
+            viewModel.onEvent(ProfilePageEvent.GetUserProfileDetails)
+        }else{
+            logger("app user already in viewModel.. building ui")
+            buildUi()
+        }
+   }
+
+    private fun buildUi() {
         buildToolbar()
         prefillUserName()
         updateUserPreferences()
@@ -69,38 +84,47 @@ class ProfilePage : Fragment() {
         buildDietaryPreferenceView()
         buildDietaryRestrictionView()
         buildAllergenView()
-        handleSaveButton(view)
-        handleUiState(view)
-   }
+        view?.let { handleSaveButton(it) }
+
+    }
+
 
     private fun handleUiState(view: View) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                when(state.profileUpdateStatus){
-                    Status.LOADING -> {}
-                    Status.SUCCESS -> {
-                        view.showSnackBar("Updated Profile Details Successfully")
-//                        navigator.navigateToHomePage(view.findFragment())
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.uiState.collect { state ->
+                    when(state.getProfileDetailsStatus){
+                        Status.LOADING -> {
+
+                        }
+                        Status.SUCCESS -> {
+                            buildUi()
+                        }
+                        Status.FAILURE -> {
+
+                        }
+                        Status.IDLE -> {
+
+                        }
                     }
-                    Status.FAILURE -> {
-                        view.showSnackBar(state.errorMessage.toString())
+                    logger(state.profileUpdateStatus.name)
+                    when(state.profileUpdateStatus){
+                        Status.LOADING -> {
+                            logger("loading in fragment for profile update status")
+                        }
+                        Status.SUCCESS -> {
+                            view.showSnackBar("Updated Profile Details Successfully")
+                            navigator.navigateFromProfileToHomePage(view.findFragment())
+                        }
+                        Status.FAILURE -> {
+                            view.showSnackBar(state.errorMessage.toString())
+                        }
+                        Status.IDLE -> {}
                     }
-                    Status.IDLE -> {}
                 }
-//                when (state.userDetailsUpdateState) {
-//                    com.mdev.feature_homepage.presentation.homepage.UserDetailsUpdateState.LOADING -> {}
-//                    com.mdev.feature_homepage.presentation.homepage.UserDetailsUpdateState.SUCCESS -> {
-//                        view.showSnackBar(state.msg.toString())
-//                        findNavController().popBackStack(R.id.homePage, false)
-//                    }
-//
-//                    com.mdev.feature_homepage.presentation.homepage.UserDetailsUpdateState.FAILURE -> {
-//                        view.showSnackBar(state.msg.toString())
-//                    }
-//                    com.mdev.feature_homepage.presentation.homepage.UserDetailsUpdateState.NOT_STARTED -> {}
-//                }
             }
         }
+
     }
 
     private fun handleSaveButton(view: View) {
@@ -108,7 +132,7 @@ class ProfilePage : Fragment() {
             val userName = viewBinding.tifUsername.getInput()
             val uid = viewModel.uiState.value.appUser?.uid ?: ""
             if (userName.isValidUserName()) {
-                Log.d("logger", "Saving user details to viewModel s${dietaryPreferences}")
+                Log.d("logger", "Saving user details to viewModel $dietaryPreferences")
                 val appUser = AppUser(
                     name = userName,
                     uid = uid,
@@ -389,5 +413,15 @@ class ProfilePage : Fragment() {
                 imageView.addImage(R.mipmap.arrow_down)
             }
         }
+    }
+
+
+    private fun updateUi(){
+        viewBinding.clAllergenCollapsable.removeAllViews()
+        viewBinding.clCollapsableDietaryRestriction.removeAllViews()
+        viewBinding.clDietaryPreferenceCollapsable.removeAllViews()
+        buildDietaryPreferenceView()
+        buildDietaryRestrictionView()
+        buildAllergenView()
     }
 }

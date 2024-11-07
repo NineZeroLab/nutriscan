@@ -12,6 +12,7 @@ import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
 import com.mdev.client_firebase.data.remote.dto.calculateAnalytics
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.client_firebase.utils.FirebaseCollection
+import com.mdev.common.utils.Resource
 import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -82,6 +83,21 @@ internal class FirebaseRepositoryImpl @Inject constructor(
 
     override suspend fun getSearchHistoryWithDetails(): StateFlow<List<ProductDetails>>{
         return _searchHistoryWithDetails.asStateFlow()
+    }
+
+    override suspend fun updateUserDetails(appUser: AppUser): Resource<Unit> {
+        try {
+            firestore.collection(FirebaseCollection.USERS)
+                .document(appUser.uid)
+                .set(
+                    appUser,
+                    SetOptions.merge()
+                ).await()
+            return Resource.Success(Unit)
+        }catch (e: Exception){
+            return Resource.Error(e.message.toString())
+        }
+
     }
 
     /**
