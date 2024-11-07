@@ -139,7 +139,7 @@ class HomePage : Fragment() {
         viewBinding.rvHomepageRecommendedProducts.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts) { productId ->
-                navigator.navigateToProductDetailsPage(this@HomePage, productId)
+                navigator.navigateToProductDetailsPage(this@HomePage, productId) //Navigating to Product Details Page
             }
         }
     }

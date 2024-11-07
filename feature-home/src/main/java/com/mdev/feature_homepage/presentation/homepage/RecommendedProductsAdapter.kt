@@ -45,7 +45,7 @@ class RecommendedProductsAdapter(
         holder.tvRecommendedBrandName.text = recommendedProduct.brandName
         holder.ivRecommendedHealthCategory.addImage(recommendedProduct.healthCategory.getIcon())
         holder.ivRecommendedProductImage.setOnClickListener {
-            callback(recommendedProduct.productId)
+            callback(recommendedProduct.productId) // create card view to put listener on the card
         }
     }
 
