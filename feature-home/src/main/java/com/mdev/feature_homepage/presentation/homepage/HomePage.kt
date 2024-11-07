@@ -101,7 +101,7 @@ class HomePage : Fragment() {
                             updateSearchHistory()
                         }
                         Status.FAILURE -> {
-                            //TODO: Fix this
+
                         }
                         Status.IDLE -> {
 
@@ -138,7 +138,9 @@ class HomePage : Fragment() {
         val recommendedProducts = viewModel.uiState.value.recommendedProducts
         viewBinding.rvHomepageRecommendedProducts.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts)
+            adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts) { productId ->
+                navigator.navigateToProductDetailsPage(this@HomePage, productId)
+            }
         }
     }
 

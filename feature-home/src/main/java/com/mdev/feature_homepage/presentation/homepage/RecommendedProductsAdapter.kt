@@ -14,8 +14,10 @@ import com.mdev.feature_homepage.domain.model.SearchHistoryItem
 import com.mdev.feature_homepage.utils.getIcon
 import com.mdev.common.R as commonRes
 
-class RecommendedProductsAdapter(private var recommendedProducts: List<RecommendedProduct>):
-    RecyclerView.Adapter<RecommendedProductsAdapter.RecommendedProductsViewHolder>() {
+class RecommendedProductsAdapter(
+    private var recommendedProducts: List<RecommendedProduct>,
+    private var callback: (String) -> Unit
+    ): RecyclerView.Adapter<RecommendedProductsAdapter.RecommendedProductsViewHolder>() {
 
         inner class RecommendedProductsViewHolder (itemView: View): RecyclerView.ViewHolder(itemView) {
             val ivRecommendedProductImage = itemView.findViewById<ImageView>(R.id.iv_recommended_product_image)
@@ -42,7 +44,9 @@ class RecommendedProductsAdapter(private var recommendedProducts: List<Recommend
         holder.tvRecommendedProductName.text = recommendedProduct.productName
         holder.tvRecommendedBrandName.text = recommendedProduct.brandName
         holder.ivRecommendedHealthCategory.addImage(recommendedProduct.healthCategory.getIcon())
-
+        holder.ivRecommendedProductImage.setOnClickListener {
+            callback(recommendedProduct.productId)
+        }
     }
 
     fun updateList (newList: List<RecommendedProduct>) {
