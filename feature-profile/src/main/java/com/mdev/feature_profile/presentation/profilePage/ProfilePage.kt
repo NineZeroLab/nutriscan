@@ -3,6 +3,9 @@ package com.mdev.feature_profile.presentation.profilePage
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -12,6 +15,7 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.findFragment
 import androidx.lifecycle.Lifecycle
@@ -20,14 +24,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.common.utils.domain.model.Status
-import com.mdev.openfoodfacts_client.domain.model.NutrientPreference
-import com.mdev.openfoodfacts_client.domain.model.NutrientPreferenceType
-import com.mdev.openfoodfacts_client.domain.model.Allergen
-import com.mdev.openfoodfacts_client.utils.ClientResources.TAG
-import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction
-import com.mdev.openfoodfacts_client.domain.model.NutrientType
-import kotlinx.coroutines.launch
-import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction.*
 import com.mdev.core.utils.addImage
 import com.mdev.core.utils.getInput
 import com.mdev.core.utils.hide
@@ -38,11 +34,21 @@ import com.mdev.core.utils.logger
 import com.mdev.core.utils.show
 import com.mdev.core.utils.showSnackBar
 import com.mdev.feature_profile.R
-import com.mdev.common.R as CommonRes
 import com.mdev.feature_profile.databinding.FragmentProfilePageBinding
 import com.mdev.feature_profile.navigation.ProfileNavigator
+import com.mdev.openfoodfacts_client.domain.model.Allergen
+import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction
+import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction.PALM_OIL_FREE
+import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction.VEGAN
+import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction.VEGETARIAN
+import com.mdev.openfoodfacts_client.domain.model.NutrientPreference
+import com.mdev.openfoodfacts_client.domain.model.NutrientPreferenceType
+import com.mdev.openfoodfacts_client.domain.model.NutrientType
+import com.mdev.openfoodfacts_client.utils.ClientResources.TAG
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.mdev.common.R as CommonRes
 
 @AndroidEntryPoint
 class ProfilePage : Fragment() {
@@ -381,6 +387,27 @@ class ProfilePage : Fragment() {
 
     private fun buildToolbar() {
         viewBinding.mtbProfilePage.apply {
+            addMenuProvider(
+                object : MenuProvider {
+                    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                        menuInflater.inflate(R.menu.profile_page_menu, menu)
+                    }
+
+                    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                        return when (menuItem.itemId) {
+                            R.id.mi_logout_profile -> {
+                                viewModel.onEvent(ProfilePageEvent.LogOut)
+                                navigator.logout(this@ProfilePage)
+                                true
+                            }
+
+                            else -> {
+                                false
+                            }
+                        }
+                    }
+                }, viewLifecycleOwner
+            )
             if (viewModel.uiState.value.appUser?.profileUpdated == true){
 //                setupWithNavController(findNavController())
                 navigationIcon = ContextCompat.getDrawable(requireContext(),CommonRes.drawable.baseline_arrow_back_24)
@@ -413,15 +440,5 @@ class ProfilePage : Fragment() {
                 imageView.addImage(R.mipmap.arrow_down)
             }
         }
-    }
-
-
-    private fun updateUi(){
-        viewBinding.clAllergenCollapsable.removeAllViews()
-        viewBinding.clCollapsableDietaryRestriction.removeAllViews()
-        viewBinding.clDietaryPreferenceCollapsable.removeAllViews()
-        buildDietaryPreferenceView()
-        buildDietaryRestrictionView()
-        buildAllergenView()
     }
 }

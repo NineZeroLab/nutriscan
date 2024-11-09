@@ -13,3 +13,6 @@ data class AppUser(
     val dietaryRestrictions: List<DietaryRestriction> = mutableListOf(),
     val allergens: List<Allergen> = mutableListOf(),
 )
+
+
+

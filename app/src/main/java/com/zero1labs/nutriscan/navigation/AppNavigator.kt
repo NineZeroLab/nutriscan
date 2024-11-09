@@ -28,7 +28,7 @@ class AppNavigator @Inject constructor(): HomeNavigator, LoginNavigator, Product
     }
 
     override fun navigateFromHomePageToLoginPage(fromFragment: Fragment) {
-        fromFragment.findNavController().navigate(R.id.action_home_page_to_login_page)
+        //TODO: clean up this function
     }
 
     override fun navigateToRegisterPage(fromFragment: Fragment) {
@@ -49,6 +49,10 @@ class AppNavigator @Inject constructor(): HomeNavigator, LoginNavigator, Product
         logger("Navigating to HomePage")
         val bottomNavigationView = fromFragment.activity?.findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         bottomNavigationView?.selectedItemId = R.id.home_graph
+    }
+
+    override fun logout(fromFragment: Fragment) {
+        fromFragment.findNavController().navigate(R.id.action_logout)
     }
 
     override fun navigateToHomePage(fromFragment: Fragment) {

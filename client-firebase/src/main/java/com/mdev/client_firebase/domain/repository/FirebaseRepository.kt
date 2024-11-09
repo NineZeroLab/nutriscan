@@ -12,7 +12,7 @@ interface FirebaseRepository {
     suspend fun registerUserByEmailAndPassword(email: String, password: String): AuthResult
     suspend fun loginUserByEmailAndPassword(email: String, password: String): AuthResult
     suspend fun createUserDetails(appUser: AppUser)
-    suspend fun signOutUser()
+    suspend fun logout()
     suspend fun getSearchHistory(): StateFlow<List<ProductDetailsDto>>
     suspend fun addItemToSearchHistory(product: ProductDetailsDto)
     suspend fun isUserLoggedIn(): Boolean
