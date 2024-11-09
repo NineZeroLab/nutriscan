@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mdev.core.utils.logger
 import com.mdev.feature_history.navigation.HistoryNavigator
 import com.mdev.feature_homepage.navigation.HomeNavigator
@@ -44,7 +45,14 @@ class AppNavigator @Inject constructor(): HomeNavigator, LoginNavigator, Product
         fromFragment.findNavController().popBackStack()
     }
 
+    override fun navigateFromProfileToHomePage(fromFragment: Fragment) {
+        logger("Navigating to HomePage")
+        val bottomNavigationView = fromFragment.activity?.findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+        bottomNavigationView?.selectedItemId = R.id.home_graph
+    }
+
     override fun navigateToHomePage(fromFragment: Fragment) {
+        //TODO: for product details to homepage
     }
 
     override fun reloadWithNewProduct(fromFragment: Fragment, productId: String) {
