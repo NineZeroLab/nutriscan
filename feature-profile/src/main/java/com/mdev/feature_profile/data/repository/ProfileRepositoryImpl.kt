@@ -15,7 +15,6 @@ class ProfileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateUserDetails(appUser: AppUser): Resource<Unit> {
-        //TODO: require firebase repository to have the functionality
-        return Resource.Success(Unit)
+        return firebaseRepository.updateUserDetails(appUser)
     }
 }

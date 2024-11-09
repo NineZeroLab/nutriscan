@@ -3,6 +3,7 @@ package com.mdev.client_firebase.domain.repository
 import com.google.firebase.auth.AuthResult
 import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
+import com.mdev.common.utils.Resource
 import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,4 +18,5 @@ interface FirebaseRepository {
     suspend fun isUserLoggedIn(): Boolean
     suspend fun addProductToSearchHistory(productDetails: ProductDetails)
     suspend fun getSearchHistoryWithDetails(): StateFlow<List<ProductDetails>>
+    suspend fun updateUserDetails(appUser: AppUser): Resource<Unit>
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.common.utils.Resource
 import com.mdev.common.utils.domain.model.Status
+import com.mdev.core.utils.logger
 import com.mdev.feature_profile.domain.usecases.GetProfileDetailsUseCase
 import com.mdev.feature_profile.domain.usecases.UpdateProfileDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,10 +32,6 @@ class ProfilePageViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProfilePageState())
     val uiState = _uiState.asStateFlow()
 
-    init{
-        getUserProfileDetails()
-    }
-
     fun onEvent(event: ProfilePageEvent){
         when(event){
             is ProfilePageEvent.GetUserProfileDetails -> getUserProfileDetails()
@@ -46,25 +43,38 @@ class ProfilePageViewModel @Inject constructor(
         updateProfileDetailsUseCase(appUser).onEach { result ->
             when(result){
                 is Resource.Error -> {
+                    logger("error in viewmodel")
                     _uiState.update {
-                        ProfilePageState(
+                        it.copy(
                             profileUpdateStatus = Status.FAILURE,
                             errorMessage = result.message
                         )
                     }
+                    _uiState.update {
+                        it.copy(
+                            profileUpdateStatus = Status.IDLE
+                        )
+                    }
                 }
                 is Resource.Loading -> {
+                    logger("loading in viewmodel")
                     _uiState.update {
-                        ProfilePageState(
+                        it.copy(
                             profileUpdateStatus = Status.LOADING
                         )
                     }
                 }
                 is Resource.Success -> {
+                    logger("success in viewmodel")
                     _uiState.update {
-                        ProfilePageState(
+                        it.copy(
                             profileUpdateStatus = Status.SUCCESS,
                             appUser = result.data
+                        )
+                    }
+                    _uiState.update {
+                        it.copy(
+                            profileUpdateStatus = Status.IDLE
                         )
                     }
                 }
@@ -82,6 +92,11 @@ class ProfilePageViewModel @Inject constructor(
                             errorMessage = result.message
                         )
                     }
+                    _uiState.update {
+                        it.copy(
+                            getProfileDetailsStatus = Status.IDLE
+                        )
+                    }
                 }
                 is Resource.Loading -> {
                     _uiState.update {
@@ -95,6 +110,11 @@ class ProfilePageViewModel @Inject constructor(
                         ProfilePageState(
                             getProfileDetailsStatus = Status.SUCCESS,
                             appUser = result.data
+                        )
+                    }
+                    _uiState.update {
+                        it.copy(
+                            getProfileDetailsStatus = Status.IDLE
                         )
                     }
                 }
