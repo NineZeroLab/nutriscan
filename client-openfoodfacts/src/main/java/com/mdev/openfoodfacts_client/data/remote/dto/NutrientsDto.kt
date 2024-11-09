@@ -19,11 +19,11 @@ data class NutrientsDto(
     @SerializedName("carbon-footprint-from-known-ingredients_serving")
     val carbonFootprintFromKnownIngredientsServing: Double? = null,
     @SerializedName("energy")
-    val energy: Int? = null,
+    val energy: Double? = null,
     @SerializedName("energy_100g")
-    val energy100g: Int? = null,
+    val energy100g: Double? = null,
     @SerializedName("energy-kcal")
-    val energyKcal: Int? = null,
+    val energyKcal: Double? = null,
     @SerializedName("energy-kcal_100g")
     val energyKcal100g: Double? = null,
     @SerializedName("energy-kcal_serving")
@@ -31,27 +31,27 @@ data class NutrientsDto(
     @SerializedName("energy-kcal_unit")
     val energyKcalUnit: String? = null,
     @SerializedName("energy-kcal_value")
-    val energyKcalValue: Int? = null,
+    val energyKcalValue: Double? = null,
     @SerializedName("energy-kcal_value_computed")
     val energyKcalValueComputed: Double? = null,
     @SerializedName("energy-kj")
-    val energyKj: Int? = null,
+    val energyKj: Double? = null,
     @SerializedName("energy-kj_100g")
-    val energyKj100g: Int? = null,
+    val energyKj100g: Double? = null,
     @SerializedName("energy-kj_serving")
-    val energyKjServing: Int? = null,
+    val energyKjServing: Double? = null,
     @SerializedName("energy-kj_unit")
     val energyKjUnit: String? = null,
     @SerializedName("energy-kj_value")
-    val energyKjValue: Int? = null,
+    val energyKjValue: Double? = null,
     @SerializedName("energy-kj_value_computed")
     val energyKjValueComputed: Double? = null,
     @SerializedName("energy_serving")
-    val energyServing: Int? = null,
+    val energyServing: Double? = null,
     @SerializedName("energy_unit")
     val energyUnit: String? = null,
     @SerializedName("energy_value")
-    val energyValue: Int? = null,
+    val energyValue: Double? = null,
     @SerializedName("fat")
     val fat: Double? = null,
     @SerializedName("fat_100g")
