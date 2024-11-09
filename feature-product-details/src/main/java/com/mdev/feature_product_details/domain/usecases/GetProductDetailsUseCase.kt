@@ -1,6 +1,7 @@
 package com.mdev.feature_product_details.domain.usecases
 
 import com.mdev.common.utils.Resource
+import com.mdev.core.utils.logger
 import com.mdev.feature_product_details.domain.model.ProductDetailsForView
 import com.mdev.feature_product_details.domain.model.Considerations
 import com.mdev.feature_product_details.domain.model.getProductConsiderations
@@ -22,7 +23,7 @@ internal class GetProductDetailsUseCase @Inject constructor(
                 emit(Resource.Error("Product Not Found"))
             }else{
                 val productDetails = product.toProductDetails()
-                val productConsiderations = product.getProductConsiderations() ?: Considerations()
+                val productConsiderations = product.getProductConsiderations()
                 val userConsiderations = getUserConsiderationsUseCase() ?: Considerations()
                 val productDetailsForView = ProductDetailsForView(
                     productDetails = productDetails,
@@ -32,6 +33,7 @@ internal class GetProductDetailsUseCase @Inject constructor(
                 emit(Resource.Success(productDetailsForView))
             }
         }catch (e: Exception){
+            logger("Error: ${e.message}")
             emit(Resource.Error(e.message.toString()))
         }
     }

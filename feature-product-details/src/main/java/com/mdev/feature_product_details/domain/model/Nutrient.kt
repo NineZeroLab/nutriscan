@@ -1,12 +1,12 @@
 package com.mdev.feature_product_details.domain.model
 
+import com.mdev.core.utils.round
 import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 import com.mdev.openfoodfacts_client.domain.model.NutrientCategory
 import com.mdev.openfoodfacts_client.domain.model.NutrientPreference
 import com.mdev.openfoodfacts_client.domain.model.NutrientPreferenceType
 import com.mdev.openfoodfacts_client.domain.model.NutrientType
 import com.mdev.openfoodfacts_client.domain.model.PointsLevel
-import com.mdev.core.utils.round
 import com.mdev.openfoodfacts_client.utils.NutriScoreCalculator
 
 internal class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.remote.dto.ProductDto){
@@ -19,8 +19,7 @@ internal class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.rem
                 points = nutriScoreData?.sugarsPoints ?: NutriScoreCalculator.getPoints(
                     NutrientType.SUGAR,
                     productNutrients?.sugars100g
-                ),
-                contentPerHundredGrams = productNutrients?.sugars100g ?: 0,
+                ), contentPerHundredGrams = productNutrients?.sugars100g?.round() ?: 0,
                 servingUnit = productNutrients?.sugarsUnit ?: ""
             )
             val energy = Nutrient.getNutrient(
@@ -28,16 +27,14 @@ internal class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.rem
                 points = nutriScoreData?.energyPoints ?: NutriScoreCalculator.getPoints(
                     NutrientType.ENERGY,
                     productNutrients?.energy?.toDouble()
-                ),
-                contentPerHundredGrams = productNutrients?.energyKcal100g ?: 0,
+                ), contentPerHundredGrams = productNutrients?.energyKcal100g?.round() ?: 0,
                 servingUnit = productNutrients?.energyKcalUnit ?: ""
             )
             val saturates = Nutrient.getNutrient(
                 nutrientType = NutrientType.SATURATES,
                 points = nutriScoreData?.saturatedFatPoints ?: NutriScoreCalculator.getPoints(
                     NutrientType.SATURATES, productNutrients?.saturatedFat100g
-                ),
-                contentPerHundredGrams = productNutrients?.saturatedFat100g ?: 0,
+                ), contentPerHundredGrams = productNutrients?.saturatedFat100g?.round() ?: 0,
                 servingUnit = productNutrients?.saturatedFatUnit ?: ""
             )
             val fibre = Nutrient.getNutrient(
@@ -45,8 +42,7 @@ internal class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.rem
                 points = nutriScoreData?.fiberPoints ?: NutriScoreCalculator.getPoints(
                     NutrientType.FIBRE,
                     productNutrients?.fiber100g
-                ),
-                contentPerHundredGrams = productNutrients?.fiber100g ?: 0,
+                ), contentPerHundredGrams = productNutrients?.fiber100g?.round() ?: 0,
                 servingUnit = productNutrients?.fiberUnit ?: ""
             )
             val sodiumContentInMg = NutriScoreCalculator.getMgFromGram(productNutrients?.sodium100g)
@@ -54,7 +50,7 @@ internal class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.rem
                 nutrientType = NutrientType.SODIUM,
                 points = nutriScoreData?.sodiumPoints
                     ?: NutriScoreCalculator.getPoints(NutrientType.SODIUM, sodiumContentInMg),
-                contentPerHundredGrams = sodiumContentInMg,
+                contentPerHundredGrams = sodiumContentInMg.round(),
                 servingUnit = "mg"
             )
             val fruitsVegetablesAndNuts = Nutrient.getNutrient(
@@ -72,8 +68,7 @@ internal class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.rem
                 nutrientType = NutrientType.PROTEIN,
                 points = nutriScoreData?.proteinsPoints ?: NutriScoreCalculator.getPoints(
                     NutrientType.PROTEIN, productNutrients?.proteins100g
-                ),
-                contentPerHundredGrams = productNutrients?.proteins100g ?: 0,
+                ), contentPerHundredGrams = productNutrients?.proteins100g?.round() ?: 0,
                 servingUnit = productNutrients?.proteinsUnit ?: ""
             )
             nutrients = mutableListOf(
@@ -89,10 +84,6 @@ internal class NutrientGenerator(product: com.mdev.openfoodfacts_client.data.rem
         }
     fun generateNutrientsForView(nutrientCategory: NutrientCategory) : List<Nutrient>{
             return nutrients.filter{ it.nutrientCategory == nutrientCategory}
-    }
-
-    fun getNutrientsCount(nutrientCategory: NutrientCategory) : Int{
-        return generateNutrientsForView(nutrientCategory).size
     }
     fun getNutrientPreference(): List<NutrientPreference>{
         val nutrientPreferences = mutableListOf<NutrientPreference>()
