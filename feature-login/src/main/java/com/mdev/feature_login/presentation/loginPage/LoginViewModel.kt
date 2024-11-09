@@ -3,6 +3,7 @@ package com.mdev.feature_login.presentation.loginPage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mdev.common.utils.Resource
+import com.mdev.core.utils.logger
 import com.mdev.feature_login.domain.usecase.IsUserLoggedInUseCase
 import com.mdev.feature_login.domain.usecase.LoginWithEmailAndPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -66,6 +67,7 @@ class LoginViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     if (result.data == true){
+                        logger("User Already Logged In")
                         _uiState.update {
                             LoginPageState(
                                 loginStatus = LoginStatus.SUCCESS
@@ -125,6 +127,5 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }.launchIn(viewModelScope)
-
     }
 }

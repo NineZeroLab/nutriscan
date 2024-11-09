@@ -9,7 +9,6 @@ import com.mdev.openfoodfacts_client.domain.model.DietaryRestriction
 import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import com.mdev.openfoodfacts_client.domain.repository.ProductRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -40,6 +39,6 @@ internal class HomePageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun logOut() {
-        firebaseRepository.signOutUser()
+        firebaseRepository.logout()
     }
 }

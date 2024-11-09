@@ -16,27 +16,20 @@
     <action
         android:id="@+id/action_navigate_to_login_page"
         app:destination="@id/login_graph"/>
-
     <action
         android:id="@+id/action_navigate_to_product_details_page"
         app:destination="@id/product_details_graph"/>
-
     <action
         android:id="@+id/action_login_page_to_home_page"
-        app:popUpTo="@layout/fragment_login_page"
+        app:popUpTo="@id/login_graph"
         app:popUpToInclusive="true"
         app:destination="@id/home_graph"/>
-    <action
-        android:id="@+id/action_home_page_to_login_page"
-        app:popUpTo="@layout/fragment_home_page"
-        app:popUpToInclusive="true"
-        app:destination="@id/login_graph"/>
-
-    <action
-        android:id="@+id/action_navigate_to_home_page"
-        app:destination="@id/home_graph"/>
-
     <action
         android:id="@+id/action_navigate_to_register_page"
         app:destination="@id/register_graph"/>
+    <action
+        android:id="@+id/action_logout"
+        app:popUpTo="@id/home_graph"
+        app:popUpToInclusive="true"
+        app:destination="@id/login_graph" />
 </navigation>

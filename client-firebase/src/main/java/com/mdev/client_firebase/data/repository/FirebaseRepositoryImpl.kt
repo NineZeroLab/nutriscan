@@ -35,15 +35,29 @@ internal class FirebaseRepositoryImpl @Inject constructor(
      * fetches the current user details from firestore
      */
     override suspend fun getCurrentUserDetails(): AppUser? {
+        if (auth.currentUser == null){
+            Log.i("logger", "getCurrentUserDetails: current user is null")
+            return null
+        }
         val userSnapShot = firestore.collection(FirebaseCollection.USERS)
             .document(auth.currentUser?.uid.toString())
             .get()
             .await()
+        Log.i("logger", "getCurrentUserDetails: userId: ${auth.currentUser?.uid}")
         return userSnapShot.toObject(AppUser::class.java)
     }
 
     override suspend fun registerUserByEmailAndPassword(email: String, password: String): AuthResult {
-        return  auth.createUserWithEmailAndPassword(email, password).await()
+        val authResult =  auth.createUserWithEmailAndPassword(email, password).await()
+        authResult.user?.let {
+            createUserDetails(
+                AppUser(
+                    name = it.email ?: "",
+                    uid = it.uid
+                )
+            )
+        }
+        return authResult
     }
 
     /**
@@ -62,6 +76,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
      * creates a new user document in firestore
      */
     override suspend fun createUserDetails(appUser: AppUser) {
+        Log.i("logger", "createUserDetails: creating firestore doc for user ${appUser.uid}")
         firestore.collection(FirebaseCollection.USERS)
             .document(appUser.uid)
             .set(
@@ -69,11 +84,6 @@ internal class FirebaseRepositoryImpl @Inject constructor(
                 SetOptions.merge()
             ).await()
     }
-
-    override suspend fun signOutUser(){
-        auth.signOut()
-    }
-
     /**
      * return the search history of the currently logged in user
      */
@@ -186,6 +196,17 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     private fun updateAnalytics() {
         _analyticsData.value = _searchHistoryWithDetails.value.calculateAnalytics()
         Log.d("logger", _analyticsData.value.toString())
+    }
+
+    override suspend fun logout() {
+        auth.signOut()
+        clearUserDetails()
+    }
+
+    private fun clearUserDetails() {
+        _analyticsData.value = AnalyticsData()
+        _searchHistory.value = emptyList()
+        _searchHistoryWithDetails.value = emptyList()
     }
 
 }

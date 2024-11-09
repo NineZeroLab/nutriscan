@@ -17,4 +17,7 @@ class ProfileRepositoryImpl @Inject constructor(
     override suspend fun updateUserDetails(appUser: AppUser): Resource<Unit> {
         return firebaseRepository.updateUserDetails(appUser)
     }
+
+    override suspend fun logout() {
+    }
 }

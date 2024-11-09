@@ -4,4 +4,5 @@ import androidx.fragment.app.Fragment
 
 interface ProfileNavigator {
     fun navigateFromProfileToHomePage(fromFragment: Fragment)
+    fun logout(fromFragment: Fragment)
 }
