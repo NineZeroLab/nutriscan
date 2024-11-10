@@ -75,7 +75,8 @@ internal class ProductRepositoryImpl @Inject constructor (
             it.response
         }
         Log.d("logger",ingredientAnalysisTags)
-        val categoriesTags = categories.filter { it.contains("en:") }.joinToString("|")
+        val categoriesTags = categories.last { it.contains("en:") }
+        Log.d("logger", categories.toString())
         Log.d("logger", categoriesTags)
         val searchResponse = openFoodFactsApi.getRecommendedProducts(
             fields = ResponseFields.getRecommendedProductFields(),

@@ -5,11 +5,16 @@ import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 
 data class AnalyticsData(
     val scannedItems: Int = 0,
-    val topCategories: Map<String, Int> = emptyMap(),
+    val topCategories: Map<String, Int> = getDefaultTopCategories(),
     val averageNutrientPerProduct: Map<NutrientType,Double> = emptyMap()
 )
 
 
+internal fun getDefaultTopCategories(): Map<String, Int> {
+    return mapOf(
+        "en:snacks" to 1,
+    )
+}
 
 
 internal fun List<ProductDetails>.calculateAnalytics(): AnalyticsData{
@@ -23,7 +28,7 @@ internal fun List<ProductDetails>.calculateAnalytics(): AnalyticsData{
             nutrient.nutrientType?.let {nutrientType ->
                 averageNutrients[nutrientType] = averageNutrients
                     .getOrDefault(nutrientType,0.0)
-                    .plus(nutrient.contentPerHundredGram.toDouble())
+                    .plus(nutrient.contentPerHundredGram)
             }
         }
     }
