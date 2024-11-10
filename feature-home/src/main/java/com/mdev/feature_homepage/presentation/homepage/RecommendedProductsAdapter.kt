@@ -10,7 +10,6 @@ import com.mdev.core.utils.addImage
 import com.mdev.core.utils.addImageFromUrl
 import com.mdev.feature_homepage.R
 import com.mdev.feature_homepage.domain.model.RecommendedProduct
-import com.mdev.feature_homepage.domain.model.SearchHistoryItem
 import com.mdev.feature_homepage.utils.getIcon
 import com.mdev.common.R as commonRes
 

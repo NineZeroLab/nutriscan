@@ -1,6 +1,5 @@
 package com.mdev.feature_scan.data.model
 
-import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
 import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
 import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 
@@ -12,9 +11,6 @@ data class ProductDetailsForViewDto(
     val imageUrl: String?,
     val healthCategory: HealthCategory,
 )
-
-
-
 
 internal fun ProductDto.toProductDetailsForViewDto(): ProductDetailsForViewDto{
     return ProductDetailsForViewDto(

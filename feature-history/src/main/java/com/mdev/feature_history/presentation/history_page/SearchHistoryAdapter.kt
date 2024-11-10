@@ -10,17 +10,20 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 import com.mdev.core.utils.TimeCalculator
 import com.mdev.core.utils.logger
 import com.mdev.feature_history.R
-import com.mdev.feature_history.domain.model.SearchHistoryItem
-import com.mdev.common.R as CommonRes
+import com.mdev.feature_history.domain.model.SearchHistoryItemForView
+import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 import java.time.LocalDateTime
+import com.mdev.common.R as CommonRes
 
-internal class SearchHistoryAdapter(private var searchHistoryItems : List<SearchHistoryItem>,private val callback: (productId: String) -> Unit) : RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
-    private var historyList = searchHistoryItems
-    private var filteredList = searchHistoryItems
+internal class SearchHistoryAdapter(
+    private val searchHistoryItemForViews: List<SearchHistoryItemForView>,
+    private val callback: (productId: String) -> Unit
+) : RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
+    private var historyList = searchHistoryItemForViews
+    private var filteredList = searchHistoryItemForViews
 
     inner class SearchHistoryViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         val ivSearchHistoryImage : ImageView = itemView.findViewById(R.id.iv_search_history_image)
@@ -84,7 +87,7 @@ internal class SearchHistoryAdapter(private var searchHistoryItems : List<Search
                 ))
         }
     }
-    fun updateData(newList: List<SearchHistoryItem>){
+    fun updateData(newList: List<SearchHistoryItemForView>) {
         this.historyList = newList
         this.filteredList = newList
         notifyDataSetChanged()

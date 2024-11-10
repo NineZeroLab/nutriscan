@@ -8,8 +8,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.mdev.client_firebase.data.remote.dto.AnalyticsData
 import com.mdev.client_firebase.data.remote.dto.AppUser
-import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
+import com.mdev.client_firebase.data.remote.dto.SearchHistoryItem
 import com.mdev.client_firebase.data.remote.dto.calculateAnalytics
+import com.mdev.client_firebase.data.remote.dto.toSearchHistoryItem
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.client_firebase.utils.FirebaseCollection
 import com.mdev.common.utils.Resource
@@ -25,9 +26,8 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ): FirebaseRepository {
 
-    private val _searchHistory : MutableStateFlow<List<ProductDetailsDto>> = MutableStateFlow(emptyList())
-
-    private val _searchHistoryWithDetails: MutableStateFlow<List<ProductDetails>> = MutableStateFlow(emptyList())
+    private val _searchHistoryWithDetails: MutableStateFlow<List<SearchHistoryItem>> =
+        MutableStateFlow(emptyList())
 
     private val _analyticsData: MutableStateFlow<AnalyticsData> = MutableStateFlow(AnalyticsData())
 
@@ -52,7 +52,6 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     override suspend fun loginUserByEmailAndPassword(email: String, password: String): AuthResult {
         val result =  auth.signInWithEmailAndPassword(email, password)
             .await()
-        updateSearchHistory()
         updateSearchHistoryWithDetails()
         updateAnalytics()
         return result
@@ -74,14 +73,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
         auth.signOut()
     }
 
-    /**
-     * return the search history of the currently logged in user
-     */
-    override suspend fun getSearchHistory(): StateFlow<List<ProductDetailsDto>> {
-        return _searchHistory.asStateFlow()
-    }
-
-    override suspend fun getSearchHistoryWithDetails(): StateFlow<List<ProductDetails>>{
+    override suspend fun getSearchHistoryWithDetails(): StateFlow<List<SearchHistoryItem>> {
         return _searchHistoryWithDetails.asStateFlow()
     }
 
@@ -101,51 +93,16 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     }
 
     /**
-     * Add the given product to firebase search history
-     */
-    @Deprecated(
-        message = "sends only the basic details to firestore",
-        replaceWith = ReplaceWith("addProductToSearchHistory()")
-    )
-    override suspend fun addItemToSearchHistory(product: ProductDetailsDto) {
-        auth.currentUser?.uid?.let { uid ->
-            firestore.collection(FirebaseCollection.USERS)
-                .document(uid)
-                .collection(FirebaseCollection.SEARCH)
-                .document(product.mainDetailsForView.productId)
-                .set(product)
-                .await()
-            _searchHistory.value = _searchHistory.value.toMutableList().apply {
-                add(product)
-            }
-        }
-    }
-
-    /**
      * Checks if a user is logged in already and updates the search history if logged in.
      * Meant for usage while opening the app.
      */
     override suspend fun isUserLoggedIn(): Boolean {
         if (auth.currentUser != null){
-            updateSearchHistory()
             updateSearchHistoryWithDetails()
             updateAnalytics()
             return true
         }
         return false
-    }
-
-    private suspend fun updateSearchHistory(){
-        auth.currentUser?.uid?.let { uid ->
-            val documentSnapshots = firestore.collection(FirebaseCollection.USERS)
-                .document(uid).collection(FirebaseCollection.SEARCH)
-                .get()
-                .await()
-                .documents
-            _searchHistory.value = documentSnapshots.mapNotNull { doc: DocumentSnapshot ->
-                doc.toObject(ProductDetailsDto::class.java)
-            }
-        }
     }
 
     private suspend fun updateSearchHistoryWithDetails(){
@@ -156,7 +113,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
                 .await()
                 .documents
             _searchHistoryWithDetails.value = documentSnapshots.mapNotNull { doc: DocumentSnapshot ->
-                doc.toObject(ProductDetails::class.java)
+                doc.toObject(SearchHistoryItem::class.java)
             }
             Log.d("logger", _searchHistoryWithDetails.value.toString())
             updateAnalytics()
@@ -165,17 +122,18 @@ internal class FirebaseRepositoryImpl @Inject constructor(
 
 
     override suspend fun addProductToSearchHistory(productDetails: ProductDetails){
+        val searchHistoryItem = productDetails.toSearchHistoryItem()
         auth.currentUser?.uid?.let { uid ->
             firestore.collection(FirebaseCollection.USERS)
                 .document(uid)
                 .collection(FirebaseCollection.SEARCH)
                 .document(productDetails.id)
-                .set(productDetails)
+                .set(searchHistoryItem)
                 .await()
             _searchHistoryWithDetails.value.let { searchHistory ->
                 if (searchHistory.none(){ it.id == productDetails.id}){
                     _searchHistoryWithDetails.value = searchHistory.toMutableList().apply {
-                        add(productDetails)
+                        add(searchHistoryItem)
                     }
                 }
             }

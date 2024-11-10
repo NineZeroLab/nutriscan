@@ -1,6 +1,5 @@
 package com.mdev.feature_homepage.presentation.homepage
 
-import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,20 +9,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mdev.core.utils.addImage
 import com.mdev.core.utils.addImageFromUrl
 import com.mdev.feature_homepage.R
-import com.mdev.feature_homepage.domain.model.SearchHistoryItem
+import com.mdev.feature_homepage.domain.model.SearchHistoryItemForView
 import com.mdev.feature_homepage.utils.getIcon
 import com.mdev.common.R as commonRes
 
 
-class SearchHistoryAdapter(
-    private var searchHistoryItems: List<SearchHistoryItem>,
+internal class SearchHistoryAdapter(
+    private var searchHistoryItems: List<SearchHistoryItemForView>,
     private var callback: (String) -> Unit
 ): RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
     inner class SearchHistoryViewHolder (itemView: View): RecyclerView.ViewHolder(itemView){
-        val tvProductName = itemView.findViewById<TextView>(R.id.tv_search_history_product_name)
-        val tvScannedTime = itemView.findViewById<TextView>(R.id.tv_seach_history_scanned_time)
-        val ivProductImage = itemView.findViewById<ImageView>(R.id.iv_search_history_product_image)
-        val ivHealthCategory = itemView.findViewById<ImageView>(R.id.iv_search_history_health_category)
+        val tvProductName: TextView = itemView.findViewById(R.id.tv_search_history_product_name)
+        val tvScannedTime: TextView = itemView.findViewById(R.id.tv_seach_history_scanned_time)
+        val ivProductImage: ImageView = itemView.findViewById(R.id.iv_search_history_product_image)
+        val ivHealthCategory: ImageView =
+            itemView.findViewById(R.id.iv_search_history_health_category)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchHistoryViewHolder {
@@ -39,14 +39,14 @@ class SearchHistoryAdapter(
         val searchHistoryItem = searchHistoryItems[position]
         holder.ivProductImage.addImageFromUrl(searchHistoryItem.imageUrl,commonRes.drawable.circle_bad)
         holder.tvProductName.text = searchHistoryItem.productName
-        holder.tvScannedTime.text = searchHistoryItem.scannedTime.toString()
+        holder.tvScannedTime.text = searchHistoryItem.scannedTime
         holder.ivHealthCategory.addImage(searchHistoryItem.healthCategory.getIcon())
         holder.ivProductImage.setOnClickListener {
             callback(searchHistoryItem.productId)
         }
     }
 
-    fun updateList (newList: List<SearchHistoryItem>) {
+    fun updateList(newList: List<SearchHistoryItemForView>) {
         this.searchHistoryItems = newList
         notifyDataSetChanged()
     }

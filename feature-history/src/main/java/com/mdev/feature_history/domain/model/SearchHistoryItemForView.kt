@@ -1,12 +1,11 @@
 package com.mdev.feature_history.domain.model
 
-import com.mdev.feature_history.data.model.SearchHistoryItemDto
+import com.mdev.client_firebase.data.remote.dto.SearchHistoryItem
 import com.mdev.openfoodfacts_client.domain.model.HealthCategory
-import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-internal data class SearchHistoryItem(
+internal data class SearchHistoryItemForView(
     val productId: String,
     val productName: String,
     val productBrand: String,
@@ -16,27 +15,14 @@ internal data class SearchHistoryItem(
 )
 
 
-
-internal fun SearchHistoryItemDto.toSearchHistoryItem(): SearchHistoryItem{
-    return SearchHistoryItem(
-        productId = this.mainDetailsForView.productId,
-        productName = this.mainDetailsForView.productName,
-        imageUrl = this.mainDetailsForView.imageUrl ?: "",
-        productBrand = this.mainDetailsForView.productBrand ?: "",
-        healthCategory = this.mainDetailsForView.healthCategory,
-        timeStamp = LocalDateTime.ofInstant(this.timestamp.toInstant(), ZoneId.systemDefault())
-    )
-}
-
-
-internal fun ProductDetails.toSearchHistoryItem(): SearchHistoryItem{
-    return SearchHistoryItem(
+internal fun SearchHistoryItem.toSearchHistoryItemForView(): SearchHistoryItemForView {
+    return SearchHistoryItemForView(
         productId = this.id,
         productBrand = this.brand,
         productName = this.name,
         imageUrl = this.imageUrl,
         healthCategory = getHealthCategory(this.nutriScoreGrade),
-        timeStamp = LocalDateTime.now()
+        timeStamp = LocalDateTime.ofInstant(this.timestamp.toInstant(), ZoneId.systemDefault())
     )
 }
 

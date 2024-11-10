@@ -7,7 +7,7 @@ import com.mdev.common.utils.Resource
 import com.mdev.common.utils.domain.model.Status
 import com.mdev.core.utils.logger
 import com.mdev.feature_homepage.domain.model.RecommendedProduct
-import com.mdev.feature_homepage.domain.model.SearchHistoryItem
+import com.mdev.feature_homepage.domain.model.SearchHistoryItemForView
 import com.mdev.feature_homepage.domain.usecases.GetRecommendedProductsUseCase
 import com.mdev.feature_homepage.domain.usecases.GetSearchHistoryUseCase
 import com.mdev.feature_homepage.domain.usecases.GetUserDetailsUseCase
@@ -21,9 +21,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-data class HomePageState(
+internal data class HomePageState(
     val appUser: AppUser? = null,
-    val searchHistory: List<SearchHistoryItem> = emptyList(),
+    val searchHistory: List<SearchHistoryItemForView> = emptyList(),
     val recommendedProducts: List<RecommendedProduct> = emptyList(),
     val appUserDataFetchState: Status = Status.IDLE,
     val searchHistoryFetchState: Status = Status.IDLE,
@@ -32,7 +32,7 @@ data class HomePageState(
 )
 
 @HiltViewModel
-class HomePageViewModel @Inject constructor(
+internal class HomePageViewModel @Inject constructor(
     private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
     private val getUserDetailsUseCase: GetUserDetailsUseCase,
     private val getRecommendedProductsUseCase: GetRecommendedProductsUseCase

@@ -3,7 +3,7 @@ package com.mdev.feature_history.presentation.history_page
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mdev.common.utils.Resource
-import com.mdev.feature_history.domain.model.SearchHistoryItem
+import com.mdev.feature_history.domain.model.SearchHistoryItemForView
 import com.mdev.feature_history.domain.usecases.GetSearchHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 internal data class HistoryPageState(
-    val searchHistory: List<SearchHistoryItem> = mutableListOf()
+    val searchHistory: List<SearchHistoryItemForView> = mutableListOf()
 )
 
 @HiltViewModel

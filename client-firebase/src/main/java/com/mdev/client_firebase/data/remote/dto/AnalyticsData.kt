@@ -1,7 +1,6 @@
 package com.mdev.client_firebase.data.remote.dto
 
 import com.mdev.openfoodfacts_client.domain.model.NutrientType
-import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 
 data class AnalyticsData(
     val scannedItems: Int = 0,
@@ -9,10 +8,7 @@ data class AnalyticsData(
     val averageNutrientPerProduct: Map<NutrientType,Double> = emptyMap()
 )
 
-
-
-
-internal fun List<ProductDetails>.calculateAnalytics(): AnalyticsData{
+internal fun List<SearchHistoryItem>.calculateAnalytics(): AnalyticsData {
     val topCategories = this.flatMap { it.categoriesHierarchy }
         .groupingBy { it }
         .eachCount()
@@ -23,7 +19,7 @@ internal fun List<ProductDetails>.calculateAnalytics(): AnalyticsData{
             nutrient.nutrientType?.let {nutrientType ->
                 averageNutrients[nutrientType] = averageNutrients
                     .getOrDefault(nutrientType,0.0)
-                    .plus(nutrient.contentPerHundredGram.toDouble())
+                    .plus(nutrient.contentPerHundredGram)
             }
         }
     }

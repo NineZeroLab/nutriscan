@@ -1,15 +1,9 @@
 package com.mdev.feature_homepage.presentation.homepage
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -18,21 +12,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdev.common.utils.domain.model.Status
-import com.mdev.core.utils.hide
-import com.mdev.core.utils.invisible
 import com.mdev.core.utils.logger
-import com.mdev.core.utils.show
-import com.mdev.feature_homepage.R
-import com.mdev.common.R as CommonRes
 import com.mdev.feature_homepage.databinding.FragmentHomePageBinding
-import com.mdev.feature_homepage.domain.model.RecommendedProduct
-import com.mdev.feature_homepage.domain.model.SearchHistoryItem
-import com.mdev.feature_homepage.domain.model.getDummyHistoryitem
-import com.mdev.feature_homepage.domain.model.getDummyRecommendedProducts
 import com.mdev.feature_homepage.navigation.HomeNavigator
-import com.mdev.openfoodfacts_client.utils.ClientResources
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
