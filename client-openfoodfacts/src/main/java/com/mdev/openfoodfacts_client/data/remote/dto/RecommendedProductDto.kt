@@ -15,5 +15,7 @@ data class RecommendedProductDto(
     @SerializedName("nutriscore_grade")
     val nutriscoreGrade: String? = null,
     @SerializedName("product_name")
-    val productName: String? = null
+    val productName: String? = null,
+    @SerializedName("brands")
+    val brand: String? = null,
 )

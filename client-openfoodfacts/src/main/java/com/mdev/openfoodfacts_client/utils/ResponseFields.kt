@@ -20,6 +20,7 @@ object ResponseFields {
         "product_name",
         "image_url",
         "nutriscore_grade",
+        "brands"
     )
 
     fun getProductDetailsFields(): String{

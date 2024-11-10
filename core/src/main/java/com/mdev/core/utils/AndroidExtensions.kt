@@ -51,6 +51,7 @@ fun ImageView.addImageFromUrl(imageUrl: String ,@DrawableRes errorImage: Int){
     Glide.with(this)
         .load(imageUrl)
         .error(errorImage)
+        .centerCrop()
         .into(this)
 }
 fun View.isVisible(): Boolean{

@@ -21,7 +21,7 @@ class SearchHistoryAdapter(
 ): RecyclerView.Adapter<SearchHistoryAdapter.SearchHistoryViewHolder>() {
     inner class SearchHistoryViewHolder (itemView: View): RecyclerView.ViewHolder(itemView){
         val tvProductName = itemView.findViewById<TextView>(R.id.tv_search_history_product_name)
-        val tvScannedTime = itemView.findViewById<TextView>(R.id.tv_seach_history_scanned_time)
+        val tvScannedTime = itemView.findViewById<TextView>(R.id.tv_search_history_scanned_time)
         val ivProductImage = itemView.findViewById<ImageView>(R.id.iv_search_history_product_image)
         val ivHealthCategory = itemView.findViewById<ImageView>(R.id.iv_search_history_health_category)
     }

@@ -15,7 +15,7 @@ fun RecommendedProductDto.toRecommendedProduct(): RecommendedProduct{
     return RecommendedProduct(
         productId = this.code ?: "",
         productName = this.productName ?: "",
-        brandName = "Product Brand",
+        brandName = this.brand?:"",
         imageUrl = this.imageUrl ?: "",
         healthCategory = getHealthCategory(this.nutriscoreGrade ?: "")
     )

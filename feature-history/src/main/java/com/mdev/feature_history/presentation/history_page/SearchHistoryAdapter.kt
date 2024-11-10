@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 import com.mdev.core.utils.TimeCalculator
+import com.mdev.core.utils.addImageFromUrl
 import com.mdev.core.utils.logger
 import com.mdev.feature_history.R
 import com.mdev.feature_history.domain.model.SearchHistoryItem
@@ -52,7 +53,6 @@ internal class SearchHistoryAdapter(private var searchHistoryItems : List<Search
             .load(item.imageUrl)
             .error(CommonRes.mipmap.app_icon_small)
             .into(holder.ivSearchHistoryImage)
-
         Glide.with(holder.ivSearchHistoryHealthCategory.context).load(healthCategoryIcon).into(holder.ivSearchHistoryHealthCategory)
         holder.cvListItem.setOnClickListener{view ->
             view.isClickable = false
