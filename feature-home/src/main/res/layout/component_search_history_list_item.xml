@@ -1,43 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:baselineAligned="false"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/md_theme_surface"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
 
-    <ImageView
-        android:id="@+id/iv_search_history_product_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_weight="1"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
         android:padding="8dp">
+
+        <!-- Product Image with Rounded Corners -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_search_history_product_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="12dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedImageView"
+            tools:srcCompat="@tools:sample/avatars" />
+
 
         <TextView
             android:id="@+id/tv_search_history_product_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:text="Product Name"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_search_history_product_image"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_seach_history_scanned_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:id="@+id/tv_search_history_scanned_time"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:text="Scanned Time"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/iv_search_history_product_image" />
 
         <ImageView
             android:id="@+id/iv_search_history_health_category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/circle_unknown" />
-    </LinearLayout>
-</LinearLayout>
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/circle_good" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
