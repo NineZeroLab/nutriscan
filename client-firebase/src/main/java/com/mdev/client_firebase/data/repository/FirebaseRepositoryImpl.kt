@@ -45,6 +45,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
             .document(auth.currentUser?.uid.toString())
             .get()
             .await()
+
         _userDetails = userSnapShot.toObject(AppUser::class.java)
         Log.i("logger", "getCurrentUserDetails: userId: ${auth.currentUser?.uid}")
         return userSnapShot.toObject(AppUser::class.java)
@@ -226,5 +227,4 @@ internal class FirebaseRepositoryImpl @Inject constructor(
             _searchHistoryWithDetails.value = emptyList()
             }
         }
-
 }
