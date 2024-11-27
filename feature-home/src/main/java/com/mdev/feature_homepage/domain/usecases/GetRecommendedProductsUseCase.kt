@@ -27,13 +27,22 @@ class GetRecommendedProductsUseCase @Inject constructor(
                 allergens
             )
             val recommendedProducts = result?.map { it.toRecommendedProduct() }
+
             if (recommendedProducts == null){
                 emit(Resource.Error("Unable to fetch Recommended Products"))
-            }else{
-                emit(Resource.Success(recommendedProducts))
+                return@flow
             }
+            if (recommendedProducts.size % 2 == 1){
+                emit(Resource.Success(recommendedProducts.dropLast(1)))
+                return@flow
+            }
+            emit(Resource.Success(recommendedProducts))
+
         }catch (e: Exception){
             emit(Resource.Error(e.message.toString()))
         }
     }
 }
+
+
+

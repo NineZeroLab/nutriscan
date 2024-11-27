@@ -126,6 +126,9 @@ class HomePage : Fragment() {
         val searchHistory = viewModel.uiState.value.searchHistory
         val adapter = viewBinding.rvHomepageSearchHistory.adapter as SearchHistoryAdapter
         adapter.updateList(searchHistory)
+        viewBinding.rvHomepageSearchHistory.visibility =
+            if( searchHistory.isEmpty()) View.GONE
+            else View.VISIBLE
     }
 
     private fun updateRecommendedProducts(){
