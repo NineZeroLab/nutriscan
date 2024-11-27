@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/analytics_page"
         android:label="AnalyticsPage"
-        android:name="com.mdev.feature_analytics.presentation.analytics_page.AnalyticsPage"
+        android:name="com.mdev.feature_analytics.presentation.analytics_page.presentation.AnalyticsPage"
         tools:layout="@layout/fragment_analytics_page"/>
 
 </navigation>
