@@ -28,23 +28,16 @@ internal class AnalyticsPageViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AnalyticsPageState())
     val uiState = _uiState.asStateFlow()
-
     init {
         getAnalyticsData()
     }
-
-    fun onEvent(event: AnalyticsPageEvent) {
-        when (event) {
-            AnalyticsPageEvent.GetAnalyticsData -> getAnalyticsData()
-        }
-    }
-
     private fun getAnalyticsData() {
         logger("AnalyticsViewModel: Fetching analytics data...")
         viewModelScope.launch {
             getAnalyticsDataUseCase().onEach { result ->
                 when (result) {
                     is Resource.Error -> {
+                        logger("AnalyticsViewModel: Error fetching analytics...")
                         _uiState.update {
                             it.copy(
                                 analyticsDataFetchState = Status.FAILURE,
@@ -60,6 +53,7 @@ internal class AnalyticsPageViewModel @Inject constructor(
                     }
 
                     is Resource.Loading -> {
+                        logger("AnalyticsViewModel: Loading analytics...")
                         _uiState.update {
                             it.copy(
                                 analyticsDataFetchState = Status.LOADING
@@ -69,11 +63,16 @@ internal class AnalyticsPageViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
+                        logger("AnalyticsViewModel: Success fetching analytics...")
+                        if (result.data == null) {
+                            logger("AnalyticsViewModel: Analytics data is null...")
+                        }
                         result.data?.let { analyticsData ->
+                            logger("AnalyticsViewModel: ${analyticsData.scannedItems}...")
                             _uiState.update {
                                 it.copy(
-                                    analyticsDataFetchState = Status.SUCCESS,
-                                    analyticsData = analyticsData
+                                    analyticsData = analyticsData,
+                                    analyticsDataFetchState = Status.SUCCESS
                                 )
                             }
                             _uiState.update {
