@@ -31,6 +31,8 @@ internal class FirebaseRepositoryImpl @Inject constructor(
 
     private val _analyticsData: MutableStateFlow<AnalyticsData> = MutableStateFlow(AnalyticsData())
 
+    private var _userDetails: AppUser? = null
+
     /**
      * fetches the current user details from firestore
      */
@@ -43,6 +45,8 @@ internal class FirebaseRepositoryImpl @Inject constructor(
             .document(auth.currentUser?.uid.toString())
             .get()
             .await()
+
+        _userDetails = userSnapShot.toObject(AppUser::class.java)
         Log.i("logger", "getCurrentUserDetails: userId: ${auth.currentUser?.uid}")
         return userSnapShot.toObject(AppUser::class.java)
     }
@@ -66,6 +70,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     override suspend fun loginUserByEmailAndPassword(email: String, password: String): AuthResult {
         val result =  auth.signInWithEmailAndPassword(email, password)
             .await()
+        getCurrentUserDetails()
         updateSearchHistory()
         updateSearchHistoryWithDetails()
         updateAnalytics()
@@ -95,6 +100,11 @@ internal class FirebaseRepositoryImpl @Inject constructor(
         return _searchHistoryWithDetails.asStateFlow()
     }
 
+    override suspend fun getAnalyticsData(): StateFlow<AnalyticsData> {
+        return _analyticsData.asStateFlow()
+    }
+
+
     override suspend fun updateUserDetails(appUser: AppUser): Resource<Unit> {
         try {
             firestore.collection(FirebaseCollection.USERS)
@@ -103,6 +113,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
                     appUser,
                     SetOptions.merge()
                 ).await()
+            _userDetails = appUser
             return Resource.Success(Unit)
         }catch (e: Exception){
             return Resource.Error(e.message.toString())
@@ -139,6 +150,7 @@ internal class FirebaseRepositoryImpl @Inject constructor(
         if (auth.currentUser != null){
             updateSearchHistory()
             updateSearchHistoryWithDetails()
+            getCurrentUserDetails()
             updateAnalytics()
             return true
         }
@@ -194,8 +206,13 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     }
 
     private fun updateAnalytics() {
-        _analyticsData.value = _searchHistoryWithDetails.value.calculateAnalytics()
-        Log.d("logger", _analyticsData.value.toString())
+        if (_userDetails == null){
+            Log.d("logger", "user details is null")
+        }
+        _userDetails?.let { _userDetails ->
+            _analyticsData.value = _searchHistoryWithDetails.value.calculateAnalytics(_userDetails.name)
+            Log.d("logger", _analyticsData.value.toString())
+        }
     }
 
     override suspend fun logout() {
@@ -204,9 +221,10 @@ internal class FirebaseRepositoryImpl @Inject constructor(
     }
 
     private fun clearUserDetails() {
-        _analyticsData.value = AnalyticsData()
-        _searchHistory.value = emptyList()
-        _searchHistoryWithDetails.value = emptyList()
-    }
-
+        _userDetails?.let {
+            _analyticsData.value = AnalyticsData(it.name)
+            _searchHistory.value = emptyList()
+            _searchHistoryWithDetails.value = emptyList()
+            }
+        }
 }

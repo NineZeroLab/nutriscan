@@ -135,7 +135,9 @@ class HomePage : Fragment() {
     }
 
     private fun buildRecommendedProductsRecyclerView () {
-        val recommendedProducts = viewModel.uiState.value.recommendedProducts
+        val products = viewModel.uiState.value.recommendedProducts
+        val recommendedProducts = products.ifEmpty { getDummyRecommendedProducts() }
+
         viewBinding.rvHomepageRecommendedProducts.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts)

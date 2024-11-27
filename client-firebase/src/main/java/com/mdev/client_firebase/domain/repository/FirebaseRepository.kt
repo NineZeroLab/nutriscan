@@ -1,6 +1,7 @@
 package com.mdev.client_firebase.domain.repository
 
 import com.google.firebase.auth.AuthResult
+import com.mdev.client_firebase.data.remote.dto.AnalyticsData
 import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.client_firebase.data.remote.dto.ProductDetailsDto
 import com.mdev.common.utils.Resource
@@ -14,6 +15,7 @@ interface FirebaseRepository {
     suspend fun createUserDetails(appUser: AppUser)
     suspend fun logout()
     suspend fun getSearchHistory(): StateFlow<List<ProductDetailsDto>>
+    suspend fun getAnalyticsData(): StateFlow<AnalyticsData>
     suspend fun addItemToSearchHistory(product: ProductDetailsDto)
     suspend fun isUserLoggedIn(): Boolean
     suspend fun addProductToSearchHistory(productDetails: ProductDetails)

@@ -38,7 +38,7 @@ class RecommendedProductsAdapter(private var recommendedProducts: List<Recommend
 
     override fun onBindViewHolder(holder: RecommendedProductsViewHolder, position: Int) {
         val recommendedProduct = recommendedProducts[position]
-        holder.ivRecommendedProductImage.addImageFromUrl(recommendedProduct.imageUrl,commonRes.drawable.circle_moderate)
+        holder.ivRecommendedProductImage.addImageFromUrl(recommendedProduct.imageUrl,commonRes.mipmap.app_icon_small)
         holder.tvRecommendedProductName.text = recommendedProduct.productName
         holder.tvRecommendedBrandName.text = recommendedProduct.brandName
         holder.ivRecommendedHealthCategory.addImage(recommendedProduct.healthCategory.getIcon())
