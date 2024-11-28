@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class HomePageState(
@@ -44,6 +45,18 @@ class HomePageViewModel @Inject constructor(
         getSearchHistory()
         getUserDetails()
     }
+
+    fun onEvent(event: HomePageEvent){
+        when(event){
+            HomePageEvent.getRecommendedProducts -> {
+
+            }
+            HomePageEvent.getSearchHistory -> getSearchHistory()
+
+            HomePageEvent.getUserDetails -> getUserDetails()
+        }
+    }
+
     private fun getUserDetails() {
         getUserDetailsUseCase().onEach { resource ->
             when(resource){
@@ -93,38 +106,15 @@ class HomePageViewModel @Inject constructor(
 
     private fun getSearchHistory() {
         logger("fetching search history from viewmodel")
-        getSearchHistoryUseCase().onEach { resource ->
-            when(resource){
-                is Resource.Error -> {
-                    logger("Error fetching search history in viewmodel")
-                    _uiState.update {
-                        it.copy(
-                            errorMessage = resource.message,
-                            searchHistoryFetchState = Status.FAILURE
-                        )
-                    }
-                    _uiState.update {
-                        it.copy(
-                            searchHistoryFetchState = Status.IDLE
-                        )
-                    }
-
-                }
-                is Resource.Loading -> {
-                    logger("Loading search history in viewmodel")
-                    _uiState.update {
-                        it.copy(
-                            searchHistoryFetchState = Status.LOADING
-                        )
-                    }
-                }
-                is Resource.Success -> {
-                    logger("success fetching search history in viewmodel")
-                    resource.data?.let { searchHistory ->
+        viewModelScope.launch {
+            getSearchHistoryUseCase().onEach { resource ->
+                when(resource){
+                    is Resource.Error -> {
+                        logger("Error fetching search history in viewmodel")
                         _uiState.update {
                             it.copy(
-                                searchHistoryFetchState = Status.SUCCESS,
-                                searchHistory = searchHistory
+                                errorMessage = resource.message,
+                                searchHistoryFetchState = Status.FAILURE
                             )
                         }
                         _uiState.update {
@@ -132,11 +122,36 @@ class HomePageViewModel @Inject constructor(
                                 searchHistoryFetchState = Status.IDLE
                             )
                         }
+
+                    }
+                    is Resource.Loading -> {
+                        logger("Loading search history in viewmodel")
+                        _uiState.update {
+                            it.copy(
+                                searchHistoryFetchState = Status.LOADING
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        logger("success fetching search history in viewmodel")
+                        resource.data?.let { searchHistory ->
+                            _uiState.update {
+                                it.copy(
+                                    searchHistoryFetchState = Status.SUCCESS,
+                                    searchHistory = searchHistory
+                                )
+                            }
+                            _uiState.update {
+                                it.copy(
+                                    searchHistoryFetchState = Status.IDLE
+                                )
+                            }
+                        }
                     }
                 }
-            }
-        }.launchIn(viewModelScope)
-    }
+            }.launchIn(viewModelScope)
+        }
+         }
 
     private fun getRecommendedProducts(
         categories: List<String>,

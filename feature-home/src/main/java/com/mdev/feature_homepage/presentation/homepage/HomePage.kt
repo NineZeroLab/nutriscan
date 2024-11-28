@@ -56,6 +56,28 @@ class HomePage : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         buildSearchHistoryRecyclerView()
         buildRecommendedProductsRecyclerView()
+        viewModel.onEvent(HomePageEvent.getSearchHistory)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.uiState.collect{ state ->
+                    when(state.searchHistoryFetchState){
+                        Status.LOADING -> {
+                            logger("Loading Search History ....")
+                        }
+                        Status.SUCCESS -> {
+                            updateSearchHistory()
+                        }
+                        Status.FAILURE -> {
+                            //TODO: Fix this
+                        }
+                        Status.IDLE -> {
+
+                        }
+                    }
+                }
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -93,20 +115,7 @@ class HomePage : Fragment() {
                     }
 
 
-                    when(state.searchHistoryFetchState){
-                        Status.LOADING -> {
-                            logger("Loading Search History ....")
-                        }
-                        Status.SUCCESS -> {
-                            updateSearchHistory()
-                        }
-                        Status.FAILURE -> {
-                            //TODO: Fix this
-                        }
-                        Status.IDLE -> {
 
-                        }
-                    }
                 }
             }
         }
@@ -125,10 +134,17 @@ class HomePage : Fragment() {
     private fun updateSearchHistory(){
         val searchHistory = viewModel.uiState.value.searchHistory
         val adapter = viewBinding.rvHomepageSearchHistory.adapter as SearchHistoryAdapter
-        adapter.updateList(searchHistory)
-        viewBinding.rvHomepageSearchHistory.visibility =
-            if( searchHistory.isEmpty()) View.GONE
-            else View.VISIBLE
+
+        if(searchHistory.isNullOrEmpty()) {
+            viewBinding.tvHomepagePlaceholderRecents.visibility = View.VISIBLE
+            viewBinding.rvHomepageSearchHistory.visibility = View.GONE
+            viewBinding.btnRecentsSeeAll.visibility = View.GONE
+        } else {
+            viewBinding.tvHomepagePlaceholderRecents.visibility = View.GONE
+            viewBinding.rvHomepageSearchHistory.visibility = View.VISIBLE
+            viewBinding.btnRecentsSeeAll.visibility = View.VISIBLE
+            adapter.updateList(searchHistory)
+        }
     }
 
     private fun updateRecommendedProducts(){
