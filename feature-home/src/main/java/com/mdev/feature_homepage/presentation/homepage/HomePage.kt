@@ -63,13 +63,26 @@ class HomePage : Fragment() {
                     when(state.recommendedProductFetchState){
                         Status.LOADING -> {
                             logger("loading recommended products")
+                            viewBinding.apply {
+                                tvRecommendedMessage.show()
+                                tvRecommendedMessage.text = "Trying to fetch recommeded products"
+                                rvHomepageRecommendedProducts.hide()
+                            }
                         }
                         Status.SUCCESS -> {
                             logger("success fetching recommended products")
+                            viewBinding.apply {
+                                tvRecommendedMessage.hide()
+                                rvHomepageRecommendedProducts.show()
+                            }
                             updateRecommendedProducts()
                         }
                         Status.FAILURE -> {
                             logger("failure fetching recommended products")
+                            viewBinding.apply {
+                                tvRecommendedMessage.show()
+                                tvRecommendedMessage.text = "Error fetching recommended products"
+                            }
 
                         }
                         Status.IDLE -> {
@@ -124,12 +137,22 @@ class HomePage : Fragment() {
 
     private fun updateSearchHistory(){
         val searchHistory = viewModel.uiState.value.searchHistory
+        if (searchHistory.isEmpty()) {
+            viewBinding.rvHomepageSearchHistory.hide()
+        }else{
+            viewBinding.rvHomepageSearchHistory.show()
+        }
         val adapter = viewBinding.rvHomepageSearchHistory.adapter as SearchHistoryAdapter
         adapter.updateList(searchHistory)
     }
 
     private fun updateRecommendedProducts(){
         val recommendedProducts = viewModel.uiState.value.recommendedProducts
+        if (recommendedProducts.isEmpty()) {
+            viewBinding.rvHomepageRecommendedProducts.hide()
+        }else{
+            viewBinding.rvHomepageRecommendedProducts.show()
+        }
         val adapter = viewBinding.rvHomepageRecommendedProducts.adapter as RecommendedProductsAdapter
         adapter.updateList(recommendedProducts)
     }
@@ -140,7 +163,9 @@ class HomePage : Fragment() {
 
         viewBinding.rvHomepageRecommendedProducts.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts)
+            adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts){ productId ->
+                navigator.navigateToProductDetailsPage(this@HomePage, productId)
+            }
         }
     }
 

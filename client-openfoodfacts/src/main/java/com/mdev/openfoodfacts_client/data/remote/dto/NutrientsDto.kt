@@ -15,7 +15,7 @@ data class NutrientsDto(
     @SerializedName("carbohydrates_value")
     val carbohydratesValue: Double? = null,
     @SerializedName("carbon-footprint-from-known-ingredients_product")
-    val carbonFootprintFromKnownIngredientsProduct: Int? = null,
+    val carbonFootprintFromKnownIngredientsProduct: Double? = null,
     @SerializedName("carbon-footprint-from-known-ingredients_serving")
     val carbonFootprintFromKnownIngredientsServing: Double? = null,
     @SerializedName("energy")

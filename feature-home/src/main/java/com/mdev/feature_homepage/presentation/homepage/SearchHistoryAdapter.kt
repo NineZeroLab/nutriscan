@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.mdev.core.utils.addImage
 import com.mdev.core.utils.addImageFromUrl
@@ -24,6 +25,7 @@ class SearchHistoryAdapter(
         val tvScannedTime = itemView.findViewById<TextView>(R.id.tv_search_history_scanned_time)
         val ivProductImage = itemView.findViewById<ImageView>(R.id.iv_search_history_product_image)
         val ivHealthCategory = itemView.findViewById<ImageView>(R.id.iv_search_history_health_category)
+        val cvSearchItem = itemView.findViewById<CardView>(R.id.cv_search_history_card)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchHistoryViewHolder {
@@ -41,7 +43,7 @@ class SearchHistoryAdapter(
         holder.tvProductName.text = searchHistoryItem.productName
         holder.tvScannedTime.text = searchHistoryItem.scannedTime.toString()
         holder.ivHealthCategory.addImage(searchHistoryItem.healthCategory.getIcon())
-        holder.ivProductImage.setOnClickListener {
+        holder.cvSearchItem.setOnClickListener {
             callback(searchHistoryItem.productId)
         }
     }

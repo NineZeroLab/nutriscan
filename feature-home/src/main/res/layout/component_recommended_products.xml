@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_recommended_item_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardBackgroundColor="@color/cardview_light_background"
-    app:strokeColor="@color/cardview_light_background"
     app:cardCornerRadius="16dp"
-    app:cardElevation="0dp">
+    app:cardElevation="0dp"
+    app:strokeColor="@color/cardview_light_background">
 
     <!-- Parent ConstraintLayout for card content positioning -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,31 +45,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_recommended_product_image" />
 
-            <TextView
-                android:id="@+id/tv_recommended_brand_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Brand Name"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_recommended_product_name"
-                app:layout_constraintEnd_toStartOf="@id/iv_recommended_health_category"
-                />
+        <TextView
+            android:id="@+id/tv_recommended_brand_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Brand Name"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_recommended_health_category"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_recommended_product_name" />
 
-            <ImageView
-                android:id="@+id/iv_recommended_health_category"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/circle_good"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_recommended_product_name"
-                app:layout_constraintStart_toEndOf="@id/tv_recommended_brand_name"
-                />
+        <ImageView
+            android:id="@+id/iv_recommended_health_category"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/circle_good"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_recommended_brand_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_recommended_product_name" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.mdev.core.utils.addImage
 import com.mdev.core.utils.addImageFromUrl
@@ -14,7 +15,7 @@ import com.mdev.feature_homepage.domain.model.SearchHistoryItem
 import com.mdev.feature_homepage.utils.getIcon
 import com.mdev.common.R as commonRes
 
-class RecommendedProductsAdapter(private var recommendedProducts: List<RecommendedProduct>):
+class RecommendedProductsAdapter(private var recommendedProducts: List<RecommendedProduct>, private val callback: (productId: String) -> Unit):
     RecyclerView.Adapter<RecommendedProductsAdapter.RecommendedProductsViewHolder>() {
 
         inner class RecommendedProductsViewHolder (itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -22,6 +23,7 @@ class RecommendedProductsAdapter(private var recommendedProducts: List<Recommend
             val tvRecommendedProductName = itemView.findViewById<TextView>(R.id.tv_recommended_product_name)
             val tvRecommendedBrandName = itemView.findViewById<TextView>(R.id.tv_recommended_brand_name)
             val ivRecommendedHealthCategory = itemView.findViewById<ImageView>(R.id.iv_recommended_health_category)
+            val cvRecommendedItem = itemView.findViewById<CardView>(R.id.cv_recommended_item_card)
         }
 
     override fun onCreateViewHolder(
@@ -42,6 +44,9 @@ class RecommendedProductsAdapter(private var recommendedProducts: List<Recommend
         holder.tvRecommendedProductName.text = recommendedProduct.productName
         holder.tvRecommendedBrandName.text = recommendedProduct.brandName
         holder.ivRecommendedHealthCategory.addImage(recommendedProduct.healthCategory.getIcon())
+        holder.cvRecommendedItem.setOnClickListener {
+            callback(recommendedProduct.productId)
+        }
 
     }
 
