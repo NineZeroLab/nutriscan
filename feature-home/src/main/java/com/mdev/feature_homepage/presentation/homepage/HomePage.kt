@@ -56,6 +56,10 @@ class HomePage : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         buildSearchHistoryRecyclerView()
         buildRecommendedProductsRecyclerView()
+        viewModel.onEvent(HomePageEvent.getUserDetails)
+        viewBinding.tvRetryRecommended.setOnClickListener {
+            viewModel.onEvent(HomePageEvent.getRecommendedProducts)
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -63,13 +67,28 @@ class HomePage : Fragment() {
                     when(state.recommendedProductFetchState){
                         Status.LOADING -> {
                             logger("loading recommended products")
+                            viewBinding.apply {
+                                llRecommendedMessage.show()
+                                tvRetryRecommended.hide()
+                                tvRecommendedMessage.text = "Trying to fetch recommeded products"
+                                rvHomepageRecommendedProducts.hide()
+                            }
                         }
                         Status.SUCCESS -> {
                             logger("success fetching recommended products")
+                            viewBinding.apply {
+                                llRecommendedMessage.hide()
+                                rvHomepageRecommendedProducts.show()
+                            }
                             updateRecommendedProducts()
                         }
                         Status.FAILURE -> {
                             logger("failure fetching recommended products")
+                            viewBinding.apply {
+                                llRecommendedMessage.show()
+                                tvRetryRecommended.show()
+                                tvRecommendedMessage.text = "Error fetching recommended products"
+                            }
 
                         }
                         Status.IDLE -> {
@@ -85,6 +104,9 @@ class HomePage : Fragment() {
                             viewBinding.tvHomepageUsername.text = "Hello, ${state.appUser?.name}"
                         }
                         Status.FAILURE -> {
+                            viewBinding.rvHomepageSearchHistory.hide()
+                            viewBinding.tvSearchHistoryMessage.text = "Error Fetching Search History"
+                            viewBinding.tvSearchHistoryMessage.show()
                             logger("error fetching user details!!!")
                         }
                         Status.IDLE -> {
@@ -124,40 +146,36 @@ class HomePage : Fragment() {
 
     private fun updateSearchHistory(){
         val searchHistory = viewModel.uiState.value.searchHistory
+        if (searchHistory.isEmpty()) {
+            viewBinding.rvHomepageSearchHistory.hide()
+            viewBinding.tvSearchHistoryMessage.show()
+        }else{
+            viewBinding.rvHomepageSearchHistory.show()
+            viewBinding.tvSearchHistoryMessage.hide()
+        }
         val adapter = viewBinding.rvHomepageSearchHistory.adapter as SearchHistoryAdapter
         adapter.updateList(searchHistory)
     }
 
     private fun updateRecommendedProducts(){
         val recommendedProducts = viewModel.uiState.value.recommendedProducts
+        if (recommendedProducts.isEmpty()) {
+            viewBinding.rvHomepageRecommendedProducts.hide()
+        }else{
+            viewBinding.rvHomepageRecommendedProducts.show()
+        }
         val adapter = viewBinding.rvHomepageRecommendedProducts.adapter as RecommendedProductsAdapter
         adapter.updateList(recommendedProducts)
     }
 
     private fun buildRecommendedProductsRecyclerView () {
-        val products = viewModel.uiState.value.recommendedProducts
-        val recommendedProducts = products.ifEmpty { getDummyRecommendedProducts() }
+        val recommendedProducts = viewModel.uiState.value.recommendedProducts
 
         viewBinding.rvHomepageRecommendedProducts.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts)
+            adapter = RecommendedProductsAdapter(recommendedProducts = recommendedProducts){ productId ->
+                navigator.navigateToProductDetailsPage(this@HomePage, productId)
+            }
         }
     }
-
-
-
-
-  /*  private fun showProgressBar(){
-        logger("trying to show progress bar")
-        viewBinding.homepageMainLayout.invisible()
-        viewBinding.progressbarLayout.show()
-    }
-
-    private fun hideProgressBar(){
-        logger("trying to hide progress bar")
-        viewBinding.homepageMainLayout.show()
-        viewBinding.progressbarLayout.hide()
-    }
-
-*/
 }

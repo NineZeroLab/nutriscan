@@ -44,6 +44,24 @@ class HomePageViewModel @Inject constructor(
         getSearchHistory()
         getUserDetails()
     }
+
+    fun onEvent(event: HomePageEvent){
+        when(event){
+            HomePageEvent.getRecommendedProducts -> {
+                uiState.value.appUser?.let {
+                    getRecommendedProducts(
+                        categories = listOf("en:snacks"),
+                        dietaryRestrictions = it.dietaryRestrictions,
+                        allergens = it.allergens
+                    )
+                }
+            }
+            HomePageEvent.getSearchHistory -> {}
+            HomePageEvent.getUserDetails -> getUserDetails()
+        }
+    }
+
+
     private fun getUserDetails() {
         getUserDetailsUseCase().onEach { resource ->
             when(resource){
