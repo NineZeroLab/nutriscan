@@ -56,6 +56,7 @@ class HomePage : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         buildSearchHistoryRecyclerView()
         buildRecommendedProductsRecyclerView()
+        viewModel.onEvent(HomePageEvent.getUserDetails)
         viewBinding.tvRetryRecommended.setOnClickListener {
             viewModel.onEvent(HomePageEvent.getRecommendedProducts)
         }

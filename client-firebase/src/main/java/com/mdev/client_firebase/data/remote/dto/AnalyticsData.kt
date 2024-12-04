@@ -20,7 +20,11 @@ internal fun List<ProductDetails>.calculateAnalytics(userName: String): Analytic
     val topCategories = this.flatMap { it.categoriesHierarchy }
         .groupingBy { it }
         .eachCount()
-        .filterKeys { it != "en:plant-based-foods-and-beverages" }
+        .filterKeys {
+            it != "en:plant-based-foods-and-beverages" &&
+            it != "en:beverages-and-beverages-preparations" &&
+                    it != "en:breakfasts"
+        }
 
     Log.d("logger", "${topCategories.keys.map { it.trimCategoryString() }}")
 

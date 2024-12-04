@@ -15,6 +15,8 @@ internal data class SearchHistoryItem(
     val timeStamp: LocalDateTime,
 )
 
+
+
 internal fun SearchHistoryItemDto.toSearchHistoryItem(): SearchHistoryItem{
     return SearchHistoryItem(
         productId = this.mainDetailsForView.productId,

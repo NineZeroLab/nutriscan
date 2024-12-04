@@ -65,7 +65,9 @@ class AnalyticsPage : Fragment(){
         viewBinding.tvAnalyticsBadScanCount.text = analyticsData.badProducts.toString()
 
         viewBinding.rvAnalyticsCategory.apply {
-            adapter = CategoryAdapter(analyticsData.topCategories.toList().take(4))
+            adapter = CategoryAdapter(analyticsData.topCategories.toList()
+                .sortedByDescending { it.second }
+                .take(4))
             layoutManager = GridLayoutManager(requireContext(),2)
         }
 

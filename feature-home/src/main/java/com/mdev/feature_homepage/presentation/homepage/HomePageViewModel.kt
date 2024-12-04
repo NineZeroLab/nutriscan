@@ -57,7 +57,7 @@ class HomePageViewModel @Inject constructor(
                 }
             }
             HomePageEvent.getSearchHistory -> {}
-            HomePageEvent.getUserDetails -> {}
+            HomePageEvent.getUserDetails -> getUserDetails()
         }
     }
 
