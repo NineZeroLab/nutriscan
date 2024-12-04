@@ -15,8 +15,6 @@ internal data class SearchHistoryItem(
     val timeStamp: LocalDateTime,
 )
 
-
-
 internal fun SearchHistoryItemDto.toSearchHistoryItem(): SearchHistoryItem{
     return SearchHistoryItem(
         productId = this.mainDetailsForView.productId,
@@ -30,13 +28,14 @@ internal fun SearchHistoryItemDto.toSearchHistoryItem(): SearchHistoryItem{
 
 
 internal fun ProductDetails.toSearchHistoryItem(): SearchHistoryItem{
+    val timeStamp = LocalDateTime.ofInstant(this.timestamp.toInstant(), ZoneId.systemDefault())
     return SearchHistoryItem(
         productId = this.id,
         productBrand = this.brand,
         productName = this.name,
         imageUrl = this.imageUrl,
         healthCategory = getHealthCategory(this.nutriScoreGrade),
-        timeStamp = LocalDateTime.now()
+        timeStamp = timeStamp
     )
 }
 

@@ -56,6 +56,9 @@ class HomePage : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         buildSearchHistoryRecyclerView()
         buildRecommendedProductsRecyclerView()
+        viewBinding.tvRetryRecommended.setOnClickListener {
+            viewModel.onEvent(HomePageEvent.getRecommendedProducts)
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -64,7 +67,8 @@ class HomePage : Fragment() {
                         Status.LOADING -> {
                             logger("loading recommended products")
                             viewBinding.apply {
-                                tvRecommendedMessage.show()
+                                llRecommendedMessage.show()
+                                tvRetryRecommended.hide()
                                 tvRecommendedMessage.text = "Trying to fetch recommeded products"
                                 rvHomepageRecommendedProducts.hide()
                             }
@@ -72,7 +76,7 @@ class HomePage : Fragment() {
                         Status.SUCCESS -> {
                             logger("success fetching recommended products")
                             viewBinding.apply {
-                                tvRecommendedMessage.hide()
+                                llRecommendedMessage.hide()
                                 rvHomepageRecommendedProducts.show()
                             }
                             updateRecommendedProducts()
@@ -80,7 +84,8 @@ class HomePage : Fragment() {
                         Status.FAILURE -> {
                             logger("failure fetching recommended products")
                             viewBinding.apply {
-                                tvRecommendedMessage.show()
+                                llRecommendedMessage.show()
+                                tvRetryRecommended.show()
                                 tvRecommendedMessage.text = "Error fetching recommended products"
                             }
 
@@ -98,6 +103,9 @@ class HomePage : Fragment() {
                             viewBinding.tvHomepageUsername.text = "Hello, ${state.appUser?.name}"
                         }
                         Status.FAILURE -> {
+                            viewBinding.rvHomepageSearchHistory.hide()
+                            viewBinding.tvSearchHistoryMessage.text = "Error Fetching Search History"
+                            viewBinding.tvSearchHistoryMessage.show()
                             logger("error fetching user details!!!")
                         }
                         Status.IDLE -> {
@@ -139,8 +147,10 @@ class HomePage : Fragment() {
         val searchHistory = viewModel.uiState.value.searchHistory
         if (searchHistory.isEmpty()) {
             viewBinding.rvHomepageSearchHistory.hide()
+            viewBinding.tvSearchHistoryMessage.show()
         }else{
             viewBinding.rvHomepageSearchHistory.show()
+            viewBinding.tvSearchHistoryMessage.hide()
         }
         val adapter = viewBinding.rvHomepageSearchHistory.adapter as SearchHistoryAdapter
         adapter.updateList(searchHistory)
@@ -158,8 +168,7 @@ class HomePage : Fragment() {
     }
 
     private fun buildRecommendedProductsRecyclerView () {
-        val products = viewModel.uiState.value.recommendedProducts
-        val recommendedProducts = products.ifEmpty { getDummyRecommendedProducts() }
+        val recommendedProducts = viewModel.uiState.value.recommendedProducts
 
         viewBinding.rvHomepageRecommendedProducts.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
@@ -168,21 +177,4 @@ class HomePage : Fragment() {
             }
         }
     }
-
-
-
-
-  /*  private fun showProgressBar(){
-        logger("trying to show progress bar")
-        viewBinding.homepageMainLayout.invisible()
-        viewBinding.progressbarLayout.show()
-    }
-
-    private fun hideProgressBar(){
-        logger("trying to hide progress bar")
-        viewBinding.homepageMainLayout.show()
-        viewBinding.progressbarLayout.hide()
-    }
-
-*/
 }

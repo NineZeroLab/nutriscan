@@ -76,18 +76,38 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:layout_marginTop="8dp"
-            android:scrollbars="none" />
+            android:scrollbars="none" >
 
-        <TextView
-            android:id="@+id/tv_recommended_message"
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <LinearLayout
+            android:id="@+id/ll_recommended_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginVertical="16dp"
-            android:text="No Products Scanned yet..."
-            android:textAlignment="viewStart"
+            android:orientation="horizontal"
             android:visibility="gone"
-            tools:visibility="visible" />
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/tv_recommended_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="No Products Scanned yet..."
+                android:textAlignment="viewStart" />
+
+            <TextView
+                android:id="@+id/tv_retry_recommended"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="Retry"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

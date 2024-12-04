@@ -24,14 +24,20 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.mdev.common.utils.domain.model.Status
 import com.mdev.core.utils.logger
+import com.mdev.feature_scan.ScanNavigator
 import com.mdev.feature_scan.databinding.FragmentScanPageBinding
 import com.mdev.feature_scan.domain.model.ProductDetailsForView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ScanPage : Fragment() {
     private lateinit var viewBinding: FragmentScanPageBinding
     private lateinit var viewModel : ScanPageViewModel
+    @Inject
+    lateinit var navigator: ScanNavigator
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,7 +74,9 @@ class ScanPage : Fragment() {
     private fun buildScanList(){
         viewBinding.rvScanList.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = ScanListAdapter(emptyList())
+            adapter = ScanListAdapter(emptyList()){ productId ->
+                navigator.navigateToProductDetailsPage(this@ScanPage, productId)
+            }
         }
     }
     private fun updateScanList(item: ProductDetailsForView){

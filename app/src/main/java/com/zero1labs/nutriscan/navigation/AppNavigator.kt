@@ -12,10 +12,11 @@ import com.mdev.feature_login.navigation.LoginNavigator
 import com.mdev.feature_product_details.navigation.ProductDetailsNavigator
 import com.mdev.feature_profile.navigation.ProfileNavigator
 import com.mdev.feature_register.navigation.RegisterNavigator
+import com.mdev.feature_scan.ScanNavigator
 import com.zero1labs.nutriscan.R
 import javax.inject.Inject
 
-class AppNavigator @Inject constructor(): HomeNavigator, LoginNavigator, ProductDetailsNavigator, ProfileNavigator, RegisterNavigator,HistoryNavigator  {
+class AppNavigator @Inject constructor(): HomeNavigator, LoginNavigator, ProductDetailsNavigator, ProfileNavigator, RegisterNavigator, HistoryNavigator, ScanNavigator{
     override fun navigateToLoginPage(fromFragment: Fragment) {
         fromFragment.findNavController().navigate(R.id.action_navigate_to_login_page)
     }

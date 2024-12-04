@@ -7,6 +7,7 @@ import com.mdev.feature_login.navigation.LoginNavigator
 import com.mdev.feature_product_details.navigation.ProductDetailsNavigator
 import com.mdev.feature_profile.navigation.ProfileNavigator
 import com.mdev.feature_register.navigation.RegisterNavigator
+import com.mdev.feature_scan.ScanNavigator
 import com.zero1labs.nutriscan.navigation.AppNavigator
 import dagger.Binds
 import dagger.Module
@@ -37,6 +38,9 @@ abstract class NavigationModule{
 
     @Binds
     abstract fun bindHistoryNavigator(appNavigator: AppNavigator): HistoryNavigator
+
+    @Binds
+    abstract fun bindScanNavigator(appNavigator: AppNavigator): ScanNavigator
 }
 
 

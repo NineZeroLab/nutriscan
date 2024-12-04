@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.mdev.core.utils.addImage
 import com.mdev.core.utils.addImageFromUrl
@@ -12,14 +13,14 @@ import com.mdev.feature_scan.R
 import com.mdev.common.R as CommonRes
 import com.mdev.feature_scan.domain.model.ProductDetailsForView
 
-internal class ScanListAdapter(private var scanList: List<ProductDetailsForView>): RecyclerView.Adapter<ScanListAdapter.ScanListViewHolder>() {
+internal class ScanListAdapter(private var scanList: List<ProductDetailsForView>, private val callback: (productId: String) -> Unit): RecyclerView.Adapter<ScanListAdapter.ScanListViewHolder>() {
 
     inner class ScanListViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val ivScanItemImage: ImageView = itemView.findViewById(R.id.iv_scan_item_image)
         val tvScanItemName: TextView = itemView.findViewById(R.id.tv_scan_item_name)
         val tvScanItemBrand: TextView = itemView.findViewById(R.id.tv_scan_item_brand)
         val ivScanItemHealthCategory: ImageView = itemView.findViewById(R.id.iv_scan_item_health_category)
-
+        val cvScanItem: CardView = itemView.findViewById(R.id.cv_scan_list_item)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScanListViewHolder {
@@ -38,6 +39,9 @@ internal class ScanListAdapter(private var scanList: List<ProductDetailsForView>
             ivScanItemImage.addImageFromUrl(item.imageUrl, CommonRes.mipmap.app_icon_small)
             ivScanItemHealthCategory.addImage(CommonRes.drawable.circle_bad)
             tvScanItemBrand.text = item.brand
+            cvScanItem.setOnClickListener {
+                callback(item.id)
+            }
         }
     }
     fun addItemToList(item: ProductDetailsForView){

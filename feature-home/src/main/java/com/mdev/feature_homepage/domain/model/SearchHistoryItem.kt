@@ -1,11 +1,14 @@
 package com.mdev.feature_homepage.domain.model
 
+import android.icu.util.TimeZone
 import com.mdev.core.utils.TimeCalculator
+import com.mdev.core.utils.logger
 import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneId
 
 data class SearchHistoryItem(
     val productId: String,
@@ -16,7 +19,10 @@ data class SearchHistoryItem(
 )
 
 internal fun ProductDetails.toSearchHistoryItem(): SearchHistoryItem{
-    val scannedTime = LocalTime.now().minusHours(3)
+    val scannedTime = LocalDateTime.ofInstant(this.timestamp.toInstant(), ZoneId.systemDefault())
+    if (this.id == "0060410068328"){
+        logger(scannedTime.toString())
+    }
     val scannedTimeString = TimeCalculator.getTime(Duration.between(scannedTime,LocalDateTime.now()))
     return SearchHistoryItem(
         productId = this.id,

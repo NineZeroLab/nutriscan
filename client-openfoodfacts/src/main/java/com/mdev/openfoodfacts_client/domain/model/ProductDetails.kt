@@ -1,8 +1,11 @@
 package com.mdev.openfoodfacts_client.domain.model
 
 import android.util.Log
+import com.google.firebase.Timestamp
 import com.mdev.openfoodfacts_client.data.remote.dto.AdditiveDto
 import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class ProductDetails(
     val id: String = "",
@@ -14,7 +17,8 @@ data class ProductDetails(
     val categoriesHierarchy: List<String> = emptyList(),
     val allergensHierarchy: List<Allergen> = emptyList(),
     val ingredientsAnalysis: List<DietaryRestriction> = emptyList(),
-    val additivesOriginalTags: List<AdditiveDto> = emptyList()
+    val additivesOriginalTags: List<AdditiveDto> = emptyList(),
+    val timestamp: Timestamp = Timestamp.now()
 )
 
 

@@ -5,6 +5,7 @@ import com.mdev.openfoodfacts_client.domain.model.HealthCategory
 import com.mdev.openfoodfacts_client.domain.model.ProductDetails
 
 internal data class ProductDetailsForView(
+    val id: String,
     val name: String,
     val brand: String?,
     val healthCategory: HealthCategory,
@@ -16,6 +17,7 @@ internal data class ProductDetailsForView(
 
 internal fun ProductDetailsForViewDto.toProductDetailsForView(): ProductDetailsForView{
     return ProductDetailsForView(
+        id =  this.id,
         name = this.name,
         brand = this.brand,
         healthCategory = this.healthCategory,
@@ -25,6 +27,7 @@ internal fun ProductDetailsForViewDto.toProductDetailsForView(): ProductDetailsF
 
 internal fun ProductDetails.toProductDetailsForView(): ProductDetailsForView{
     return ProductDetailsForView(
+        id = this.id,
         name = this.name,
         brand = this.brand,
         healthCategory = getHealthCategory(this.nutriScoreGrade),
