@@ -26,7 +26,7 @@ import com.mdev.common.utils.domain.model.Status
 import com.mdev.core.utils.logger
 import com.mdev.feature_scan.ScanNavigator
 import com.mdev.feature_scan.databinding.FragmentScanPageBinding
-import com.mdev.feature_scan.domain.model.ProductDetailsForView
+import com.mdev.feature_scan.domain.model.ScanItemForView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
@@ -79,7 +79,7 @@ class ScanPage : Fragment() {
             }
         }
     }
-    private fun updateScanList(item: ProductDetailsForView){
+    private fun updateScanList(item: ScanItemForView){
         val adapter = viewBinding.rvScanList.adapter as ScanListAdapter
         adapter.addItemToList(item)
     }

@@ -1,4 +1,8 @@
 <resources>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="palm_oil_status">Palm Oil Status</string>
+    <string name="vegan_status">vegan status</string>
+    <string name="vegetarian_status">vegetarian status</string>
+    <string name="health_category">health category</string>
 </resources>

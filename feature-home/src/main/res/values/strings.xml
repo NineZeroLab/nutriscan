@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trying_to_fetch_recommeded_products">Trying to fetch recommeded products</string>
+    <string name="error_fetching_recommended_products">Error fetching recommended products</string>
+    <string name="error_fetching_search_history">Error Fetching Search History</string>
+</resources>

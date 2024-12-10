@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mdev.common.utils.Resource
 import com.mdev.common.utils.domain.model.Status
 import com.mdev.core.utils.logger
-import com.mdev.feature_scan.domain.model.ProductDetailsForView
+import com.mdev.feature_scan.domain.model.ScanItemForView
 import com.mdev.feature_scan.domain.usecase.GetProductDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 internal data class ScanPageState(
-    val scannedProducts: List<ProductDetailsForView> = emptyList(),
+    val scannedProducts: List<ScanItemForView> = emptyList(),
     val errorMessage: String? = null,
     val scanState: Status = Status.IDLE
 )
