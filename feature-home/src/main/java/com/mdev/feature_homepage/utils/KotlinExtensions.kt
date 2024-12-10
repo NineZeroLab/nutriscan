@@ -13,3 +13,8 @@ fun HealthCategory.getIcon():Int {
         HealthCategory.UNKNOWN -> commonRes.drawable.circle_unknown
     }
 }
+
+fun String?.greet(): String{
+    if (this.isNullOrEmpty()) return "Hello, User"
+    return "Hello, $this"
+}

@@ -14,7 +14,7 @@ internal class GetSearchHistoryUseCase @Inject constructor(
         emit(Resource.Loading())
         try {
             historyRepository.getSearchHistory().collect{ searchHistoryDto ->
-                emit(Resource.Success(searchHistoryDto))
+                emit(Resource.Success(searchHistoryDto.sortedByDescending { it.timeStamp }))
             }
         }catch (e: Exception){
             emit(Resource.Error(e.message.toString()))
