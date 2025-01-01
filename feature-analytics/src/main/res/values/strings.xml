@@ -1,4 +1,9 @@
 <resources>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="top_categories">Top Categories</string>
+    <string name="average_nutrients">Average Nutrients</string>
+    <string name="scan_products_to_view_analytics">Scan Products to view Analytics</string>
+    <string name="good_scans">"Good Scans: "</string>
+    <string name="bad_scans">"Bad Scans:  "</string>
 </resources>

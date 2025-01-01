@@ -5,6 +5,7 @@ import com.mdev.core.utils.logger
 import com.mdev.feature_product_details.domain.model.ProductDetailsForView
 import com.mdev.feature_product_details.domain.model.Considerations
 import com.mdev.feature_product_details.domain.model.getProductConsiderations
+import com.mdev.feature_product_details.domain.model.toAdditiveShortView
 import com.mdev.feature_product_details.domain.model.toProductDetails
 import com.mdev.feature_product_details.domain.repository.ProductDetailsRepository
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +23,11 @@ internal class GetProductDetailsUseCase @Inject constructor(
             if (product == null){
                 emit(Resource.Error("Product Not Found"))
             }else{
-                val productDetails = product.toProductDetails()
+                val additives = productDetailsRepository.getAdditives(product.additivesOriginalTags ?: emptyList())
+                logger("additives: $additives")
+                val productDetails = product.toProductDetails().copy(
+                    additives = additives.map { it.toAdditiveShortView() }
+                )
                 val productConsiderations = product.getProductConsiderations()
                 val userConsiderations = getUserConsiderationsUseCase() ?: Considerations()
                 val productDetailsForView = ProductDetailsForView(

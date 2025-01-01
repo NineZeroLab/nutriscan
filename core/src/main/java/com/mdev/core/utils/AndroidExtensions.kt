@@ -57,3 +57,11 @@ fun ImageView.addImageFromUrl(imageUrl: String ,@DrawableRes errorImage: Int){
 fun View.isVisible(): Boolean{
     return this.visibility == View.VISIBLE
 }
+
+
+fun ImageView.loadBannerImage(imageId: Int){
+    Glide.with(this)
+        .load(imageId)
+        .fitCenter()
+        .into(this)
+}

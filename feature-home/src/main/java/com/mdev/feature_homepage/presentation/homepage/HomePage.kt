@@ -11,7 +11,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.mdev.common.utils.domain.model.Status
+import com.mdev.core.utils.addImage
 import com.mdev.core.utils.hide
 import com.mdev.core.utils.logger
 import com.mdev.core.utils.show
@@ -44,6 +46,11 @@ class HomePage : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Glide.with(requireContext())
+            .load(R.raw.home_page_banner)
+            .fitCenter()
+            .into(viewBinding.ivBannerBackground)
+
         buildSearchHistoryRecyclerView()
         buildRecommendedProductsRecyclerView()
         viewModel.onEvent(HomePageEvent.getUserDetails)

@@ -3,6 +3,7 @@ package com.mdev.feature_product_details.data.repository
 import com.mdev.client_firebase.data.remote.dto.AppUser
 import com.mdev.client_firebase.domain.repository.FirebaseRepository
 import com.mdev.feature_product_details.domain.repository.ProductDetailsRepository
+import com.mdev.openfoodfacts_client.data.remote.dto.AdditiveDto
 import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
 import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
 import com.mdev.openfoodfacts_client.domain.model.Allergen
@@ -20,6 +21,10 @@ internal class ProductDetailsRepositoryImpl @Inject constructor(
 
     override suspend fun getUserPreference(): AppUser? {
         return firebaseRepository.getCurrentUserDetails()
+    }
+
+    override suspend fun getAdditives(additivesHierarchy: List<String>): List<AdditiveDto>{
+        return productRepository.getAdditivesByENumber(additivesHierarchy)
     }
 
     override suspend fun getRecommendedProducts(

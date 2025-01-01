@@ -41,6 +41,7 @@ internal class ProductRepositoryImpl @Inject constructor (
         )
         val productDto = searchResponse.products.getOrNull(0)
         val additives = getAdditivesByENumber(productDto?.additivesOriginalTags ?: emptyList())
+        Log.d("logger",additives.toString())
         return productDto?.toProductDetails(additives)
     }
 
@@ -53,12 +54,18 @@ internal class ProductRepositoryImpl @Inject constructor (
             }
         val additivesType = object : TypeToken<List<AdditiveDto>>() {}.type
         val additives: List<AdditiveDto> = gson.fromJson(jsonFile, additivesType)
-        _additives = additives
+        val additivesNameFiltered = additives.map { additive ->
+            additive.copy(
+                name = additive.name?.split(",")?.getOrElse(0){"Unknown"}
+            )
+        }
+        _additives = additivesNameFiltered
     }
 
     override fun getAdditivesByENumber(eNumber: List<String>): List<AdditiveDto>{
+        val additives = eNumber.map { it.replace("en:", "") }
         return _additives.filter {
-            it.eNumber in eNumber
+            it.eNumber in additives
         }
     }
 

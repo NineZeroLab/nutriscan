@@ -15,7 +15,6 @@ class CategoryAdapter(private val categories: List<Pair<String, Int>>): Recycler
         val ivCategoryImage: ImageView = itemView.findViewById(R.id.iv_analytics_category_image)
         val tvCategoryName: TextView = itemView.findViewById(R.id.tv_analytics_category_name)
         val tvCategoryCount: TextView = itemView.findViewById(R.id.tv_analytics_category_count)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {

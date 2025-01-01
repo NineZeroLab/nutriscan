@@ -15,9 +15,7 @@ internal class MainDetailsForView(
     companion object{
         fun getMainDetailsForView(product : ProductDto) : MainDetailsForView {
 
-            val nutriScoreGrade = if (product.nutriScoreGrade == "unknown") NutriScoreCalculator.getNutriScoreGrade(
-                product.nutrients
-            ) else product.nutriScoreGrade
+            val nutriScoreGrade = product.nutriScoreGrade
             val healthCategory = getHealthCategory(nutriScoreGrade)
             return MainDetailsForView(
                 productId = product.productId,

@@ -5,6 +5,7 @@ import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
 internal data class RecommendedProduct(
     val id: String?,
     val name: String?,
+    val brand: String?,
     val imageUrl: String?,
     val nutriScoreGrade: String?
 )
@@ -14,6 +15,7 @@ internal fun RecommendedProductDto.toRecommendedProduct(): RecommendedProduct{
     return RecommendedProduct(
         id = this.code,
         name = this.productName,
+        brand = this.brand,
         imageUrl = this.imageUrl,
         nutriScoreGrade = this.nutriscoreGrade
     )

@@ -1,6 +1,7 @@
 package com.mdev.feature_product_details.domain.repository
 
 import com.mdev.client_firebase.data.remote.dto.AppUser
+import com.mdev.openfoodfacts_client.data.remote.dto.AdditiveDto
 import com.mdev.openfoodfacts_client.data.remote.dto.ProductDto
 import com.mdev.openfoodfacts_client.data.remote.dto.RecommendedProductDto
 import com.mdev.openfoodfacts_client.domain.model.Allergen
@@ -14,4 +15,6 @@ internal interface ProductDetailsRepository {
         dietaryRestrictions: List<DietaryRestriction>,
         allergens: List<Allergen>
     ): List<RecommendedProductDto>?
+
+    suspend fun getAdditives(additivesHierarchy: List<String>): List<AdditiveDto>
 }

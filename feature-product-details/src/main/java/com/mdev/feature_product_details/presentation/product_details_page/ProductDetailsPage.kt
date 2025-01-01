@@ -1,12 +1,9 @@
 package com.mdev.feature_product_details.presentation.product_details_page
 
 import android.content.Context
-import android.media.Image
 import android.os.Bundle
-import android.util.LayoutDirection
 import android.util.Log
 import android.view.LayoutInflater
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -17,6 +14,7 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -27,26 +25,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.mdev.common.utils.domain.model.Status
 import com.mdev.core.utils.addImage
-import com.mdev.common.R as CommonRes
-import com.mdev.feature_product_details.R
-import com.mdev.openfoodfacts_client.domain.model.NutrientCategory
-import com.mdev.openfoodfacts_client.domain.model.Allergen
-import com.mdev.openfoodfacts_client.domain.model.HealthCategory
-import com.mdev.openfoodfacts_client.domain.model.NutrientType
-import com.mdev.openfoodfacts_client.domain.model.ProductType
 import com.mdev.core.utils.hide
 import com.mdev.core.utils.logger
 import com.mdev.core.utils.showSnackBar
+import com.mdev.feature_product_details.R
 import com.mdev.feature_product_details.databinding.FragmentProductDetailsPageBinding
 import com.mdev.feature_product_details.domain.model.AdditivesShortView
 import com.mdev.feature_product_details.domain.model.MainDetailsForView
 import com.mdev.feature_product_details.domain.model.Nutrient
 import com.mdev.feature_product_details.domain.model.RecommendedProduct
 import com.mdev.feature_product_details.navigation.ProductDetailsNavigator
+import com.mdev.openfoodfacts_client.domain.model.Allergen
+import com.mdev.openfoodfacts_client.domain.model.HealthCategory
+import com.mdev.openfoodfacts_client.domain.model.NutrientCategory
+import com.mdev.openfoodfacts_client.domain.model.NutrientType
+import com.mdev.openfoodfacts_client.domain.model.ProductType
 import com.mdev.openfoodfacts_client.utils.ClientResources
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.mdev.common.R as CommonRes
 
 @AndroidEntryPoint
 class ProductDetailsPage : Fragment() {
@@ -136,7 +134,7 @@ class ProductDetailsPage : Fragment() {
         viewModel.uiState.value.let { state ->
             state.productDetails?.let { productDetails ->
 
-                buildMainHeader( productDetails.mainDetailsForView, state.userConclusion?.dietaryPreferenceConclusion ?: "")
+                buildMainHeader(productDetails.mainDetailsForView)
             }
             if (state.productConsiderations != null && state.userConsiderations != null){
                 buildAllergensView(
@@ -198,6 +196,10 @@ class ProductDetailsPage : Fragment() {
                     requireContext(),
                     R.drawable.allergen_selector
                 )
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
                 isAllCaps = false
                 textOn = allergen.heading
                 textOff = allergen.heading
@@ -221,7 +223,6 @@ class ProductDetailsPage : Fragment() {
 
     private fun buildMainHeader(
         mainDetailsForView: MainDetailsForView,
-        dietaryPreferenceConclusion: String,
     ){
         val itemView = LayoutInflater.from(requireContext()).inflate(R.layout.product_details_main_header, llProductDetailsLayout,false)
         val cvProductHealthCategory: CardView = itemView.findViewById(R.id.cv_product_health)
@@ -230,6 +231,9 @@ class ProductDetailsPage : Fragment() {
         val tvProductBrand: TextView = itemView.findViewById(R.id.tv_product_brand)
         val ivProductHealthIcon: ImageView = itemView.findViewById(R.id.iv_product_health_icon)
         val tvProductHealthGrade: TextView = itemView.findViewById(R.id.tv_product_health_grade)
+        val ivPalmOilStatus: ImageView = itemView.findViewById(R.id.iv_palm_oil_status)
+        val ivVeganStatus: ImageView = itemView.findViewById(R.id.iv_vegan_status)
+        val ivVegetarianStatus: ImageView = itemView.findViewById(R.id.iv_vegetarian_status)
 
         val (healthCategoryIcon, healthCategoryBg) = getHealthCategoryIcon(
             requireContext(),mainDetailsForView.healthCategory
@@ -316,28 +320,49 @@ class ProductDetailsPage : Fragment() {
 
     private fun buildAdditives(additives: List<AdditivesShortView>){
         val additivesHeaderView = LayoutInflater.from(requireContext()).inflate(R.layout.component_additives_header,llProductDetailsLayout, false)
+        val clAdditivesLayout =
+            additivesHeaderView.findViewById<ConstraintLayout>(R.id.cl_additives_layout)
+        val flAdditivesLayout = additivesHeaderView.findViewById<Flow>(R.id.fl_additives_content)
         additivesHeaderView.findViewById<TextView>(R.id.tv_additives_nos).text = additives.size.toString()
-        val additivesLevelContent = additivesHeaderView.findViewById<LinearLayout>(R.id.ll_additives_level_content)
         val dropDownImage = additivesHeaderView.findViewById<ImageView>(R.id.iv_drop_down_arrow)
         dropDownImage.setOnClickListener {
-            if (additivesLevelContent.visibility == View.VISIBLE){
-                additivesLevelContent.visibility = View.GONE
+            if (clAdditivesLayout.visibility == View.VISIBLE) {
+                clAdditivesLayout.visibility = View.GONE
                 dropDownImage.addImage(R.mipmap.arrow_down)
             }else{
-                additivesLevelContent.visibility = View.VISIBLE
+                clAdditivesLayout.visibility = View.VISIBLE
                 dropDownImage.addImage(R.mipmap.arrow_up)
             }
         }
 
         additives.forEach { additive ->
-            val additivesContentView = LayoutInflater.from(requireContext()).inflate(R.layout.component_additives_content_level, additivesLevelContent, false)
-            additivesContentView.apply {
-                findViewById<TextView>(R.id.tv_risk_level).text = additive.additiveRiskLevel.displayText
-                findViewById<ImageView>(R.id.iv_risk_level).addImage(additive.additiveRiskLevel.icon)
-                findViewById<TextView>(R.id.tv_risk_level_nos).text = additive.count.toString()
-                findViewById<TextView>(R.id.tv_risk_level_nos).text = additive.count.toString()
+            val button = ToggleButton(requireContext())
+            button.apply {
+                background = ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.allergen_selector
+                )
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
+                isAllCaps = false
+                textOn = additive.name
+                textOff = additive.name
+                text = additive.name
+                isChecked = false
+                isClickable = false
+                id = View.generateViewId()
             }
-            additivesLevelContent.addView(additivesContentView)
+            button.setTextColor(
+                resources.getColor(
+                    if (button.isChecked) CommonRes.color.md_theme_onPrimary else CommonRes.color.md_theme_onBackground
+                )
+            )
+            val buttonIds = flAdditivesLayout.referencedIds.toMutableList()
+            buttonIds.add(button.id)
+            flAdditivesLayout.referencedIds = buttonIds.toIntArray()
+            clAdditivesLayout.addView(button)
         }
         llProductDetailsLayout.addView(additivesHeaderView)
     }

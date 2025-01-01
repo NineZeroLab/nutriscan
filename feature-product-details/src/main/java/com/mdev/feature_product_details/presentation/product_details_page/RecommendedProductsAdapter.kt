@@ -41,7 +41,7 @@ internal class RecommendedProductsAdapter(
         val product = recommendedProducts[position]
         holder.ivProductImage.addImageFromUrl(product.imageUrl.toString(), errorImage = CommonRes.mipmap.app_icon_small)
         holder.tvProductName.text = product.name
-        holder.tvProductBrand.text = product.nutriScoreGrade
+        holder.tvProductBrand.text = product.brand
         //change the onClickListener to the parent view
         holder.ivProductImage.setOnClickListener {
             product.id?.let {

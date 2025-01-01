@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.findFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import com.mdev.core.utils.getInput
 import com.mdev.core.utils.logger
 import com.mdev.core.utils.showSnackBar
@@ -79,7 +80,7 @@ class LoginPage : Fragment() {
                     }
                     LoginStatus.SUCCESS -> {
                         logger("Login Success")
-                        view.showSnackBar("Logging in ...")
+                        view.showSnackBar("Logging in ...", Snackbar.LENGTH_SHORT)
                         navigator.navigateFromLoginPageToHomePage(view.findFragment())
                     }
                     LoginStatus.FAILURE -> {

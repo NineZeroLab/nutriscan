@@ -14,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mdev.client_firebase.data.remote.dto.AnalyticsData
 import com.mdev.core.utils.hide
+import com.mdev.core.utils.loadBannerImage
 import com.mdev.core.utils.round
 import com.mdev.core.utils.show
 import com.mdev.feature_analytics.R
@@ -38,6 +39,8 @@ class AnalyticsPage : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewBinding.ivAnalyticsBanner.loadBannerImage(R.raw.analytics_banner)
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.uiState.collect{ state ->
@@ -59,8 +62,8 @@ class AnalyticsPage : Fragment(){
         }
         viewBinding.tvAnalyticsUsername.text = analyticsData.userName
         viewBinding.tvTotalScans.text = analyticsData.scannedItems.toString()
-        viewBinding.tvAnalyticsGoodScanText.text = "Good Products "
-        viewBinding.tvAnalyticsBadScanText.text  = "Bad Products  "
+        viewBinding.tvAnalyticsGoodScanText.text = getString(R.string.good_scans)
+        viewBinding.tvAnalyticsBadScanText.text  = getString(R.string.bad_scans)
         viewBinding.tvAnalyticsGoodScanCount.text = analyticsData.goodProducts.toString()
         viewBinding.tvAnalyticsBadScanCount.text = analyticsData.badProducts.toString()
 
@@ -76,9 +79,10 @@ class AnalyticsPage : Fragment(){
         for((nutrient, averageValue) in analyticsData.averageNutrientPerProduct){
             if (nutrient == null) continue
             val nutrientView = LayoutInflater.from(requireContext()).inflate(R.layout.component_nutrient_analytics_data, viewBinding.llNutrientsAnalyticsData, false)
+            val nutrientContentText = "${averageValue.round()} ${nutrient.defaultUnit}"
 
             nutrientView.findViewById<TextView>(R.id.tv_analytics_nutrient_name).text = nutrient.heading
-            nutrientView.findViewById<TextView>(R.id.tv_analytics_nutrient_average).text = averageValue.round().toString()
+            nutrientView.findViewById<TextView>(R.id.tv_analytics_nutrient_average).text = nutrientContentText
 
             viewBinding.llNutrientsAnalyticsData.addView(nutrientView)
         }
